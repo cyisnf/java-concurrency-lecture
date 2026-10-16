@@ -1,0 +1,209 @@
+# スレッドの同期（join・wait・notify） {#sec-synchronization}
+
+**同期**とは、2つ以上の処理のタイミングを合わせることです。Javaでは、どのスレッドをどの順番で実行するかは基本的に実行時のシステムが決めますが、`join()`・`wait()`・`notify()` を使うと、プログラムの側で実行の順番を制御できます。
+
+| メソッド | 何を待つか | 待機の解除 |
+| --- | --- | --- |
+| `join()` | 指定したスレッドが**終了する**まで | 対象のスレッドが終了したとき |
+| `wait()` | 他のスレッドから**通知される**まで | `notify()` または `notifyAll()` が呼ばれたとき |
+
+## join：スレッドの終了を待つ {#sec-join}
+
+`t.join()` を呼ぶと、呼び出したスレッドは、スレッド `t` が終了するまで待ちます。`join()` より後の処理は、`t` が終了してから実行されます。
+
+```{.java filename="JoinTest.java"}
+public class JoinTest extends Thread {
+
+    public void run() {
+        for (int i = 0; i < 10; i++) {
+            System.out.println(i);
+        }
+    }
+
+    public static void main(String[] args) {
+        JoinTest jt = new JoinTest();
+        jt.start();
+
+        /* 手順2で、このコメントを外す
+        try {
+            jt.join();  // jt スレッドが終わるまで、メインスレッドはここで待つ
+        } catch (InterruptedException e) {
+        }
+        */
+
+        System.out.println("END");
+    }
+}
+```
+
+**手順**
+
+1. そのまま実行する。メインスレッドの「END」の出力と、`jt` スレッドの0〜9の出力は並行に行われるため、ENDが表示される位置は実行のたびに変わります（最初に表示されることが多いでしょう）。
+2. コメントを外して `jt.join()` を有効にし、再度実行する。メインスレッドは `jt` が終わるまで待つので、**ENDは必ず最後に**表示されます。
+
+`join(long ミリ秒)` のように引数を指定すると、対象のスレッドが終わらなくても、指定時間が過ぎれば待機をやめて処理を再開します。
+
+::: {.callout-warning}
+## スレッドを stop() で止めてはいけない
+`Thread` クラスには `stop()` メソッドがありますが、使ってはいけません。`stop()` はスレッドを処理の途中で強制終了するため、共有変数を書き換えの途中のまま残すおそれがあります。現在のJavaでは非推奨であり、新しいバージョンでは呼び出すと例外が発生します。
+
+スレッドは `run()` メソッドの最後まで実行すると自動的に終了します。**`run()` が自然に終わるように設計する**のが原則です（[5.5節](05-race-condition.qmd#sec-volatile)の `running` フラグの例を参照）。
+:::
+
+## wait と notify：条件が整うまで待つ {#sec-wait-notify}
+
+`join()` はスレッドの終了まで待つメソッドでした。これに対して `wait()` は、**他のスレッドから通知が来るまで**待つメソッドです。「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。
+
+| メソッド | 働き |
+| --- | --- |
+| `wait()` | 持っているロックを**解放してから**待機状態に入る。引数でミリ秒を指定すると、その時間が過ぎたときにも待機を終える |
+| `notify()` | 同じオブジェクトで `wait()` しているスレッドのうち、**1つだけ**を起こす（どれを起こすかはシステムが決める） |
+| `notifyAll()` | 同じオブジェクトで `wait()` しているスレッドを**すべて**起こす |
+
+::: {.callout-important}
+## 重要な規則
+- `wait()`・`notify()`・`notifyAll()` は、そのオブジェクトのロックを持っている状態、つまり `synchronized` ブロック（またはメソッド）の中でしか呼べません。外で呼ぶと `IllegalMonitorStateException` が発生します。
+- `wait()` を呼んだスレッドはロックを手放すため、その間に他のスレッドが `synchronized` の中に入れます。
+- `notify()` で起こされたスレッドは、すぐには再開しません。**ロックをもう一度取得できてから**、`wait()` の次の行から再開します。
+:::
+
+```{mermaid}
+%%| fig-cap: "wait / notify によるスレッドの状態の移り変わり"
+stateDiagram-v2
+    direction LR
+    state "実行中（ロックを持っている）" as Running
+    state "待機中（ロックを解放して待つ）" as Waiting
+    state "ロック再取得待ち" as Relock
+    Running --> Waiting: wait()
+    Waiting --> Relock: notify() / notifyAll()
+    Relock --> Running: ロックを取得したら、wait() の次の行から再開
+```
+
+## サンプル：上限と下限のあるカウンタ {#sec-wait-notify-sample}
+
+2つのスレッドが、変数 `n` をそれぞれ1000回ずつ増やす（インクリメント）・減らす（デクリメント）プログラムです。ただし、`n` は0以上10以下に保ちます。
+
+- `n` が10のときに増やそうとしたら、`wait()` で待つ。
+- `n` が0のときに減らそうとしたら、`wait()` で待つ。
+- 増減に成功したら `notify()` を呼び、待っている相手のスレッドを起こす。
+
+```{.java filename="WaitNotifyTest.java"}
+public class WaitNotifyTest {
+    int n = 0;
+
+    synchronized void inc() {
+        while (n == 10) {  // 上限に達している間は待つ（if ではなく while）
+            System.out.println("nが10なので、加算を待機");
+            try {
+                wait();    // ロックを解放して待機
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+        n++;
+        System.out.println("Inc:" + n);
+        notify();          // 減算を待っているスレッドを起こす
+    }
+
+    synchronized void dec() {
+        while (n == 0) {   // 下限に達している間は待つ
+            System.out.println("nが0なので、減算を待機");
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+        n--;
+        System.out.println("Dec:" + n);
+        notify();          // 加算を待っているスレッドを起こす
+    }
+
+    public static void main(String[] args) {
+        WaitNotifyTest wt = new WaitNotifyTest();
+        new IncThread(wt).start();
+        new DecThread(wt).start();
+    }
+}
+
+class IncThread extends Thread {
+    WaitNotifyTest wt;
+
+    public IncThread(WaitNotifyTest wt) {
+        this.wt = wt;
+    }
+
+    public void run() {
+        for (int i = 0; i < 1000; i++) {
+            wt.inc();
+        }
+    }
+}
+
+class DecThread extends Thread {
+    WaitNotifyTest wt;
+
+    public DecThread(WaitNotifyTest wt) {
+        this.wt = wt;
+    }
+
+    public void run() {
+        for (int i = 0; i < 1000; i++) {
+            wt.dec();
+        }
+    }
+}
+```
+
+### なぜ if ではなく while で条件を確かめるのか {.unnumbered}
+
+`wait()` から戻ったときに、待っていた条件が満たされているとは限りません。理由は2つあります。
+
+1. 起こされてからロックを再取得するまでの間に、別のスレッドが先に値を変えている可能性がある（増やす側・減らす側のスレッドが複数ある場合に起こりやすい）。
+2. Javaの仕様上、通知がなくても `wait()` から戻ることがある（**見せかけの起床**、spurious wakeup）。
+
+::: {.callout-important}
+## wait() は必ず while ループの中で呼ぶ
+`while` で囲んでおけば、戻った後にもう一度条件を確かめ、満たされていなければ再び待ちます。
+:::
+
+### notify() と notifyAll() の使い分け {.unnumbered}
+
+このサンプルのように、待つ可能性のあるスレッドが1種類ずつなら `notify()` で足ります。待つ理由が異なるスレッドが混在する場合は、`notify()` では目的と違うスレッドだけが起こされて、全員が待ち続けることがあります。その場合は `notifyAll()` を使うのが安全です。
+
+## 練習問題3：条件が整うまで待つキュー {#sec-ex3 .unnumbered}
+
+[練習問題1](05-race-condition.qmd#sec-ex1)の `IntQueue` を、次のように変更してください。
+
+- キューが**空**のときに `dequeue()` が呼ばれたら、要素が追加されるまで `wait()` で待つ。
+- キューが**満杯**のときに `enqueue()` が呼ばれたら、要素が取り出されるまで `wait()` で待つ。
+- その結果、各スレッドが**必ず100回ずつ** `enqueue()` または `dequeue()` を成功させるようにする。
+
+**実行結果の例**
+
+```
+$ java IntQueue
+（中略）
+dequeue :42 tail:3
+dequeue :49 tail:2
+dequeue :22 tail:1
+dequeue :80 tail:0
+dequeue :47 tail:-1
+dequeue :Queue Empty.. wait enqueue()
+enqueue :98 tail:0
+（中略）
+enqueue :76 tail:6
+enqueue :19 tail:7
+enqueue :100 tail:8
+enqueue :58 tail:9
+enqueue :Queue Full.. wait dequeue()
+dequeue :33 tail:8
+dequeue :53 tail:7
+```
+
+::: {.callout-tip collapse="true"}
+## ヒント（クリックで表示）
+- [6.3節](#sec-wait-notify-sample)のサンプルと同じく、待つ条件は `while` で確かめてください。
+- この問題では、追加側と取り出し側のスレッドが**2つずつ**あります。`notify()` だと、同じ側のスレッド（例：取り出し側のスレッドが、別の取り出し側のスレッド）を起こしてしまい、全員が待ち続ける可能性があります。`notifyAll()` を使うのが安全です。
+- すべてのスレッドが終了し、プログラムが正常に終わることも確認してください。
+:::

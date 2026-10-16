@@ -1,0 +1,55 @@
+project:
+  type: book
+  output-dir: _book
+  # サイトとして公開するファイルを明示する（README.md などを公開しないため）
+  render:
+    - index.qmd
+    - chapters/*.qmd
+    - appendix/*.qmd
+
+lang: ja
+
+book:
+  title: "Javaによる並行プログラミング入門"
+  subtitle: "Java演習 講義資料"
+  author: "Kohki Higuchi"
+  date: last-modified
+  date-format: "YYYY年M月D日"
+  # 公開するリポジトリのURLに書き換えてください（「編集」「誤りを報告」ボタンに使われます）
+  repo-url: https://github.com/cyisnf/java-concurrency
+  repo-actions: [edit, issue]
+  search: true
+  page-navigation: true
+  chapters:
+    - index.qmd
+    - chapters/01-concurrent-parallel.qmd
+    - chapters/02-process-thread.qmd
+    - chapters/03-create-thread.qmd
+    - chapters/04-sleep.qmd
+    - chapters/05-race-condition.qmd
+    - chapters/06-synchronization.qmd
+    - chapters/07-deadlock.qmd
+    - chapters/08-parallel.qmd
+  appendices:
+    - appendix/glossary.qmd
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    number-depth: 2
+    code-copy: true
+    code-overflow: scroll
+    highlight-style: github
+
+  # --- PDF版（任意）-----------------------------------------------
+  # 日本語のPDFを作るには、手元のPCに TeX Live（LuaLaTeX）が必要です。
+  # 使う場合は、下の4行の先頭の「#」を外し、`quarto render --to pdf` を実行します。
+  # pdf:
+  #   documentclass: bxjsbook
+  #   classoption: [lualatex, ja=standard]
+  #   pdf-engine: lualatex

@@ -1,0 +1,15 @@
+/* 日本語の本文を読みやすくするための最小限の調整 */
+body {
+  line-height: 1.8;
+}
+
+/* 表のセル内の文章が詰まりすぎないようにする */
+table td,
+table th {
+  padding: 0.4rem 0.6rem;
+}
+
+/* コードブロックの行間は本文より狭くする */
+pre code {
+  line-height: 1.5;
+}

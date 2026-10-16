@@ -1,0 +1,109 @@
+# デッドロック {#sec-deadlock}
+
+**デッドロック**とは、2つ以上のスレッド（またはプロセス）が互いに相手の持つ資源の解放を待ち合い、どれも先に進めなくなる状態です。並行プログラミングで最も代表的な落とし穴です。
+
+身近な例は、4方向から同時に車が進入した交差点です。どの車も「右側の車が先に行くのを待つ」と、全員が待ち続けて誰も動けなくなります。
+
+## デッドロックが起こる4つの条件 {#sec-deadlock-conditions}
+
+次の4つの条件が**すべて**そろったときに、デッドロックが起こりえます。逆に、どれか1つでも崩せばデッドロックは起こりません。
+
+| 条件 | 意味 | 食事の例（[7.2節](#sec-deadlock-sample)） |
+| --- | --- | --- |
+| 相互排除 | 資源を同時に使えるのは1人だけ | ナイフもフォークも1本しかない |
+| 保持と待機 | 資源を持ったまま、別の資源を待つ | フォークを持ったまま、ナイフを待つ |
+| 横取り不可 | 他人が持つ資源を奪えない | 他人のナイフを取り上げられない |
+| 循環待ち | 待ちの関係が輪になる | AはBのナイフを、BはAのフォークを待つ |
+
+## サンプル：ナイフとフォークで食事する人々 {#sec-deadlock-sample}
+
+次のプログラムは、デッドロックを起こす**可能性がある**プログラムです。
+
+- 8人の人（スレッド）がいて、ナイフとフォークは1本ずつしかない。
+- 食事をするには、ナイフとフォークの**両方**を持っている必要がある。
+- `fork` と `knife` には、それを持っている人のID番号が入る。0は「誰も持っていない」ことを表す。
+- 食事が終わったら、ナイフとフォークを返す（0に戻す）。各人は10回食事をする。
+
+```{.java filename="DeadLockTest.java"}
+public class DeadLockTest {
+    int fork = 0;   // フォークを持っている人のID（0なら誰も持っていない）
+    int knife = 0;  // ナイフを持っている人のID
+
+    synchronized void getFork(int n) {
+        if (fork != 0) {
+            return;  // 誰かが持っているので取れない
+        }
+        fork = n;
+        System.out.println(n + " get Fork");
+    }
+
+    synchronized void getKnife(int n) {
+        if (knife != 0) {
+            return;
+        }
+        knife = n;
+        System.out.println(n + " get Knife");
+    }
+
+    synchronized void reset(int n) {  // 自分が持っている道具を返す
+        if (fork == n) fork = 0;
+        if (knife == n) knife = 0;
+    }
+
+    synchronized boolean canEat(int n) {  // 両方持っていれば食事できる
+        return (fork == n) && (knife == n);
+    }
+
+    public static void main(String[] args) {
+        DeadLockTest dlt = new DeadLockTest();
+        for (int i = 1; i < 9; i++) {
+            new HumanThread(dlt, i).start();
+        }
+    }
+}
+
+class HumanThread extends Thread {
+    DeadLockTest dlt;
+    int id;
+
+    public HumanThread(DeadLockTest dlt, int id) {
+        this.dlt = dlt;
+        this.id = id;
+    }
+
+    public void run() {
+        for (int i = 0; i < 10; i++) {
+            while (!dlt.canEat(id)) {  // 両方そろうまで取りに行き続ける
+                dlt.getFork(id);
+                dlt.getKnife(id);
+            }
+            System.out.println(id + " ate a meal.");
+            dlt.reset(id);
+        }
+    }
+}
+```
+
+**何が起こるか**：たとえば、人1がフォークを、人2がナイフを取ったとします。人1はナイフを、人2はフォークを待ち続けますが、どちらも自分の道具を手放しません。[7.1節](#sec-deadlock-conditions)の4条件がすべてそろうため、誰も食事ができなくなり、プログラムは終わらなくなります。
+
+各メソッドは `synchronized` なので、[第5章](05-race-condition.qmd)の競合状態は起こりません。それでもデッドロックは起こります。つまり、**排他制御が正しくても、資源の取り方（アルゴリズム）に問題があればデッドロックは起こる**のです。
+
+※ このサンプルでは、スレッドは `wait()` で止まるのではなく、ループを回り続けながら待ちます。そのため、止まっているように見えてもCPUは使われ続けます。
+
+::: {.callout-warning}
+## デッドロックの怖さ
+実行のタイミングによっては、問題なく最後まで動くこともあります。そのため、テストで見つからずに残りやすく、**原因の特定が難しい不具合**になります。プログラムを設計する段階で、デッドロックが起こりえないかを確かめることが重要です。
+:::
+
+## 練習問題4：デッドロックしない設計 {#sec-ex4 .unnumbered}
+
+[7.2節](#sec-deadlock-sample)のサンプルを、デッドロックが起こらない設計に書き換えてください。
+
+::: {.callout-tip collapse="true"}
+## ヒント（クリックで表示）
+[7.1節](#sec-deadlock-conditions)の4条件のうち、どれか1つを崩せばよいことを使います。たとえば次のような方針が考えられます。
+
+- ナイフとフォークを**1回の排他制御の中で両方同時に**取る（両方そろわなければ、どちらも取らない）。
+- 片方しか取れなかったら、取った道具を**すぐに返して**やり直す。
+- 全員が必ず「フォーク → ナイフ」の**同じ順番で**取る。つまり、フォークを取れた人だけがナイフを取りに行き、フォークを持っていない人はナイフに手を出さない（待ちの輪ができなくなる）。
+:::

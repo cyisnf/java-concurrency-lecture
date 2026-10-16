@@ -1,0 +1,349 @@
+# 競合状態と排他制御 {#sec-race-condition}
+
+複数のスレッドが同じ変数を同時に書き換えると、更新の一部が失われることがあります（**競合状態**、レースコンディション）。これを防ぐには、`synchronized` を使って**一度に1つのスレッドだけがその処理を実行できるようにする**（**排他制御**）必要があります。
+
+## 問題の再現 {#sec-race-demo}
+
+3つのスレッドが、共有する変数 `c` をそれぞれ10000回ずつ1増やすプログラムです。正しく動けば、最終的な `c` は **30000** になるはずです。
+
+```{.java filename="Count.java（排他制御なし）"}
+public class Count {
+    int c = 0;  // 3つのスレッドが共有する変数
+
+    public static void main(String[] args) throws InterruptedException {
+        Count count = new Count();
+        CounterThread t1 = new CounterThread(count);
+        CounterThread t2 = new CounterThread(count);
+        CounterThread t3 = new CounterThread(count);
+        t1.start();
+        t2.start();
+        t3.start();
+
+        // 3つのスレッドがすべて終わるまで待つ（join は第6章で詳しく説明）
+        t1.join();
+        t2.join();
+        t3.join();
+        System.out.println("最終結果: " + count.c);  // 期待値は30000
+    }
+}
+
+class CounterThread extends Thread {
+    Count count;
+
+    public CounterThread(Count count) {
+        this.count = count;
+    }
+
+    public void run() {
+        for (int i = 0; i < 10000; i++) {
+            count.c++;  // 共有変数を1増やす
+        }
+    }
+}
+```
+
+何度か実行すると、30000になることもありますが、**30000未満**（例：`最終結果: 29974`）になることがあります。
+
+## なぜ値が失われるのか {#sec-race-cause}
+
+`count.c++;` は1行の文ですが、実際には次の**3つの操作**に分かれて実行されます。
+
+1. **読み込み**：変数 `c` の値を読み込む。
+2. **計算**：読み込んだ値に1を足す。
+3. **書き込み**：計算結果を変数 `c` に書き込む。
+
+あるスレッドが1〜3を終える前に、別のスレッドが割り込むと、次のように更新が失われます（`c` の初期値を10とします）。
+
+| 順番 | スレッド1 | スレッド2 | 変数 `c` の値 |
+| --- | --- | --- | --- |
+| 1 | `c` を読む（10） |  | 10 |
+| 2 |  | `c` を読む（10） | 10 |
+| 3 | 1を足す（11） |  | 10 |
+| 4 |  | 1を足す（11） | 10 |
+| 5 | `c` に11を書く |  | 11 |
+| 6 |  | `c` に11を書く | **11**（本来は12） |
+
+: 更新が失われる実行順の例
+
+2つのスレッドがそれぞれ1回ずつ足したのに、`c` は1しか増えていません。
+
+::: {.callout-important}
+## 共有変数の書き換えには必ず注意する
+スレッドの利点は、同じ変数を共有できることです。しかし、**共有変数を複数のスレッドで書き換えるときは、必ずこの問題が起こりうる**と考えてください。
+:::
+
+## synchronizedブロックによる排他制御 {#sec-sync-block}
+
+Javaのすべてのオブジェクトは、**ロック**（鍵）を1つずつ持っています。
+
+- スレッドは `synchronized (オブジェクト) { … }` のブロックに入るときに、そのオブジェクトのロックを取得します。
+- ブロックを出るときに、ロックを解放します。
+- あるスレッドがロックを持っている間、他のスレッドは同じロックを取得できず、**解放されるまで待たされます**。
+
+これを使って、`c++` の3つの操作を「1つのスレッドが最後まで続けて行う」ようにします。
+
+```{.java filename="Count.java（synchronizedブロック版）の変更箇所"}
+public class Count {
+    int c = 0;
+
+    // c を1増やす処理を、Count クラスのメソッドにまとめる
+    public void inc() {
+        synchronized (this) {  // この Count オブジェクトのロックを取得
+            c++;               // 読み込み・計算・書き込みを1つのスレッドだけが行う
+        }                      // ここでロックを解放
+    }
+    // main メソッドは5.1と同じ
+}
+
+class CounterThread extends Thread {
+    // …（フィールドとコンストラクタは5.1と同じ）
+    public void run() {
+        for (int i = 0; i < 10000; i++) {
+            count.inc();  // c++ の代わりに inc() を呼ぶ
+        }
+    }
+}
+```
+
+これで、何度実行しても最終結果は必ず30000になります。ロックを持つスレッドが「読み込み・計算・書き込み」を終えてからロックを解放するため、[前節の表](#sec-race-cause)のように複数のスレッドが読み込みだけを終えた状態にはなりません。このように、ある処理を同時に1つのスレッドしか実行できないようにする制御を**排他制御**と呼びます。
+
+::: {.callout-warning}
+## 排他制御は「すべての」アクセスに必要
+たとえば `inc()` を使っていても、別の場所で `count.c` を `synchronized` なしに読み出すと、途中の値や古い値が見えることがあります。
+:::
+
+## synchronizedメソッド {#sec-sync-method}
+
+メソッド全体を排他制御したいときは、メソッドの宣言に `synchronized` を付けます。
+
+```java
+public synchronized void inc() {
+    c++;
+}
+```
+
+これは、メソッドの中身全体を `synchronized (this) { … }` で囲んだのと同じ意味です。
+
+| 観点 | synchronizedブロック | synchronizedメソッド |
+| --- | --- | --- |
+| ロックの対象 | 任意のオブジェクトを指定できる | `this`（そのオブジェクト）に固定。static メソッドの場合はクラス |
+| 排他制御する範囲 | 必要な部分だけを囲める | メソッド全体 |
+| 書きやすさ | やや長い | 簡潔 |
+
+メソッド全体を排他制御すると、本来は排他制御の必要がない処理まで1つのスレッドしか実行できなくなり、処理が遅くなることがあります。**排他制御の範囲は必要な部分だけに絞る**のが基本です。
+
+## volatile変数（発展） {#sec-volatile}
+
+`volatile` は、変数の**可視性**（あるスレッドが書き込んだ値を、他のスレッドがすぐに読めること）を保証する修飾子です。
+
+各スレッドは、処理を速くするために共有変数の値を一時的に手元（CPUのキャッシュなど）に保持することがあります。そのため、あるスレッドが書き換えた値が、別のスレッドからしばらく見えないことがあります。`volatile` を付けた変数は、読み書きのたびに共有メモリ上の値が使われるため、常に最新の値が見えます。
+
+::: {.callout-warning}
+## volatile は競合状態を防げない
+`volatile int c` としても、`c++` の「読み込み・計算・書き込み」の間に他のスレッドが割り込むことは防げません。そのため、最終結果は30000にならないことがあります。
+:::
+
+| 修飾子 | 可視性（最新の値が見える） | 原子性（一連の操作を途中で割り込まれない） |
+| --- | --- | --- |
+| `volatile` | 保証される | **保証されない** |
+| `synchronized` | 保証される | 保証される |
+
+`volatile` が適しているのは、「1つのスレッドが書き、他のスレッドは読むだけ」の変数です。代表例は、スレッドを止めるためのフラグです。
+
+```{.java filename="Worker.java"}
+class Worker extends Thread {
+    volatile boolean running = true;  // 他のスレッドから false にされる
+
+    public void run() {
+        while (running) {
+            // 処理
+        }
+        // running が false になると、ループを抜けてスレッドが終了する
+    }
+}
+```
+
+::: {.callout-note}
+## 参考：AtomicInteger
+カウンタのように「読んで、変えて、書く」変数を安全に扱うには、`synchronized` のほか、`java.util.concurrent.atomic.AtomicInteger` の `incrementAndGet()` を使う方法もあります。
+:::
+
+初めのうちは、**共有変数を書き換える処理は `synchronized` で守る**と覚えておけば十分です。
+
+## 補足：スレッドの識別番号 {#sec-thread-id}
+
+各スレッドには一意の識別番号（スレッドID）があり、`getId()` で取得できます。スレッドIDは正の `long` 型の値で、そのスレッドが存在する間は変わりません。スレッドの終了後は、同じ値が再利用されることがあります。どのスレッドが出力したかを確かめたいときは、次のように表示するとよいでしょう。
+
+```java
+System.out.println(getId() + ":" + count.c);
+```
+
+※ Java 19以降では、`getId()` の代わりに `threadId()` を使うことが推奨されています。
+
+## 練習問題1：スレッド安全なキュー {#sec-ex1 .unnumbered}
+
+次のキュー（`IntQueue`）を、複数のスレッドから同時に操作しても正しく動くように変更してください。
+
+**仕様**
+
+- キューには正の整数だけを入れられる。
+- `tail` は現在の末尾の位置を表す。キューが空のときは `tail = -1` とする。
+- `enqueue`（追加）用のスレッドを2つ、`dequeue`（取り出し）用のスレッドを2つ、並行に動かす。
+
+**課題**
+
+1. 変更前のプログラムを実行し、表示結果を記録する。
+2. 適切な排他制御を加えて実行し、1の結果と比べる。
+3. メソッド全体を `synchronized` にするのが最も手軽ですが、**`synchronized` ブロックで囲むならどの範囲を囲むべきか**を考察する。
+
+```{.java filename="IntQueue.java"}
+public class IntQueue {
+    final int SIZE = 10;
+    private int[] values = new int[SIZE];
+    private int tail = -1;  // 末尾の位置（空のときは -1）
+
+    boolean enqueue(int data) {
+        if (data < 0) {
+            return false;           // 負の値は受け付けない
+        }
+        if (tail == SIZE - 1) {
+            return false;           // 満杯
+        }
+        tail++;
+        values[tail] = data;
+        System.out.println("enqueue :" + data + " tail:" + tail);
+        return true;
+    }
+
+    int dequeue() {
+        if (isEmpty()) {
+            return -1;              // 空
+        }
+        int data = values[0];
+        for (int i = 0; i < SIZE - 1; i++) {
+            values[i] = values[i + 1];  // 要素を1つずつ前に詰める
+        }
+        tail--;
+        System.out.println("dequeue :" + data + " tail:" + tail);
+        return data;
+    }
+
+    boolean isEmpty() {
+        return (tail == -1);
+    }
+
+    public static void main(String[] args) {
+        IntQueue q = new IntQueue();
+        new EnQueueThread(q).start();
+        new EnQueueThread(q).start();
+        new DeQueueThread(q).start();
+        new DeQueueThread(q).start();
+    }
+}
+
+class EnQueueThread extends Thread {
+    IntQueue q;
+
+    public EnQueueThread(IntQueue q) {
+        this.q = q;
+    }
+
+    public void run() {
+        for (int i = 0; i < 100; i++) {
+            int data = (int) (Math.random() * 100 + 1);  // 1〜100の乱数
+            q.enqueue(data);
+        }
+    }
+}
+
+class DeQueueThread extends Thread {
+    IntQueue q;
+
+    public DeQueueThread(IntQueue q) {
+        this.q = q;
+    }
+
+    public void run() {
+        for (int i = 0; i < 100; i++) {
+            q.dequeue();
+        }
+    }
+}
+```
+
+::: {.callout-tip collapse="true"}
+## ヒント（クリックで表示）
+「`tail` を確認する処理」と「`tail` を書き換える処理」の間に、別のスレッドが割り込むと何が起こるかを考えてください。たとえば、満杯の確認の直後に別のスレッドが追加すると、配列の範囲外に書き込む可能性があります。
+:::
+
+## 練習問題2：ATMによる送金 {#sec-ex2 .unnumbered}
+
+`ATM` と `Customer` の2つのクラスを使い、口座間でお金を移動するプログラムを完成させてください。
+
+**仕様**
+
+- 口座は100個あり、各口座の初期残高は10万円とする。
+- 顧客30人（`Customer` スレッド30個）が同時にATMを操作する。
+- 各顧客は、0〜9ミリ秒に1回、ランダムに選んだ口座からランダムに選んだ口座へ、ランダムな金額（0〜9999円）を移動する。これを1人1000回行う。
+- 全員の操作が終わった後、全口座の残高と総額を `printMoney()` で表示し、**総額が 10万円 × 100口座 = 1000万円のまま**であることを確認する。
+
+**課題**：`printMoney()` と `move()` の中身を書き、排他制御なしの場合と、ありの場合で総額を比べてください。
+
+```{.java filename="ATM.java"}
+public class ATM {
+    static int SIZE = 100;
+    int[] account;
+
+    public ATM() {
+        account = new int[SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            account[i] = 100000;  // 初期残高10万円
+        }
+    }
+
+    void printMoney() {
+        // ここを記述：各口座の残高と総額を表示する
+    }
+
+    void move(int from, int to, int money) {
+        // ここを記述：口座 from から口座 to へ money 円を移動する
+    }
+
+    public static void main(String[] args) {
+        ATM atm = new ATM();
+        for (int i = 0; i < 30; i++) {
+            new Customer(atm).start();
+        }
+    }
+}
+
+class Customer extends Thread {
+    ATM atm;
+
+    public Customer(ATM atm) {
+        this.atm = atm;
+    }
+
+    public void run() {
+        for (int i = 0; i < 1000; i++) {
+            int from = (int) (Math.random() * ATM.SIZE);
+            int to = (int) (Math.random() * ATM.SIZE);
+            int money = (int) (Math.random() * 10000);
+            atm.move(from, to, money);
+            try {
+                sleep((int) (Math.random() * 10));  // 0〜9ミリ秒休止
+            } catch (InterruptedException e) {
+                System.err.println(e);
+            }
+        }
+        atm.printMoney();  // 各顧客が操作を終えるたびに表示（最後の表示が最終結果）
+    }
+}
+```
+
+::: {.callout-tip collapse="true"}
+## ヒント（クリックで表示）
+`printMoney()` は顧客が操作を終えるたびに呼ばれるため、全部で30回表示されます。最後に表示される総額が最終結果です。全員の終了を待ってから1回だけ表示したい場合は、[第6章](06-synchronization.qmd)の `join()` を使って `main` メソッドを書き換えてください。
+:::
+
+**発展**：残高が足りない場合は移動しないようにすると、より現実的になります。その場合も、総額が変わらないことを確認してください。

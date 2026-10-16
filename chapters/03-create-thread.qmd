@@ -1,0 +1,114 @@
+# スレッドの作成と実行 {#sec-create-thread}
+
+Javaでスレッドを作る方法は2つあります。**(1) `Runnable` インタフェースを実装する方法**と、**(2) `Thread` クラスを継承する方法**です。どちらも「新しいスレッドに実行させたい処理を `run()` メソッドに書き、`start()` で起動する」という点は共通です。
+
+## 方法1：Runnableインタフェースを実装する {#sec-runnable}
+
+`Runnable` インタフェースを実装したクラスを作り、そのオブジェクトを `Thread` のコンストラクタに渡します。
+
+```{.java filename="Runnable_Thread.java"}
+public class Runnable_Thread implements Runnable {
+
+    // 新しいスレッドが実行する処理
+    public void run() {
+        while (true) {
+            System.out.println("BBB");
+        }
+    }
+
+    public static void main(String[] args) {
+        Runnable_Thread r = new Runnable_Thread();
+        Thread thread = new Thread(r);  // 実行する処理を渡してスレッドを作る
+        thread.start();                 // 新しいスレッドを起動 → r.run() が実行される
+
+        // ここから下はメインスレッドが実行する
+        while (true) {
+            System.out.println("AAA");
+        }
+    }
+}
+```
+
+処理の流れは次のとおりです。
+
+1. `main` メソッドは、プログラム開始時に自動で作られる**メインスレッド**で実行されます。
+2. `thread.start()` を呼ぶと、新しいスレッドが起動し、そのスレッドが `run()` メソッドを実行します。
+3. 以後、メインスレッド（AAAを表示）と新しいスレッド（BBBを表示）が並行に動きます。
+
+::: {.callout-warning}
+## よくある誤り：run() を直接呼ぶ
+`start()` ではなく `run()` を直接呼ぶと、新しいスレッドは作られず、メインスレッドが `run()` を普通のメソッドとして実行するだけになります。スレッドを起動するときは、必ず `start()` を呼んでください。
+:::
+
+::: {.callout-note}
+## プログラムの止め方
+このプログラムは無限ループのため、自動では終了しません。ターミナルで **Ctrl + C** を押して停止してください。
+:::
+
+## 方法2：Threadクラスを継承する {#sec-extends-thread}
+
+`Thread` クラスを継承（`extends`）したクラスを作り、`run()` メソッドを上書き（オーバーライド）します。
+
+```{.java filename="SubThread.java"}
+public class SubThread extends Thread {
+
+    // 新しいスレッドが実行する処理
+    public void run() {
+        while (true) {
+            System.out.println("BBB");
+        }
+    }
+
+    public static void main(String[] args) {
+        SubThread t = new SubThread();
+        t.start();  // SubThread自身がThreadなので、そのままstart()できる
+
+        // ここから下はメインスレッドが実行する
+        while (true) {
+            System.out.println("AAA");
+        }
+    }
+}
+```
+
+`SubThread` はすでに `Thread` の機能を引き継いでいるため、方法1のように別途 `Thread` オブジェクトを作る必要はありません。自分自身のオブジェクトを作って `start()` を呼ぶだけで起動できます。
+
+## 2つの方法の使い分け {#sec-runnable-vs-thread}
+
+| 観点 | 方法1：`implements Runnable` | 方法2：`extends Thread` |
+| --- | --- | --- |
+| 他のクラスの継承 | できる（Javaは単一継承なので、継承枠を空けておける） | できない（継承枠を `Thread` が使ってしまう） |
+| 複数のインタフェース | 他のインタフェースと同時に実装できる | 同様に実装できる |
+| `Thread` のメソッドの呼び出し | `Thread.currentThread().getName()` のように経由が必要 | `getName()`、`sleep()` などを直接呼べる |
+| 向いている場面 | 一般的な場面（推奨されることが多い） | スレッド自体を細かく操作したい場面、短いサンプル |
+
+Javaはクラスの**多重継承を認めていない**ため、継承できるスーパークラスは1つだけです。方法2を使うと、その1つを `Thread` に使ってしまいます。他のクラスを継承したい場合は、方法1を選んでください。
+
+::: {.callout-note}
+## 参考：ラムダ式を使った書き方
+Java 8以降では、ラムダ式を使って短く書くこともできます。
+
+```java
+Thread thread = new Thread(() -> System.out.println("BBB"));
+thread.start();
+```
+:::
+
+## 実行結果の見方 {#sec-output}
+
+[方法1](#sec-runnable)または[方法2](#sec-extends-thread)のプログラムを実行すると、環境によって多少異なりますが、次のような出力が続きます。
+
+```
+AAA
+AAA
+AAA
+BBB
+BBB
+BBB
+AAA
+...
+```
+
+- 現在の多くのコンピュータはマルチコアなので、2つ程度のスレッドであれば、切り替えではなく**ほぼ並列に**同時実行されます。
+- 同じ文字がまとまって出力されるのは、各スレッドがある程度の時間続けて実行されてから、別のスレッドに切り替わるためです。AAAとBBBの順番は実行のたびに変わります。
+- 使えるコアが1つしかない場合や、他のプログラムがコアを占有している場合には、どちらか一方の文字列ばかりが出力されることもあります。
