@@ -16,7 +16,7 @@ book:
   date: last-modified
   date-format: "YYYY年M月D日"
   # 公開するリポジトリのURLに書き換えてください（「編集」「誤りを報告」ボタンに使われます）
-  repo-url: https://github.com/cyisnf/java-concurrency
+  repo-url: https://github.com/cyisnf/java-concurrency-lecture.git
   repo-actions: [edit, issue]
   search: true
   page-navigation: true
