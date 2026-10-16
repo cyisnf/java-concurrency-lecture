@@ -49,9 +49,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5279da176302e357f9cc2e0724e3eec4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-8d1d59eac7a895217fcde15c4807ef7d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-5279da176302e357f9cc2e0724e3eec4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-3737459a709222b8c3531ce17b4632b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-7d9ab679c82f4cdd3315c3a76f2ba6ee.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-3737459a709222b8c3531ce17b4632b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -416,20 +416,16 @@ ul.task-list li input[type="checkbox"] {
 <p>この資料では、Javaのスレッドを使って「複数の処理を同時に進めるプログラム」（並行プログラム）の書き方と、その際に起こる問題への対処法を学びます。</p>
 <section id="学習目標" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="学習目標">学習目標</h2>
-<p>この資料を終えたときに、次のことができるようになります。</p>
 <ol type="1">
-<li>並行処理と並列処理の違いを、例を挙げて説明できる。</li>
-<li>プロセスとスレッドの違いを説明できる。</li>
+<li>並行処理と並列処理の違いを理解する。</li>
+<li>プロセスとスレッドの違いを理解する。</li>
 <li>Javaでスレッドを作成し、実行できる。</li>
-<li>複数のスレッドが同じ変数を扱うときの問題（競合状態）を説明し、<code>synchronized</code> で防げる。</li>
-<li><code>join</code>・<code>wait</code>・<code>notify</code> を使って、スレッド間で実行のタイミングを合わせられる。</li>
-<li>デッドロックが起こる理由を説明し、起こらない設計に直せる。</li>
-<li>スレッド数を変えて実行時間を測り、並列処理の効果を確かめられる。</li>
+<li>複数のスレッドが同じ変数を扱うときの問題を理解し対処できる。</li>
 </ol>
 </section>
 <section id="前提知識" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="前提知識">前提知識</h2>
-<p>Javaのクラス、継承、インタフェース、例外処理（<code>try</code>〜<code>catch</code>）の基本。</p>
+<p>Javaのクラス、継承、インタフェース、例外処理（<code>try</code>〜<code>catch</code>）等。</p>
 </section>
 <section id="読み進め方" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="読み進め方">読み進め方</h2>
