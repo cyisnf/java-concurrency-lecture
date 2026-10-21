@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>5&nbsp; スレッドの同期（join・wait・notify） – Javaによる並行プログラミング入門</title>
+<title>7&nbsp; デッドロック – Javaによる並行プログラミング入門</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -71,8 +71,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../chapters/06-deadlock.html" rel="next">
-<link href="../chapters/04-race-condition.html" rel="prev">
+<link href="../chapters/08-parallel.html" rel="next">
+<link href="../chapters/06-synchronization.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -114,9 +114,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "サーチ"
   }
 }</script>
-<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
-<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
-<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -293,7 +290,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/05-synchronization.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/07-deadlock.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
@@ -354,20 +351,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/05-synchronization.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
+  <a href="../chapters/05-volatile.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">原子性と可視性</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/06-deadlock.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
+  <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/07-parallel.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
+  <a href="../chapters/07-deadlock.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/08-parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -397,16 +400,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-join" id="toc-sec-join" class="nav-link active" data-scroll-target="#sec-join"><span class="header-section-number">5.1</span> join：スレッドの終了を待つ</a></li>
-  <li><a href="#sec-wait-notify" id="toc-sec-wait-notify" class="nav-link" data-scroll-target="#sec-wait-notify"><span class="header-section-number">5.2</span> wait と notify：条件が整うまで待つ</a></li>
-  <li><a href="#sec-wait-notify-sample" id="toc-sec-wait-notify-sample" class="nav-link" data-scroll-target="#sec-wait-notify-sample"><span class="header-section-number">5.3</span> サンプル：上限と下限のあるカウンタ</a>
-  <ul class="collapse">
-  <li><a href="#なぜ-if-ではなく-while-で条件を確かめるのか" id="toc-なぜ-if-ではなく-while-で条件を確かめるのか" class="nav-link" data-scroll-target="#なぜ-if-ではなく-while-で条件を確かめるのか">なぜ if ではなく while で条件を確かめるのか</a></li>
-  <li><a href="#notify-と-notifyall-の使い分け" id="toc-notify-と-notifyall-の使い分け" class="nav-link" data-scroll-target="#notify-と-notifyall-の使い分け">notify() と notifyAll() の使い分け</a></li>
-  </ul></li>
-  <li><a href="#sec-ex3" id="toc-sec-ex3" class="nav-link" data-scroll-target="#sec-ex3">練習問題3：条件が整うまで待つキュー</a></li>
+  <li><a href="#sec-deadlock-conditions" id="toc-sec-deadlock-conditions" class="nav-link active" data-scroll-target="#sec-deadlock-conditions"><span class="header-section-number">7.1</span> デッドロックが起こる4つの条件</a></li>
+  <li><a href="#sec-deadlock-sample" id="toc-sec-deadlock-sample" class="nav-link" data-scroll-target="#sec-deadlock-sample"><span class="header-section-number">7.2</span> サンプル：ナイフとフォークで食事する人々</a></li>
+  <li><a href="#sec-ex4" id="toc-sec-ex4" class="nav-link" data-scroll-target="#sec-ex4">練習問題4：デッドロックしない設計</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/05-synchronization.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/07-deadlock.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -414,7 +412,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-synchronization" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></h1>
+<h1 class="title"><span id="sec-deadlock" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span></h1>
 </div>
 
 
@@ -431,308 +429,136 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><strong>同期</strong>とは、2つ以上の処理のタイミングを合わせることです。Javaでは、どのスレッドをどの順番で実行するかは基本的に実行時のシステムが決めますが、<code>join()</code>・<code>wait()</code>・<code>notify()</code> を使うと、プログラムの側で実行の順番を制御できます。</p>
+<p><strong>デッドロック</strong>とは、2つ以上のスレッド（またはプロセス）が互いに相手の持つ資源の解放を待ち合い、どれも先に進めなくなる状態です。並行プログラミングで最も代表的な落とし穴です。</p>
+<p>身近な例は、4方向から同時に車が進入した交差点です。どの車も「右側の車が先に行くのを待つ」と、全員が待ち続けて誰も動けなくなります。</p>
+<section id="sec-deadlock-conditions" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="sec-deadlock-conditions"><span class="header-section-number">7.1</span> デッドロックが起こる4つの条件</h2>
+<p>次の4つの条件が<strong>すべて</strong>そろったときに、デッドロックが起こりえます。逆に、どれか1つでも崩せばデッドロックは起こりません。</p>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
 <thead>
 <tr class="header">
-<th>メソッド</th>
-<th>何を待つか</th>
-<th>待機の解除</th>
+<th>条件</th>
+<th>意味</th>
+<th>食事の例（<a href="#sec-deadlock-sample">7.2節</a>）</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>join()</code></td>
-<td>指定したスレッドが<strong>終了する</strong>まで</td>
-<td>対象のスレッドが終了したとき</td>
+<td>相互排除</td>
+<td>資源を同時に使えるのは1人だけ</td>
+<td>ナイフもフォークも1本しかない</td>
 </tr>
 <tr class="even">
-<td><code>wait()</code></td>
-<td>他のスレッドから<strong>通知される</strong>まで</td>
-<td><code>notify()</code> または <code>notifyAll()</code> が呼ばれたとき</td>
+<td>保持と待機</td>
+<td>資源を持ったまま、別の資源を待つ</td>
+<td>フォークを持ったまま、ナイフを待つ</td>
+</tr>
+<tr class="odd">
+<td>横取り不可</td>
+<td>他人が持つ資源を奪えない</td>
+<td>他人のナイフを取り上げられない</td>
+</tr>
+<tr class="even">
+<td>循環待ち</td>
+<td>待ちの関係が輪になる</td>
+<td>AはBのナイフを、BはAのフォークを待つ</td>
 </tr>
 </tbody>
 </table>
-<section id="sec-join" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="sec-join"><span class="header-section-number">5.1</span> join：スレッドの終了を待つ</h2>
-<p><code>t.join()</code> を呼ぶと、呼び出したスレッドは、スレッド <code>t</code> が終了するまで待ちます。<code>join()</code> より後の処理は、<code>t</code> が終了してから実行されます。</p>
+</section>
+<section id="sec-deadlock-sample" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="sec-deadlock-sample"><span class="header-section-number">7.2</span> サンプル：ナイフとフォークで食事する人々</h2>
+<p>次のプログラムは、デッドロックを起こす<strong>可能性がある</strong>プログラムです。</p>
+<ul>
+<li>8人の人（スレッド）がいて、ナイフとフォークは1本ずつしかない。</li>
+<li>食事をするには、ナイフとフォークの<strong>両方</strong>を持っている必要がある。</li>
+<li><code>fork</code> と <code>knife</code> には、それを持っている人のID番号が入る。0は「誰も持っていない」ことを表す。</li>
+<li>食事が終わったら、ナイフとフォークを返す（0に戻す）。各人は10回食事をする。</li>
+</ul>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
-<pre><strong>JoinTest.java</strong></pre>
+<pre><strong>DeadLockTest.java</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-filename="JoinTest.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> JoinTest <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">10</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>i<span class="op">);</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        JoinTest jt <span class="op">=</span> <span class="kw">new</span> <span class="fu">JoinTest</span><span class="op">();</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        jt<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-filename="DeadLockTest.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> DeadLockTest <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> fork <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>   <span class="co">// フォークを持っている人のID（0なら誰も持っていない）</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> knife <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>  <span class="co">// ナイフを持っている人のID</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">void</span> <span class="fu">getFork</span><span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>fork <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span><span class="op">;</span>  <span class="co">// 誰かが持っているので取れない</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        fork <span class="op">=</span> n<span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>n <span class="op">+</span> <span class="st">" get Fork"</span><span class="op">);</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="co">/* 手順2で、このコメントを外す</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">        try {</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">            jt.join();  // jt スレッドが終わるまで、メインスレッドはここで待つ</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">        } catch (InterruptedException e) {</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">        }</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">        */</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"END"</span><span class="op">);</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">void</span> <span class="fu">getKnife</span><span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>knife <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        knife <span class="op">=</span> n<span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>n <span class="op">+</span> <span class="st">" get Knife"</span><span class="op">);</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">void</span> <span class="fu">reset</span><span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span>  <span class="co">// 自分が持っている道具を返す</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>fork <span class="op">==</span> n<span class="op">)</span> fork <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>knife <span class="op">==</span> n<span class="op">)</span> knife <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">boolean</span> <span class="fu">canEat</span><span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span>  <span class="co">// 両方持っていれば食事できる</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">(</span>fork <span class="op">==</span> n<span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">(</span>knife <span class="op">==</span> n<span class="op">);</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        DeadLockTest dlt <span class="op">=</span> <span class="kw">new</span> <span class="fu">DeadLockTest</span><span class="op">();</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">9</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>            <span class="kw">new</span> <span class="fu">HumanThread</span><span class="op">(</span>dlt<span class="op">,</span> i<span class="op">).</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> HumanThread <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    DeadLockTest dlt<span class="op">;</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> id<span class="op">;</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">HumanThread</span><span class="op">(</span>DeadLockTest dlt<span class="op">,</span> <span class="dt">int</span> id<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">dlt</span> <span class="op">=</span> dlt<span class="op">;</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">id</span> <span class="op">=</span> id<span class="op">;</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">10</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>            <span class="cf">while</span> <span class="op">(!</span>dlt<span class="op">.</span><span class="fu">canEat</span><span class="op">(</span>id<span class="op">))</span> <span class="op">{</span>  <span class="co">// 両方そろうまで取りに行き続ける</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>                dlt<span class="op">.</span><span class="fu">getFork</span><span class="op">(</span>id<span class="op">);</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>                dlt<span class="op">.</span><span class="fu">getKnife</span><span class="op">(</span>id<span class="op">);</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>id <span class="op">+</span> <span class="st">" ate a meal."</span><span class="op">);</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>            dlt<span class="op">.</span><span class="fu">reset</span><span class="op">(</span>id<span class="op">);</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><strong>手順</strong></p>
-<ol type="1">
-<li>そのまま実行する。メインスレッドの「END」の出力と、<code>jt</code> スレッドの0〜9の出力は並行に行われるため、ENDが表示される位置は実行のたびに変わります（最初に表示されることが多いでしょう）。</li>
-<li>コメントを外して <code>jt.join()</code> を有効にし、再度実行する。メインスレッドは <code>jt</code> が終わるまで待つので、<strong>ENDは必ず最後に</strong>表示されます。</li>
-</ol>
-<p><code>join(long ミリ秒)</code> のように引数を指定すると、対象のスレッドが終わらなくても、指定時間が過ぎれば待機をやめて処理を再開します。</p>
+<p><strong>何が起こるか</strong>：たとえば、人1がフォークを、人2がナイフを取ったとします。人1はナイフを、人2はフォークを待ち続けますが、どちらも自分の道具を手放しません。<a href="#sec-deadlock-conditions">7.1節</a>の4条件がすべてそろうため、誰も食事ができなくなり、プログラムは終わらなくなります。</p>
+<p>各メソッドは <code>synchronized</code> なので、<a href="05-race-condition.qmd">第5章</a>の競合状態は起こりません。それでもデッドロックは起こります。つまり、<strong>排他制御が正しくても、資源の取り方（アルゴリズム）に問題があればデッドロックは起こる</strong>のです。</p>
+<p>※ このサンプルでは、スレッドは <code>wait()</code> で止まるのではなく、ループを回り続けながら待ちます。そのため、止まっているように見えてもCPUは使われ続けます。</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">警告</span>スレッドを stop() で止めてはいけない
+<span class="screen-reader-only">警告</span>デッドロックの怖さ
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>Thread</code> クラスには <code>stop()</code> メソッドがありますが、使ってはいけません。<code>stop()</code> はスレッドを処理の途中で強制終了するため、共有変数を書き換えの途中のまま残すおそれがあります。現在のJavaでは非推奨であり、新しいバージョンでは呼び出すと例外が発生します。</p>
-<p>スレッドは <code>run()</code> メソッドの最後まで実行すると自動的に終了します。<strong><code>run()</code> が自然に終わるように設計する</strong>のが原則です（<a href="05-race-condition.qmd#sec-volatile">5.5節</a>の <code>running</code> フラグの例を参照）。</p>
+<p>実行のタイミングによっては、問題なく最後まで動くこともあります。そのため、テストで見つからずに残りやすく、<strong>原因の特定が難しい不具合</strong>になります。プログラムを設計する段階で、デッドロックが起こりえないかを確かめることが重要です。</p>
 </div>
 </div>
 </section>
-<section id="sec-wait-notify" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="sec-wait-notify"><span class="header-section-number">5.2</span> wait と notify：条件が整うまで待つ</h2>
-<p><code>join()</code> はスレッドの終了まで待つメソッドでした。これに対して <code>wait()</code> は、<strong>他のスレッドから通知が来るまで</strong>待つメソッドです。「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>メソッド</th>
-<th>働き</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>wait()</code></td>
-<td>持っているロックを<strong>解放してから</strong>待機状態に入る。引数でミリ秒を指定すると、その時間が過ぎたときにも待機を終える</td>
-</tr>
-<tr class="even">
-<td><code>notify()</code></td>
-<td>同じオブジェクトで <code>wait()</code> しているスレッドのうち、<strong>1つだけ</strong>を起こす（どれを起こすかはシステムが決める）</td>
-</tr>
-<tr class="odd">
-<td><code>notifyAll()</code></td>
-<td>同じオブジェクトで <code>wait()</code> しているスレッドを<strong>すべて</strong>起こす</td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">重要</span>重要な規則
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul>
-<li><code>wait()</code>・<code>notify()</code>・<code>notifyAll()</code> は、そのオブジェクトのロックを持っている状態、つまり <code>synchronized</code> ブロック（またはメソッド）の中でしか呼べません。外で呼ぶと <code>IllegalMonitorStateException</code> が発生します。</li>
-<li><code>wait()</code> を呼んだスレッドはロックを手放すため、その間に他のスレッドが <code>synchronized</code> の中に入れます。</li>
-<li><code>notify()</code> で起こされたスレッドは、すぐには再開しません。<strong>ロックをもう一度取得できてから</strong>、<code>wait()</code> の次の行から再開します。</li>
-</ul>
-</div>
-</div>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">stateDiagram-v2
-    direction LR
-    state "実行中（ロックを持っている）" as Running
-    state "待機中（ロックを解放して待つ）" as Waiting
-    state "ロック再取得待ち" as Relock
-    Running --&gt; Waiting: wait()
-    Waiting --&gt; Relock: notify() / notifyAll()
-    Relock --&gt; Running: ロックを取得したら、wait() の次の行から再開
-</pre>
-</div>
-<p></p><figcaption> wait / notify によるスレッドの状態の移り変わり</figcaption> </figure><p></p>
-</div>
-</div>
-</div>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">stateDiagram-v2
-    direction LR
-    state "実行中（ロックを持っている）" as Running
-    state "待機中（ロックを解放して待つ）" as Waiting
-    state "ロック再取得待ち" as Relock
-    Running --&gt; Waiting: wait()
-    Waiting --&gt; Relock: notify() / notifyAll()
-    Relock --&gt; Running: ロックを取得したら、wait() の次の行から再開
-
-    classDef running fill:#DCFCE7,stroke:#15803D,stroke-width:3px,color:#14532D,font-size:17px
-    classDef waiting fill:#FEF3C7,stroke:#B45309,stroke-width:3px,color:#78350F,font-size:17px
-    classDef relock  fill:#DBEAFE,stroke:#1D4ED8,stroke-width:3px,color:#1E3A8A,font-size:17px
-    class Running running
-    class Waiting waiting
-    class Relock relock
-</pre>
-</div>
-<p></p><figcaption> wait / notify によるスレッドの状態の移り変わり</figcaption> </figure><p></p>
-</div>
-</div>
-</div>
-</section>
-<section id="sec-wait-notify-sample" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="sec-wait-notify-sample"><span class="header-section-number">5.3</span> サンプル：上限と下限のあるカウンタ</h2>
-<p>2つのスレッドが、変数 <code>n</code> をそれぞれ1000回ずつ増やす（インクリメント）・減らす（デクリメント）プログラムです。ただし、<code>n</code> は0以上10以下に保ちます。</p>
-<ul>
-<li><code>n</code> が10のときに増やそうとしたら、<code>wait()</code> で待つ。</li>
-<li><code>n</code> が0のときに減らそうとしたら、<code>wait()</code> で待つ。</li>
-<li>増減に成功したら <code>notify()</code> を呼び、待っている相手のスレッドを起こす。</li>
-</ul>
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>WaitNotifyTest.java</strong></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-filename="WaitNotifyTest.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> WaitNotifyTest <span class="op">{</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> n <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">void</span> <span class="fu">inc</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> <span class="op">(</span>n <span class="op">==</span> <span class="dv">10</span><span class="op">)</span> <span class="op">{</span>  <span class="co">// 上限に達している間は待つ（if ではなく while）</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"nが10なので、加算を待機"</span><span class="op">);</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span> <span class="op">{</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                <span class="fu">wait</span><span class="op">();</span>    <span class="co">// ロックを解放して待機</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">InterruptedException</span> e<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span><span class="op">;</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        n<span class="op">++;</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"Inc:"</span> <span class="op">+</span> n<span class="op">);</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">notify</span><span class="op">();</span>          <span class="co">// 減算を待っているスレッドを起こす</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">void</span> <span class="fu">dec</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> <span class="op">(</span>n <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span>   <span class="co">// 下限に達している間は待つ</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"nが0なので、減算を待機"</span><span class="op">);</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span> <span class="op">{</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>                <span class="fu">wait</span><span class="op">();</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">InterruptedException</span> e<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span><span class="op">;</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        n<span class="op">--;</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"Dec:"</span> <span class="op">+</span> n<span class="op">);</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        <span class="fu">notify</span><span class="op">();</span>          <span class="co">// 加算を待っているスレッドを起こす</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>        WaitNotifyTest wt <span class="op">=</span> <span class="kw">new</span> <span class="fu">WaitNotifyTest</span><span class="op">();</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>        <span class="kw">new</span> <span class="fu">IncThread</span><span class="op">(</span>wt<span class="op">).</span><span class="fu">start</span><span class="op">();</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>        <span class="kw">new</span> <span class="fu">DecThread</span><span class="op">(</span>wt<span class="op">).</span><span class="fu">start</span><span class="op">();</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> IncThread <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    WaitNotifyTest wt<span class="op">;</span></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">IncThread</span><span class="op">(</span>WaitNotifyTest wt<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">wt</span> <span class="op">=</span> wt<span class="op">;</span></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">1000</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>            wt<span class="op">.</span><span class="fu">inc</span><span class="op">();</span></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> DecThread <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    WaitNotifyTest wt<span class="op">;</span></span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">DecThread</span><span class="op">(</span>WaitNotifyTest wt<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">wt</span> <span class="op">=</span> wt<span class="op">;</span></span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">1000</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>            wt<span class="op">.</span><span class="fu">dec</span><span class="op">();</span></span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<section id="なぜ-if-ではなく-while-で条件を確かめるのか" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="なぜ-if-ではなく-while-で条件を確かめるのか">なぜ if ではなく while で条件を確かめるのか</h3>
-<p><code>wait()</code> から戻ったときに、待っていた条件が満たされているとは限りません。理由は2つあります。</p>
-<ol type="1">
-<li>起こされてからロックを再取得するまでの間に、別のスレッドが先に値を変えている可能性がある（増やす側・減らす側のスレッドが複数ある場合に起こりやすい）。</li>
-<li>Javaの仕様上、通知がなくても <code>wait()</code> から戻ることがある（<strong>見せかけの起床</strong>、spurious wakeup）。</li>
-</ol>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">重要</span>wait() は必ず while ループの中で呼ぶ
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>while</code> で囲んでおけば、戻った後にもう一度条件を確かめ、満たされていなければ再び待ちます。</p>
-</div>
-</div>
-</section>
-<section id="notify-と-notifyall-の使い分け" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="notify-と-notifyall-の使い分け">notify() と notifyAll() の使い分け</h3>
-<p>このサンプルのように、待つ可能性のあるスレッドが1種類ずつなら <code>notify()</code> で足ります。待つ理由が異なるスレッドが混在する場合は、<code>notify()</code> では目的と違うスレッドだけが起こされて、全員が待ち続けることがあります。その場合は <code>notifyAll()</code> を使うのが安全です。</p>
-</section>
-</section>
-<section id="sec-ex3" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="sec-ex3">練習問題3：条件が整うまで待つキュー</h2>
-<p><a href="05-race-condition.qmd#sec-ex1">練習問題1</a>の <code>IntQueue</code> を、次のように変更してください。</p>
-<ul>
-<li>キューが<strong>空</strong>のときに <code>dequeue()</code> が呼ばれたら、要素が追加されるまで <code>wait()</code> で待つ。</li>
-<li>キューが<strong>満杯</strong>のときに <code>enqueue()</code> が呼ばれたら、要素が取り出されるまで <code>wait()</code> で待つ。</li>
-<li>その結果、各スレッドが<strong>必ず100回ずつ</strong> <code>enqueue()</code> または <code>dequeue()</code> を成功させるようにする。</li>
-</ul>
-<p><strong>実行結果の例</strong></p>
-<pre><code>$ java IntQueue
-（中略）
-dequeue :42 tail:3
-dequeue :49 tail:2
-dequeue :22 tail:1
-dequeue :80 tail:0
-dequeue :47 tail:-1
-dequeue :Queue Empty.. wait enqueue()
-enqueue :98 tail:0
-（中略）
-enqueue :76 tail:6
-enqueue :19 tail:7
-enqueue :100 tail:8
-enqueue :58 tail:9
-enqueue :Queue Full.. wait dequeue()
-dequeue :33 tail:8
-dequeue :53 tail:7</code></pre>
+<section id="sec-ex4" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-ex4">練習問題4：デッドロックしない設計</h2>
+<p><a href="#sec-deadlock-sample">7.2節</a>のサンプルを、デッドロックが起こらない設計に書き換えてください。</p>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -741,12 +567,13 @@ dequeue :53 tail:7</code></pre>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
+<p><a href="#sec-deadlock-conditions">7.1節</a>の4条件のうち、どれか1つを崩せばよいことを使います。たとえば次のような方針が考えられます。</p>
 <ul>
-<li><a href="#sec-wait-notify-sample">6.3節</a>のサンプルと同じく、待つ条件は <code>while</code> で確かめてください。</li>
-<li>この問題では、追加側と取り出し側のスレッドが<strong>2つずつ</strong>あります。<code>notify()</code> だと、同じ側のスレッド（例：取り出し側のスレッドが、別の取り出し側のスレッド）を起こしてしまい、全員が待ち続ける可能性があります。<code>notifyAll()</code> を使うのが安全です。</li>
-<li>すべてのスレッドが終了し、プログラムが正常に終わることも確認してください。</li>
+<li>ナイフとフォークを<strong>1回の排他制御の中で両方同時に</strong>取る（両方そろわなければ、どちらも取らない）。</li>
+<li>片方しか取れなかったら、取った道具を<strong>すぐに返して</strong>やり直す。</li>
+<li>全員が必ず「フォーク → ナイフ」の<strong>同じ順番で</strong>取る。つまり、フォークを取れた人だけがナイフを取りに行き、フォークを持っていない人はナイフに手を出さない（待ちの輪ができなくなる）。</li>
 </ul>
 </div>
 </div>
@@ -1171,13 +998,13 @@ dequeue :53 tail:7</code></pre>
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapters/04-race-condition.html" class="pagination-link" aria-label="競合状態と排他制御">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span>
+      <a href="../chapters/06-synchronization.html" class="pagination-link" aria-label="スレッドの同期（join・wait・notify）">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../chapters/06-deadlock.html" class="pagination-link" aria-label="デッドロック">
-        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../chapters/08-parallel.html" class="pagination-link" aria-label="並列処理による高速化">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1186,4 +1013,4 @@ dequeue :53 tail:7</code></pre>
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/05-synchronization.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/07-deadlock.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></div></div></footer></body></html>

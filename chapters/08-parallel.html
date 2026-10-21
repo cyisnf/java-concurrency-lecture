@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>7&nbsp; 並列処理による高速化 – Javaによる並行プログラミング入門</title>
+<title>8&nbsp; 並列処理による高速化 – Javaによる並行プログラミング入門</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -72,7 +72,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
 <link href="../appendix/glossary.html" rel="next">
-<link href="../chapters/06-deadlock.html" rel="prev">
+<link href="../chapters/07-deadlock.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -290,7 +290,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/07-parallel.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/08-parallel.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
@@ -351,20 +351,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/05-synchronization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
+  <a href="../chapters/05-volatile.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">原子性と可視性</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/06-deadlock.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
+  <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/07-parallel.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
+  <a href="../chapters/07-deadlock.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/08-parallel.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -394,13 +400,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-cpu-count" id="toc-sec-cpu-count" class="nav-link active" data-scroll-target="#sec-cpu-count"><span class="header-section-number">7.1</span> CPU（コア）数の確認</a></li>
-  <li><a href="#sec-para-sample" id="toc-sec-para-sample" class="nav-link" data-scroll-target="#sec-para-sample"><span class="header-section-number">7.2</span> サンプル：配列の要素を分担して増やす</a></li>
-  <li><a href="#sec-measure" id="toc-sec-measure" class="nav-link" data-scroll-target="#sec-measure"><span class="header-section-number">7.3</span> 実行時間の測り方</a></li>
-  <li><a href="#sec-suitability" id="toc-sec-suitability" class="nav-link" data-scroll-target="#sec-suitability"><span class="header-section-number">7.4</span> 並列処理に向くプログラム、向かないプログラム</a></li>
+  <li><a href="#sec-cpu-count" id="toc-sec-cpu-count" class="nav-link active" data-scroll-target="#sec-cpu-count"><span class="header-section-number">8.1</span> CPU（コア）数の確認</a></li>
+  <li><a href="#sec-para-sample" id="toc-sec-para-sample" class="nav-link" data-scroll-target="#sec-para-sample"><span class="header-section-number">8.2</span> サンプル：配列の要素を分担して増やす</a></li>
+  <li><a href="#sec-measure" id="toc-sec-measure" class="nav-link" data-scroll-target="#sec-measure"><span class="header-section-number">8.3</span> 実行時間の測り方</a></li>
+  <li><a href="#sec-suitability" id="toc-sec-suitability" class="nav-link" data-scroll-target="#sec-suitability"><span class="header-section-number">8.4</span> 並列処理に向くプログラム、向かないプログラム</a></li>
   <li><a href="#sec-exercise" id="toc-sec-exercise" class="nav-link" data-scroll-target="#sec-exercise">演習：スレッド数と処理時間の関係</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/07-parallel.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/08-parallel.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -408,7 +414,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-parallel" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></h1>
+<h1 class="title"><span id="sec-parallel" class="quarto-section-identifier"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></h1>
 </div>
 
 
@@ -426,8 +432,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>Javaのスレッドは、使えるコアが複数あれば自動的に並列に実行されます。書き方はこれまでの並行プログラミングと同じです。この章では、スレッド数を増やすと実行時間がどれだけ短くなるかを、実際に測って確かめます。</p>
-<section id="sec-cpu-count" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="sec-cpu-count"><span class="header-section-number">7.1</span> CPU（コア）数の確認</h2>
+<section id="sec-cpu-count" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="sec-cpu-count"><span class="header-section-number">8.1</span> CPU（コア）数の確認</h2>
 <p>まず、使っているコンピュータが同時にいくつの処理を実行できるかを確認します。Linuxでは次のコマンドで確認できます。</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> nproc                              <span class="co"># 同時に実行できる処理の数（論理プロセッサ数）</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">8</span></span>
@@ -453,8 +459,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="sec-para-sample" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="sec-para-sample"><span class="header-section-number">7.2</span> サンプル：配列の要素を分担して増やす</h2>
+<section id="sec-para-sample" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="sec-para-sample"><span class="header-section-number">8.2</span> サンプル：配列の要素を分担して増やす</h2>
 <p>100万個の要素をもつ配列の各要素を、10000回ずつ1増やすプログラムです。コマンドライン引数でスレッド数を指定し、配列を<strong>スレッド数で等分して</strong>、各スレッドに担当させます。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -512,8 +518,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>各スレッドは配列の<strong>別々の範囲</strong>だけを書き換えるため、同じ要素を複数のスレッドが触ることはありません。そのため、<a href="05-race-condition.qmd">第5章</a>の排他制御は不要です。</p>
 <p>※ 担当範囲の終わりは、最後のスレッドだけ <code>SIZE</code> にしています。たとえば3スレッドの場合、1000000 ÷ 3 の余り（1要素）が、どのスレッドにも割り当てられずに残るのを防ぐためです。</p>
 </section>
-<section id="sec-measure" class="level2" data-number="7.3">
-<h2 data-number="7.3" class="anchored" data-anchor-id="sec-measure"><span class="header-section-number">7.3</span> 実行時間の測り方</h2>
+<section id="sec-measure" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="sec-measure"><span class="header-section-number">8.3</span> 実行時間の測り方</h2>
 <p><strong>方法1：プログラムの中で測る</strong>（<a href="#sec-para-sample">8.2節</a>のサンプルで使っている方法）</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">long</span> startTime <span class="op">=</span> <span class="bu">System</span><span class="op">.</span><span class="fu">currentTimeMillis</span><span class="op">();</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">// 計測したい処理</span></span>
@@ -568,8 +574,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><code>user</code> がほとんど変わらないのは、仕事の総量が変わらないからです。半分ずつの仕事を2人で分担しても、1人で全部やっても、仕事の総量は同じなのと同じ理屈です。</p>
 <p><code>&gt; /dev/null</code> は、プログラムの出力を画面に表示せずに捨てる指定です。画面表示（入出力）にかかる時間を除いて、計算の時間を測りたいときに使います。</p>
 </section>
-<section id="sec-suitability" class="level2" data-number="7.4">
-<h2 data-number="7.4" class="anchored" data-anchor-id="sec-suitability"><span class="header-section-number">7.4</span> 並列処理に向くプログラム、向かないプログラム</h2>
+<section id="sec-suitability" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="sec-suitability"><span class="header-section-number">8.4</span> 並列処理に向くプログラム、向かないプログラム</h2>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1094,8 +1100,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapters/06-deadlock.html" class="pagination-link" aria-label="デッドロック">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span>
+      <a href="../chapters/07-deadlock.html" class="pagination-link" aria-label="デッドロック">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
@@ -1109,4 +1115,4 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/07-parallel.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/08-parallel.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></div></div></footer></body></html>
