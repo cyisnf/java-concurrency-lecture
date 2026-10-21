@@ -310,32 +310,26 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/04-sleep.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">スレッドの一時停止（sleep）</span></span></a>
+  <a href="../chapters/04-race-condition.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/05-race-condition.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
+  <a href="../chapters/05-synchronization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
+  <a href="../chapters/06-deadlock.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/07-deadlock.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../chapters/08-parallel.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
+  <a href="../chapters/07-parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -414,6 +408,7 @@ ul.task-list li input[type="checkbox"] {
 <p>並行処理では、ある作業の待ち時間に別の作業を進めます。また、優先度の高い出来事（お湯が沸いた）が起きたら、今の作業を中断してそちらに切り替えます。</p>
 <p>一方、作業を1つずつ最後まで終えてから次に進むやり方を<strong>逐次処理</strong>と呼びます。逐次処理では、お湯が沸くまでただ待つしかありません。急な来客があっても、玄関に出られるのはずっと後になってしまいます。</p>
 <p>Windows、macOS、Linuxなどの現在のOSは、この並行処理（<strong>マルチタスク</strong>とも呼ぶ）を標準で備えています。そのため、Webページを見ながらメールの受信に気づき、同時に音楽を再生できます。CPUのコアが1つしかなくても、OSはごく短い時間ごとに実行する処理を切り替えています。その結果、複数の処理が同時に動いている<strong>ように見える</strong>のです。</p>
+<p>この機能をもつOSを<strong>マルチタスクOS</strong>と呼び、Windows、Linux、macOS、Androidなど現在の主要なOSのほとんどが該当します。</p>
 </section>
 <section id="sec-parallel-intro" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="sec-parallel-intro"><span class="header-section-number">1.3</span> 並列処理（Parallel）</h2>

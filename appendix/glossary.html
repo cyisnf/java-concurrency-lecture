@@ -36,7 +36,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../chapters/08-parallel.html" rel="prev">
+<link href="../chapters/07-parallel.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -309,32 +309,26 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/04-sleep.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">スレッドの一時停止（sleep）</span></span></a>
+  <a href="../chapters/04-race-condition.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/05-race-condition.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
+  <a href="../chapters/05-synchronization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
+  <a href="../chapters/06-deadlock.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/07-deadlock.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../chapters/08-parallel.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
+  <a href="../chapters/07-parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -427,42 +421,42 @@ ul.task-list li input[type="checkbox"] {
 <tr class="odd">
 <td>競合状態</td>
 <td>複数のスレッドが共有変数を同時に書き換え、結果がおかしくなること</td>
-<td><a href="../chapters/05-race-condition.html">第5章</a></td>
+<td><a href="../chapters/05-race-condition.qmd">第5章</a></td>
 </tr>
 <tr class="even">
 <td>ロック</td>
 <td>オブジェクトがもつ鍵。取得したスレッドだけが <code>synchronized</code> の中を実行できる</td>
-<td><a href="../chapters/05-race-condition.html">第5章</a></td>
+<td><a href="../chapters/05-race-condition.qmd">第5章</a></td>
 </tr>
 <tr class="odd">
 <td>排他制御</td>
 <td>ある処理を、同時に1つのスレッドしか実行できないようにすること</td>
-<td><a href="../chapters/05-race-condition.html">第5章</a></td>
+<td><a href="../chapters/05-race-condition.qmd">第5章</a></td>
 </tr>
 <tr class="even">
 <td>原子性</td>
 <td>一連の操作が、途中で他のスレッドに割り込まれずに実行されること</td>
-<td><a href="../chapters/05-race-condition.html">第5章</a></td>
+<td><a href="../chapters/05-race-condition.qmd">第5章</a></td>
 </tr>
 <tr class="odd">
 <td>可視性</td>
 <td>あるスレッドが書き込んだ値を、他のスレッドが読めること</td>
-<td><a href="../chapters/05-race-condition.html">第5章</a></td>
+<td><a href="../chapters/05-race-condition.qmd">第5章</a></td>
 </tr>
 <tr class="even">
 <td>同期</td>
 <td>複数のスレッドの実行のタイミングを合わせること</td>
-<td><a href="../chapters/06-synchronization.html">第6章</a></td>
+<td><a href="../chapters/06-synchronization.qmd">第6章</a></td>
 </tr>
 <tr class="odd">
 <td>デッドロック</td>
 <td>スレッドどうしが互いに相手の資源を待ち合い、どれも先に進めなくなること</td>
-<td><a href="../chapters/07-deadlock.html">第7章</a></td>
+<td><a href="../chapters/07-deadlock.qmd">第7章</a></td>
 </tr>
 <tr class="even">
 <td>論理プロセッサ</td>
 <td>OSから見える、同時に実行できる処理の単位</td>
-<td><a href="../chapters/08-parallel.html">第8章</a></td>
+<td><a href="../chapters/08-parallel.qmd">第8章</a></td>
 </tr>
 </tbody>
 </table>
@@ -885,8 +879,8 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapters/08-parallel.html" class="pagination-link" aria-label="並列処理による高速化">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span>
+      <a href="../chapters/07-parallel.html" class="pagination-link" aria-label="並列処理による高速化">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>5&nbsp; 競合状態と排他制御 – Javaによる並行プログラミング入門</title>
+<title>4&nbsp; 競合状態と排他制御 – Javaによる並行プログラミング入門</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -71,8 +71,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../chapters/06-synchronization.html" rel="next">
-<link href="../chapters/04-sleep.html" rel="prev">
+<link href="../chapters/05-synchronization.html" rel="next">
+<link href="../chapters/03-create-thread.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -114,6 +114,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "サーチ"
   }
 }</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -290,7 +293,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/05-race-condition.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/04-race-condition.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
@@ -345,32 +348,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/04-sleep.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">スレッドの一時停止（sleep）</span></span></a>
+  <a href="../chapters/04-race-condition.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/05-race-condition.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
+  <a href="../chapters/05-synchronization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
+  <a href="../chapters/06-deadlock.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/07-deadlock.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../chapters/08-parallel.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
+  <a href="../chapters/07-parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -400,16 +397,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-race-demo" id="toc-sec-race-demo" class="nav-link active" data-scroll-target="#sec-race-demo"><span class="header-section-number">5.1</span> 問題の再現</a></li>
-  <li><a href="#sec-race-cause" id="toc-sec-race-cause" class="nav-link" data-scroll-target="#sec-race-cause"><span class="header-section-number">5.2</span> なぜ値が失われるのか</a></li>
-  <li><a href="#sec-sync-block" id="toc-sec-sync-block" class="nav-link" data-scroll-target="#sec-sync-block"><span class="header-section-number">5.3</span> synchronizedブロックによる排他制御</a></li>
-  <li><a href="#sec-sync-method" id="toc-sec-sync-method" class="nav-link" data-scroll-target="#sec-sync-method"><span class="header-section-number">5.4</span> synchronizedメソッド</a></li>
-  <li><a href="#sec-volatile" id="toc-sec-volatile" class="nav-link" data-scroll-target="#sec-volatile"><span class="header-section-number">5.5</span> volatile変数（発展）</a></li>
-  <li><a href="#sec-thread-id" id="toc-sec-thread-id" class="nav-link" data-scroll-target="#sec-thread-id"><span class="header-section-number">5.6</span> 補足：スレッドの識別番号</a></li>
+  <li><a href="#sec-abstract" id="toc-sec-abstract" class="nav-link active" data-scroll-target="#sec-abstract"><span class="header-section-number">4.1</span> 概要</a></li>
+  <li><a href="#sec-race-demo" id="toc-sec-race-demo" class="nav-link" data-scroll-target="#sec-race-demo"><span class="header-section-number">4.2</span> 問題の再現</a></li>
+  <li><a href="#sec-race-cause" id="toc-sec-race-cause" class="nav-link" data-scroll-target="#sec-race-cause"><span class="header-section-number">4.3</span> なぜ値が失われるのか</a></li>
+  <li><a href="#sec-sync-block" id="toc-sec-sync-block" class="nav-link" data-scroll-target="#sec-sync-block"><span class="header-section-number">4.4</span> synchronizedブロックによる排他制御</a></li>
+  <li><a href="#sec-sync-method" id="toc-sec-sync-method" class="nav-link" data-scroll-target="#sec-sync-method"><span class="header-section-number">4.5</span> synchronizedメソッド</a></li>
+  <li><a href="#sec-comparing" id="toc-sec-comparing" class="nav-link" data-scroll-target="#sec-comparing"><span class="header-section-number">4.6</span> 2つの方法の比較</a></li>
+  <li><a href="#sec-volatile" id="toc-sec-volatile" class="nav-link" data-scroll-target="#sec-volatile"><span class="header-section-number">4.7</span> volatile変数（発展）</a></li>
+  <li><a href="#sec-thread-id" id="toc-sec-thread-id" class="nav-link" data-scroll-target="#sec-thread-id"><span class="header-section-number">4.8</span> 補足：スレッドの識別番号</a></li>
   <li><a href="#sec-ex1" id="toc-sec-ex1" class="nav-link" data-scroll-target="#sec-ex1">練習問題1：スレッド安全なキュー</a></li>
   <li><a href="#sec-ex2" id="toc-sec-ex2" class="nav-link" data-scroll-target="#sec-ex2">練習問題2：ATMによる送金</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/05-race-condition.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/04-race-condition.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -417,7 +416,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-race-condition" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></h1>
+<h1 class="title"><span id="sec-race-condition" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></h1>
 </div>
 
 
@@ -434,10 +433,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>複数のスレッドが同じ変数を同時に書き換えると、更新の一部が失われることがあります（<strong>競合状態</strong>、レースコンディション）。これを防ぐには、<code>synchronized</code> を使って<strong>一度に1つのスレッドだけがその処理を実行できるようにする</strong>（<strong>排他制御</strong>）必要があります。</p>
-<section id="sec-race-demo" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="sec-race-demo"><span class="header-section-number">5.1</span> 問題の再現</h2>
-<p>3つのスレッドが、共有する変数 <code>c</code> をそれぞれ10000回ずつ1増やすプログラムです。正しく動けば、最終的な <code>c</code> は <strong>30000</strong> になるはずです。</p>
+<section id="sec-abstract" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="sec-abstract"><span class="header-section-number">4.1</span> 概要</h2>
+<p>ある変数を<strong>複数のスレッドから同時に更新</strong>した際に、更新の一部が失われることがあります（<strong>競合状態</strong>）。 <strong>一度に1つのスレッドだけがその処理を実行</strong>できるようにすることで、これを防ぐことができます（<strong>排他制御</strong>）。</p>
+</section>
+<section id="sec-race-demo" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="sec-race-demo"><span class="header-section-number">4.2</span> 問題の再現</h2>
+<ul>
+<li>3つのスレッドがあり、変数 <code>c</code> を共有しているとします。</li>
+<li>各スレッドは、変数 <code>c</code> の値を1増やす処理を、それぞれ10000回ずつ行います。</li>
+<li>正しく動けば、最終的な <code>c</code> は <strong>30000</strong> になるはずです。</li>
+</ul>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Count.java（排他制御なし）</strong></pre>
@@ -458,7 +464,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        t1<span class="op">.</span><span class="fu">join</span><span class="op">();</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        t2<span class="op">.</span><span class="fu">join</span><span class="op">();</span></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        t3<span class="op">.</span><span class="fu">join</span><span class="op">();</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"最終結果: "</span> <span class="op">+</span> count<span class="op">.</span><span class="fu">c</span><span class="op">);</span>  <span class="co">// 期待値は30000</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"最終結果: "</span> <span class="op">+</span> count<span class="op">.</span><span class="fu">c</span><span class="op">);</span>  <span class="co">// 期待している値は30000</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
@@ -476,10 +482,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>何度か実行すると、30000になることもありますが、<strong>30000未満</strong>（例：<code>最終結果: 29974</code>）になることがあります。</p>
+<p>何度か実行すると、30000になることもありますが、<strong>30000未満</strong>になることがあります。</p>
 </section>
-<section id="sec-race-cause" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="sec-race-cause"><span class="header-section-number">5.2</span> なぜ値が失われるのか</h2>
+<section id="sec-race-cause" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="sec-race-cause"><span class="header-section-number">4.3</span> なぜ値が失われるのか</h2>
 <p><code>count.c++;</code> は1行の文ですが、実際には次の<strong>3つの操作</strong>に分かれて実行されます。</p>
 <ol type="1">
 <li><strong>読み込み</strong>：変数 <code>c</code> の値を読み込む。</li>
@@ -487,56 +493,53 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>書き込み</strong>：計算結果を変数 <code>c</code> に書き込む。</li>
 </ol>
 <p>あるスレッドが1〜3を終える前に、別のスレッドが割り込むと、次のように更新が失われます（<code>c</code> の初期値を10とします）。</p>
-<table class="caption-top table">
-<caption>更新が失われる実行順の例</caption>
-<thead>
-<tr class="header">
-<th>順番</th>
-<th>スレッド1</th>
-<th>スレッド2</th>
-<th>変数 <code>c</code> の値</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td><code>c</code> を読む（10）</td>
-<td></td>
-<td>10</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td></td>
-<td><code>c</code> を読む（10）</td>
-<td>10</td>
-</tr>
-<tr class="odd">
-<td>3</td>
-<td>1を足す（11）</td>
-<td></td>
-<td>10</td>
-</tr>
-<tr class="even">
-<td>4</td>
-<td></td>
-<td>1を足す（11）</td>
-<td>10</td>
-</tr>
-<tr class="odd">
-<td>5</td>
-<td><code>c</code> に11を書く</td>
-<td></td>
-<td>11</td>
-</tr>
-<tr class="even">
-<td>6</td>
-<td></td>
-<td><code>c</code> に11を書く</td>
-<td><strong>11</strong>（本来は12）</td>
-</tr>
-</tbody>
-</table>
-<p>2つのスレッドがそれぞれ1回ずつ足したのに、<code>c</code> は1しか増えていません。</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-race" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-race-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-race">sequenceDiagram
+    autonumber
+    participant T1 as スレッド1
+    participant C as 共有変数 c（ヒープ）
+    participant T2 as スレッド2
+
+    Note over C: c = 10
+
+    rect rgba(37, 99, 235, 0.15)
+    T1-&gt;&gt;C: c を読む
+    C--&gt;&gt;T1: 10
+    end
+
+    rect rgba(234, 88, 12, 0.15)
+    T2-&gt;&gt;C: c を読む
+    C--&gt;&gt;T2: 10
+    end
+
+    Note over T1: 10 + 1 = 11
+    Note over T2: 10 + 1 = 11
+
+    rect rgba(37, 99, 235, 0.15)
+    T1-&gt;&gt;C: 11 を書く
+    end
+    Note over C: c = 11
+
+    rect rgba(234, 88, 12, 0.15)
+    T2-&gt;&gt;C: 11 を書く
+    end
+    Note over C: c = 11（本来は 12）&lt;br/&gt;スレッド1の更新は失われた
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-race-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;4.1: 2つのスレッドの競合（スレッド1の更新が失われる）
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>2つのスレッドがそれぞれ1回ずつ足したのに、結果的に <code>c</code> は1しか増えていません。</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -547,19 +550,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>スレッドの利点は、同じ変数を共有できることです。しかし、<strong>共有変数を複数のスレッドで書き換えるときは、必ずこの問題が起こりうる</strong>と考えてください。</p>
+<p>スレッドの利点は、同じ変数を共有できることです。しかし、共有変数を複数のスレッドで書き換えるときは、<strong>正しく対処しなければ、必ずこの問題が起こりうる</strong>と考えてください。</p>
 </div>
 </div>
 </section>
-<section id="sec-sync-block" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="sec-sync-block"><span class="header-section-number">5.3</span> synchronizedブロックによる排他制御</h2>
+<section id="sec-sync-block" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="sec-sync-block"><span class="header-section-number">4.4</span> synchronizedブロックによる排他制御</h2>
 <p>Javaのすべてのオブジェクトは、<strong>ロック</strong>（鍵）を1つずつ持っています。</p>
 <ul>
 <li>スレッドは <code>synchronized (オブジェクト) { … }</code> のブロックに入るときに、そのオブジェクトのロックを取得します。</li>
 <li>ブロックを出るときに、ロックを解放します。</li>
 <li>あるスレッドがロックを持っている間、他のスレッドは同じロックを取得できず、<strong>解放されるまで待たされます</strong>。</li>
 </ul>
-<p>これを使って、<code>c++</code> の3つの操作を「1つのスレッドが最後まで続けて行う」ようにします。</p>
+<p>これを使って、<code>c++</code> の3つの操作を「同時に1つのスレッドだけが行う」ようにします。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Count.java（synchronizedブロック版）の変更箇所</strong></pre>
@@ -585,7 +588,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>これで、何度実行しても最終結果は必ず30000になります。ロックを持つスレッドが「読み込み・計算・書き込み」を終えてからロックを解放するため、<a href="#sec-race-cause">前節の表</a>のように複数のスレッドが読み込みだけを終えた状態にはなりません。このように、ある処理を同時に1つのスレッドしか実行できないようにする制御を<strong>排他制御</strong>と呼びます。</p>
+<p>これで、何度実行しても最終結果は必ず30000になります。</p>
+<p>ロックを持つスレッドが「読み込み・計算・書き込み」を終えてからロックを解放するため、<a href="#fig-race">前節の図</a>のように複数のスレッドが読み込みだけを終えた状態にはなりません。</p>
+<p>このように、ある処理を同時に1つのスレッドしか実行できないようにする制御を<strong>排他制御</strong>と呼びます。</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -596,23 +601,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>たとえば <code>inc()</code> を使っていても、別の場所で <code>count.c</code> を <code>synchronized</code> なしに読み出すと、途中の値や古い値が見えることがあります。</p>
+<p><code>inc()</code> とは別の場所で <code>count.c</code> を <code>synchronized</code> なしに読み書きした場合には、依然として競合が起こりえます。</p>
 </div>
 </div>
 </section>
-<section id="sec-sync-method" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="sec-sync-method"><span class="header-section-number">5.4</span> synchronizedメソッド</h2>
+<section id="sec-sync-method" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="sec-sync-method"><span class="header-section-number">4.5</span> synchronizedメソッド</h2>
 <p>メソッド全体を排他制御したいときは、メソッドの宣言に <code>synchronized</code> を付けます。</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">synchronized</span> <span class="dt">void</span> <span class="fu">inc</span><span class="op">()</span> <span class="op">{</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    c<span class="op">++;</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p>これは、メソッドの中身全体を <code>synchronized (this) { … }</code> で囲んだのと同じ意味です。</p>
+</section>
+<section id="sec-comparing" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="sec-comparing"><span class="header-section-number">4.6</span> 2つの方法の比較</h2>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>観点</th>
@@ -623,8 +626,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>ロックの対象</td>
-<td>任意のオブジェクトを指定できる</td>
-<td><code>this</code>（そのオブジェクト）に固定。static メソッドの場合はクラス</td>
+<td>任意のオブジェクト</td>
+<td><code>this</code>（そのオブジェクト）</td>
 </tr>
 <tr class="even">
 <td>排他制御する範囲</td>
@@ -638,19 +641,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>メソッド全体を排他制御すると、本来は排他制御の必要がない処理まで1つのスレッドしか実行できなくなり、処理が遅くなることがあります。<strong>排他制御の範囲は必要な部分だけに絞る</strong>のが基本です。</p>
+<p>メソッド全体を排他制御すると、本来は排他制御の必要がない処理まで1つのスレッドしか実行できなくなり、処理が遅くなることがあります。</p>
+<p><strong>排他制御の範囲は必要な部分だけに絞る</strong>のが基本です。</p>
 </section>
-<section id="sec-volatile" class="level2" data-number="5.5">
-<h2 data-number="5.5" class="anchored" data-anchor-id="sec-volatile"><span class="header-section-number">5.5</span> volatile変数（発展）</h2>
-<p><code>volatile</code> は、変数の<strong>可視性</strong>（あるスレッドが書き込んだ値を、他のスレッドがすぐに読めること）を保証する修飾子です。</p>
-<p>各スレッドは、処理を速くするために共有変数の値を一時的に手元（CPUのキャッシュなど）に保持することがあります。そのため、あるスレッドが書き換えた値が、別のスレッドからしばらく見えないことがあります。<code>volatile</code> を付けた変数は、読み書きのたびに共有メモリ上の値が使われるため、常に最新の値が見えます。</p>
+<section id="sec-volatile" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="sec-volatile"><span class="header-section-number">4.7</span> volatile変数（発展）</h2>
+<p><code>volatile</code> は、変数の<strong>可視性</strong>（あるスレッドが書き込んだ値が、他のスレッドがすぐに確認できること）を保証する修飾子です。</p>
+<ul>
+<li>各スレッドは、処理を速くするために共有変数の値を<strong>一時的に手元（CPUのキャッシュなど）に保持</strong>することがあります。</li>
+<li>そのため、あるスレッドが変数の値を書き換えても、しばらくの間、他のスレッドからは手元の古い値しか確認できないことがあります。</li>
+<li><code>volatile</code> を付けた変数が読み書きされる場合は、<strong>常に共有メモリ上の値が確認される</strong>ので、この問題に対処できます。</li>
+</ul>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">警告</span>volatile は競合状態を防げない
+<span class="screen-reader-only">警告</span>しかし、 volatile では競合状態を防げない
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -714,8 +722,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>初めのうちは、<strong>共有変数を書き換える処理は <code>synchronized</code> で守る</strong>と覚えておけば十分です。</p>
 </section>
-<section id="sec-thread-id" class="level2" data-number="5.6">
-<h2 data-number="5.6" class="anchored" data-anchor-id="sec-thread-id"><span class="header-section-number">5.6</span> 補足：スレッドの識別番号</h2>
+<section id="sec-thread-id" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="sec-thread-id"><span class="header-section-number">4.8</span> 補足：スレッドの識別番号</h2>
 <p>各スレッドには一意の識別番号（スレッドID）があり、<code>getId()</code> で取得できます。スレッドIDは正の <code>long</code> 型の値で、そのスレッドが存在する間は変わりません。スレッドの終了後は、同じ値が再利用されることがあります。どのスレッドが出力したかを確かめたいときは、次のように表示するとよいでしょう。</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="fu">getId</span><span class="op">()</span> <span class="op">+</span> <span class="st">":"</span> <span class="op">+</span> count<span class="op">.</span><span class="fu">c</span><span class="op">);</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p>※ Java 19以降では、<code>getId()</code> の代わりに <code>threadId()</code> を使うことが推奨されています。</p>
@@ -906,7 +914,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><code>printMoney()</code> は顧客が操作を終えるたびに呼ばれるため、全部で30回表示されます。最後に表示される総額が最終結果です。全員の終了を待ってから1回だけ表示したい場合は、<a href="../chapters/06-synchronization.html">第6章</a>の <code>join()</code> を使って <code>main</code> メソッドを書き換えてください。</p>
+<p><code>printMoney()</code> は顧客が操作を終えるたびに呼ばれるため、全部で30回表示されます。最後に表示される総額が最終結果です。全員の終了を待ってから1回だけ表示したい場合は、<a href="06-synchronization.qmd">第6章</a>の <code>join()</code> を使って <code>main</code> メソッドを書き換えてください。</p>
 </div>
 </div>
 </div>
@@ -1331,13 +1339,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapters/04-sleep.html" class="pagination-link" aria-label="スレッドの一時停止（sleep）">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">スレッドの一時停止（sleep）</span></span>
+      <a href="../chapters/03-create-thread.html" class="pagination-link" aria-label="スレッドの作成と実行">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">スレッドの作成と実行</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../chapters/06-synchronization.html" class="pagination-link" aria-label="スレッドの同期（join・wait・notify）">
-        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../chapters/05-synchronization.html" class="pagination-link" aria-label="スレッドの同期（join・wait・notify）">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1346,4 +1354,4 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/05-race-condition.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/04-race-condition.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></div></div></footer></body></html>

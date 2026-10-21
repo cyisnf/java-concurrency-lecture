@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>7&nbsp; デッドロック – Javaによる並行プログラミング入門</title>
+<title>6&nbsp; デッドロック – Javaによる並行プログラミング入門</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -71,8 +71,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../chapters/08-parallel.html" rel="next">
-<link href="../chapters/06-synchronization.html" rel="prev">
+<link href="../chapters/07-parallel.html" rel="next">
+<link href="../chapters/05-synchronization.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -290,7 +290,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/07-deadlock.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/06-deadlock.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
@@ -345,32 +345,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/04-sleep.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">スレッドの一時停止（sleep）</span></span></a>
+  <a href="../chapters/04-race-condition.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/05-race-condition.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
+  <a href="../chapters/05-synchronization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
+  <a href="../chapters/06-deadlock.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/07-deadlock.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../chapters/08-parallel.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
+  <a href="../chapters/07-parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -400,11 +394,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-deadlock-conditions" id="toc-sec-deadlock-conditions" class="nav-link active" data-scroll-target="#sec-deadlock-conditions"><span class="header-section-number">7.1</span> デッドロックが起こる4つの条件</a></li>
-  <li><a href="#sec-deadlock-sample" id="toc-sec-deadlock-sample" class="nav-link" data-scroll-target="#sec-deadlock-sample"><span class="header-section-number">7.2</span> サンプル：ナイフとフォークで食事する人々</a></li>
+  <li><a href="#sec-deadlock-conditions" id="toc-sec-deadlock-conditions" class="nav-link active" data-scroll-target="#sec-deadlock-conditions"><span class="header-section-number">6.1</span> デッドロックが起こる4つの条件</a></li>
+  <li><a href="#sec-deadlock-sample" id="toc-sec-deadlock-sample" class="nav-link" data-scroll-target="#sec-deadlock-sample"><span class="header-section-number">6.2</span> サンプル：ナイフとフォークで食事する人々</a></li>
   <li><a href="#sec-ex4" id="toc-sec-ex4" class="nav-link" data-scroll-target="#sec-ex4">練習問題4：デッドロックしない設計</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/07-deadlock.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/06-deadlock.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -412,7 +406,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-deadlock" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span></h1>
+<h1 class="title"><span id="sec-deadlock" class="quarto-section-identifier"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span></h1>
 </div>
 
 
@@ -431,8 +425,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p><strong>デッドロック</strong>とは、2つ以上のスレッド（またはプロセス）が互いに相手の持つ資源の解放を待ち合い、どれも先に進めなくなる状態です。並行プログラミングで最も代表的な落とし穴です。</p>
 <p>身近な例は、4方向から同時に車が進入した交差点です。どの車も「右側の車が先に行くのを待つ」と、全員が待ち続けて誰も動けなくなります。</p>
-<section id="sec-deadlock-conditions" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="sec-deadlock-conditions"><span class="header-section-number">7.1</span> デッドロックが起こる4つの条件</h2>
+<section id="sec-deadlock-conditions" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="sec-deadlock-conditions"><span class="header-section-number">6.1</span> デッドロックが起こる4つの条件</h2>
 <p>次の4つの条件が<strong>すべて</strong>そろったときに、デッドロックが起こりえます。逆に、どれか1つでも崩せばデッドロックは起こりません。</p>
 <table class="caption-top table">
 <thead>
@@ -466,8 +460,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
-<section id="sec-deadlock-sample" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="sec-deadlock-sample"><span class="header-section-number">7.2</span> サンプル：ナイフとフォークで食事する人々</h2>
+<section id="sec-deadlock-sample" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="sec-deadlock-sample"><span class="header-section-number">6.2</span> サンプル：ナイフとフォークで食事する人々</h2>
 <p>次のプログラムは、デッドロックを起こす<strong>可能性がある</strong>プログラムです。</p>
 <ul>
 <li>8人の人（スレッド）がいて、ナイフとフォークは1本ずつしかない。</li>
@@ -538,7 +532,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><strong>何が起こるか</strong>：たとえば、人1がフォークを、人2がナイフを取ったとします。人1はナイフを、人2はフォークを待ち続けますが、どちらも自分の道具を手放しません。<a href="#sec-deadlock-conditions">7.1節</a>の4条件がすべてそろうため、誰も食事ができなくなり、プログラムは終わらなくなります。</p>
-<p>各メソッドは <code>synchronized</code> なので、<a href="../chapters/05-race-condition.html">第5章</a>の競合状態は起こりません。それでもデッドロックは起こります。つまり、<strong>排他制御が正しくても、資源の取り方（アルゴリズム）に問題があればデッドロックは起こる</strong>のです。</p>
+<p>各メソッドは <code>synchronized</code> なので、<a href="05-race-condition.qmd">第5章</a>の競合状態は起こりません。それでもデッドロックは起こります。つまり、<strong>排他制御が正しくても、資源の取り方（アルゴリズム）に問題があればデッドロックは起こる</strong>のです。</p>
 <p>※ このサンプルでは、スレッドは <code>wait()</code> で止まるのではなく、ループを回り続けながら待ちます。そのため、止まっているように見えてもCPUは使われ続けます。</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -998,13 +992,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapters/06-synchronization.html" class="pagination-link" aria-label="スレッドの同期（join・wait・notify）">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span>
+      <a href="../chapters/05-synchronization.html" class="pagination-link" aria-label="スレッドの同期（join・wait・notify）">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../chapters/08-parallel.html" class="pagination-link" aria-label="並列処理による高速化">
-        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../chapters/07-parallel.html" class="pagination-link" aria-label="並列処理による高速化">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1013,4 +1007,4 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/07-deadlock.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/06-deadlock.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></div></div></footer></body></html>

@@ -14,7 +14,7 @@
     "href": "index.html#学習目標",
     "title": "Javaによる並行プログラミング入門",
     "section": "学習目標",
-    "text": "学習目標\n\n並行処理と並列処理の違いを理解する。\nプロセスとスレッドの違いを理解する。\nJavaでスレッドを作成し、実行できる。\n複数のスレッドが同じ変数を扱うときの問題を理解し対処できる。",
+    "text": "学習目標\nJavaのスレッドを用いて、共有データを安全に扱う並行プログラムを設計・作成し、並列化の効果を評価する。",
     "crumbs": [
       "はじめに"
     ]
@@ -44,7 +44,7 @@
     "href": "index.html#資料の構成",
     "title": "Javaによる並行プログラミング入門",
     "section": "資料の構成",
-    "text": "資料の構成\n\n\n\n章\n内容\n練習問題\n\n\n\n\n第1章\n並行と並列\n\n\n\n第2章\nプロセスとスレッド\n\n\n\n第3章\nスレッドの作成と実行\n\n\n\n第4章\nスレッドの一時停止（sleep）\n\n\n\n第5章\n競合状態と排他制御\n練習問題1・2\n\n\n第6章\nスレッドの同期（join・wait・notify）\n練習問題3\n\n\n第7章\nデッドロック\n練習問題4\n\n\n第8章\n並列処理による高速化\n演習\n\n\n付録A\n用語集\n\n\n\n\n資料の誤りに気づいた場合は、各ページの目次の下にあるリンクから、GitHubのIssueで知らせてください。",
+    "text": "資料の構成\n\n\n\n章\n内容\n練習問題\n\n\n\n\n第1章\n並行と並列\n\n\n\n第2章\nプロセスとスレッド\n\n\n\n第3章\nスレッドの作成と実行\n\n\n\n第4章\n競合状態と排他制御\n練習問題1・2\n\n\n第5章\nスレッドの同期（join・wait・notify）\n練習問題3\n\n\n第6章\nデッドロック\n練習問題4\n\n\n第7章\n並列処理による高速化\n演習\n\n\n付録A\n用語集\n\n\n\n\n資料の誤りに気づいた場合は、各ページの目次の下にあるリンクから、GitHubのIssueで知らせてください。",
     "crumbs": [
       "はじめに"
     ]
@@ -64,7 +64,7 @@
     "href": "chapters/01-concurrent-parallel.html#sec-concurrent",
     "title": "1  並行と並列",
     "section": "1.2 並行処理（Concurrent）",
-    "text": "1.2 並行処理（Concurrent）\n並行処理とは、1人（または処理の数より少ない人数）で、複数の作業を少しずつ切り替えながら進める処理です。台所で鍋料理を作る場面で考えます。\n\n鍋に水を入れて火にかける。\n沸騰するまでの間に、野菜を切る。\nまだ沸騰しないので、食卓にお皿を並べ始める。\nお湯が沸いたので、お皿並べを中断し、野菜を鍋に入れる。\n野菜が煮えるまでの間に、お皿並べを再開する。\n\n並行処理では、ある作業の待ち時間に別の作業を進めます。また、優先度の高い出来事（お湯が沸いた）が起きたら、今の作業を中断してそちらに切り替えます。\n一方、作業を1つずつ最後まで終えてから次に進むやり方を逐次処理と呼びます。逐次処理では、お湯が沸くまでただ待つしかありません。急な来客があっても、玄関に出られるのはずっと後になってしまいます。\nWindows、macOS、Linuxなどの現在のOSは、この並行処理（マルチタスクとも呼ぶ）を標準で備えています。そのため、Webページを見ながらメールの受信に気づき、同時に音楽を再生できます。CPUのコアが1つしかなくても、OSはごく短い時間ごとに実行する処理を切り替えています。その結果、複数の処理が同時に動いているように見えるのです。",
+    "text": "1.2 並行処理（Concurrent）\n並行処理とは、1人（または処理の数より少ない人数）で、複数の作業を少しずつ切り替えながら進める処理です。台所で鍋料理を作る場面で考えます。\n\n鍋に水を入れて火にかける。\n沸騰するまでの間に、野菜を切る。\nまだ沸騰しないので、食卓にお皿を並べ始める。\nお湯が沸いたので、お皿並べを中断し、野菜を鍋に入れる。\n野菜が煮えるまでの間に、お皿並べを再開する。\n\n並行処理では、ある作業の待ち時間に別の作業を進めます。また、優先度の高い出来事（お湯が沸いた）が起きたら、今の作業を中断してそちらに切り替えます。\n一方、作業を1つずつ最後まで終えてから次に進むやり方を逐次処理と呼びます。逐次処理では、お湯が沸くまでただ待つしかありません。急な来客があっても、玄関に出られるのはずっと後になってしまいます。\nWindows、macOS、Linuxなどの現在のOSは、この並行処理（マルチタスクとも呼ぶ）を標準で備えています。そのため、Webページを見ながらメールの受信に気づき、同時に音楽を再生できます。CPUのコアが1つしかなくても、OSはごく短い時間ごとに実行する処理を切り替えています。その結果、複数の処理が同時に動いているように見えるのです。\nこの機能をもつOSをマルチタスクOSと呼び、Windows、Linux、macOS、Androidなど現在の主要なOSのほとんどが該当します。",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>並行と並列</span>"
     ]
@@ -94,7 +94,7 @@
     "href": "chapters/02-process-thread.html",
     "title": "2  プロセスとスレッド",
     "section": "",
-    "text": "2.1 プロセス\nプロセスもスレッドも「プログラムを実行する単位」ですが、メモリを他と共有するかどうかが決定的に異なります。\nプロセスとは、OSにおけるプログラムの実行単位です。ターミナルで java や gcc などのコマンドを入力すると、それぞれのプログラムが1つのプロセスとして実行されます。UNIX系のOSでは、ps コマンドで実行中のプロセスを一覧できます。\nCPUの数よりも多いプロセスを同時に動かすときは、第1章で説明した並行処理をOSが行っています。あるプロセスが待機している時間（アイドル時間）に別のプロセスを進めることで、すべてが同時に動いているように見せています。この機能をもつOSをマルチタスクOSと呼び、Windows、Linux、macOS、Androidなど現在の主要なOSのほとんどが該当します。",
+    "text": "2.1 プロセス\nプロセスとは、OS が管理しているプログラムの実行単位です。",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>プロセスとスレッド</span>"
     ]
@@ -104,7 +104,7 @@
     "href": "chapters/02-process-thread.html#sec-process",
     "title": "2  プロセスとスレッド",
     "section": "",
-    "text": "$ ps",
+    "text": "例えば、ターミナルから自作の java プログラムを実行すると、それが1つのプロセスとして実行されます。\nUNIX系OSでは、ps コマンドで実行中のプロセスを一覧できます。\n\n$ ps",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>プロセスとスレッド</span>"
     ]
@@ -114,7 +114,7 @@
     "href": "chapters/02-process-thread.html#sec-thread",
     "title": "2  プロセスとスレッド",
     "section": "2.2 スレッド",
-    "text": "2.2 スレッド\nスレッドも、プロセスと同じくプログラムを実行する単位です。1つのプロセスの中に、複数のスレッドを作ることができます。プロセスとの違いは、同じプロセス内のスレッドどうしは、同じメモリ領域（同じ変数）を読み書きできる点です。\nJavaには、複数のスレッドを簡単に扱う仕組み（マルチスレッド）が用意されています。この資料では、Javaのマルチスレッドプログラミングを通して並行プログラミングを学びます。",
+    "text": "2.2 スレッド\nスレッドとは、プロセスよりも細かいプログラムの実行単位です。\n\n1つのプロセスに複数のスレッドを内包させることができます。\nJavaにはスレッドを簡単に扱う仕組みが用意されています。",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>プロセスとスレッド</span>"
     ]
@@ -124,7 +124,7 @@
     "href": "chapters/02-process-thread.html#sec-process-vs-thread",
     "title": "2  プロセスとスレッド",
     "section": "2.3 プロセスとスレッドの比較",
-    "text": "2.3 プロセスとスレッドの比較\n\n\n\n\n\n\n\n\n観点\nプロセス\nスレッド\n\n\n\n\nメモリ領域\nプロセスごとに専用。他のプロセスのメモリは、OSの管理により読み書きできない\n同じプロセス内のスレッドで共有。同じ変数を読み書きできる\n\n\n作成・切り替えの負担\n比較的大きい\n比較的小さい\n\n\n自由度\n低い（互いに干渉しにくく安全）\n高い（共有できる反面、干渉を防ぐ工夫が必要）\n\n\n\nスレッドでも、スレッドごとに別の変数を用意すれば、プロセスのように専用のメモリだけを使わせることができます。一方で、同じ変数を複数のスレッドから読み書きすることもできます。\n\n\n\n\n\n\n重要自由度の高さには代償がある\n\n\n\nスレッドは自由度が高い分、正しく扱うための知識と技術が必要になります。その具体的な問題と対策は第5章で扱います。",
+    "text": "2.3 プロセスとスレッドの比較\n両者はともに「プログラムを実行する単位」ですが、重要な違いの一つは（ヒープと呼ばれる）メモリを他と共有できるかどうかです。\n\n\n\n\n\n\nflowchart TB\n    subgraph OS[\"OS\"]\n        direction LR\n        subgraph PA[\"プロセスA（java）\"]\n            direction TB\n            HA[(\"メモリ（ヒープ）\")]\n            M1[\"メインスレッド\"] &lt;--&gt; HA\n            T1[\"スレッド1\"] &lt;--&gt; HA\n            T2[\"スレッド2\"] &lt;--&gt; HA\n        end\n        subgraph PB[\"プロセスB（gcc）\"]\n            direction TB\n            HB[(\"メモリ（ヒープ）\")]\n            M2[\"メインスレッド\"] &lt;--&gt; HB\n        end\n        PA ~~~ PB\n    end\n\n    %% 見た目の種類を定義する（塗り・枠線・枠の太さ・文字色・文字サイズ）\n    classDef memory fill:#CCFBF1,stroke:#0F766E,stroke-width:3px,color:#134E4A,font-size:17px\n    classDef thread fill:#FFEDD5,stroke:#C2410C,stroke-width:3px,color:#7C2D12,font-size:17px\n\n    %% 箱に種類を割り当てる\n    class HA,HB memory\n    class M1,T1,T2,M2 thread\n\n    %% 外枠（OS とプロセス）の見た目\n    style OS fill:#EDEDED,stroke:#64748B,stroke-width:2px,stroke-dasharray:6 4\n    style PA fill:#EDE9FE,stroke:#6D28D9,stroke-width:3px,color:#3B0764\n    style PB fill:#EDE9FE,stroke:#6D28D9,stroke-width:3px,color:#3B0764\n\n    %% すべての矢印を太く、青くする\n    linkStyle default stroke:#2563EB,stroke-width:3px\n\n\n\n\n図 2.1: プロセスとスレッドの包含関係\n\n\n\n\n\n図 2.1 のように、1つのプロセスの中に複数のスレッドがあり、スレッドどうしはヒープを介してデータを共有できます。\nデータがヒープ上にあったとしても、そのデータを1つのスレッドだけが扱うように設計することで、スレッド専用のデータとして扱う（＝他スレッドにデータを共有しない）こともできます。\n\n\n\n\n\n\n\n\n観点\nプロセス\nスレッド\n\n\n\n\n包含関係\n上位\n下位\n\n\nメモリ領域\nOSの管理により、他のプロセスのメモリは読み書きできない\nプロセス内で、他のスレッドと同じメモリに読み書きできる\n\n\n自由度\n低い\n高い\n\n\n安全性\n互いに干渉しにくく安全\n意図しない干渉が発生する危険\n\n\n\n\n\n\n\n\n\n重要自由度の高さには代償がある\n\n\n\nスレッドは自由度が高い分、正しく扱うための知識と技術が必要になります。その具体的な問題と対策は第5章で扱います。",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>プロセスとスレッド</span>"
     ]
@@ -134,7 +134,17 @@
     "href": "chapters/03-create-thread.html",
     "title": "3  スレッドの作成と実行",
     "section": "",
-    "text": "3.1 方法1：Runnableインタフェースを実装する\nJavaでスレッドを作る方法は2つあります。(1) Runnable インタフェースを実装する方法と、(2) Thread クラスを継承する方法です。どちらも「新しいスレッドに実行させたい処理を run() メソッドに書き、start() で起動する」という点は共通です。\nRunnable インタフェースを実装したクラスを作り、そのオブジェクトを Thread のコンストラクタに渡します。\n処理の流れは次のとおりです。",
+    "text": "3.1 概要\nJavaでスレッドを作る 2 つの方法を説明します。",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>スレッドの作成と実行</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-create-thread.html#sec-abstract",
+    "href": "chapters/03-create-thread.html#sec-abstract",
+    "title": "3  スレッドの作成と実行",
+    "section": "",
+    "text": "Runnable インタフェースを実装する方法\nThread クラスを継承する方法\n\n\n\n\n\n\n\nヒント継承と実装\n\n\n\n継承（extends）：\n\n親クラスの機能を引き継ぎ、さらに機能を拡張すること。\nJavaのクラスは1つのクラスしか継承できない。\n\n実装（implements）：\n\n実装クラスが持つべきメソッドを定めたもの（これをインターフェイスと呼ぶ）に対して、その処理内容を記述すること。\n1つのクラスは複数のインターフェイスを実装できる。",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>スレッドの作成と実行</span>"
     ]
@@ -143,8 +153,8 @@
     "objectID": "chapters/03-create-thread.html#sec-runnable",
     "href": "chapters/03-create-thread.html#sec-runnable",
     "title": "3  スレッドの作成と実行",
-    "section": "",
-    "text": "Runnable_Thread.java\n\npublic class Runnable_Thread implements Runnable {\n\n    // 新しいスレッドが実行する処理\n    public void run() {\n        while (true) {\n            System.out.println(\"BBB\");\n        }\n    }\n\n    public static void main(String[] args) {\n        Runnable_Thread r = new Runnable_Thread();\n        Thread thread = new Thread(r);  // 実行する処理を渡してスレッドを作る\n        thread.start();                 // 新しいスレッドを起動 → r.run() が実行される\n\n        // ここから下はメインスレッドが実行する\n        while (true) {\n            System.out.println(\"AAA\");\n        }\n    }\n}\n\n\n\nmain メソッドは、プログラム開始時に自動で作られるメインスレッドで実行されます。\nthread.start() を呼ぶと、新しいスレッドが起動し、そのスレッドが run() メソッドを実行します。\n以後、メインスレッド（AAAを表示）と新しいスレッド（BBBを表示）が並行に動きます。\n\n\n\n\n\n\n\n警告よくある誤り：run() を直接呼ぶ\n\n\n\nstart() ではなく run() を直接呼ぶと、新しいスレッドは作られず、メインスレッドが run() を普通のメソッドとして実行するだけになります。スレッドを起動するときは、必ず start() を呼んでください。\n\n\n\n\n\n\n\n\nノートプログラムの止め方\n\n\n\nこのプログラムは無限ループのため、自動では終了しません。ターミナルで Ctrl + C を押して停止してください。",
+    "section": "3.2 方法1：Runnable インタフェースを実装する",
+    "text": "3.2 方法1：Runnable インタフェースを実装する\nRunnable インタフェースを実装したクラスを作り、そのオブジェクトを Thread のコンストラクタに渡します。\n\n\nRunnable_Thread.java\n\npublic class Runnable_Thread implements Runnable {\n\n    // 新しいスレッドが実行する処理\n    public void run() {\n        while (true) {\n            System.out.println(\"BBB\");\n        }\n    }\n\n    public static void main(String[] args) {\n        Runnable_Thread r = new Runnable_Thread();\n        Thread thread = new Thread(r);  // 実行する処理を渡してスレッドを作る\n        thread.start();                 // 新しいスレッドを起動 → r.run() が実行される\n\n        // ここから下はメインスレッドが実行する\n        while (true) {\n            System.out.println(\"AAA\");\n        }\n    }\n}\n\n処理の流れは次のとおりです。\n\nプログラム開始時に自動でメインスレッドが作られ、そのスレッドで main メソッドが実行されます。\nthread.start() によって新しいスレッドが作られ、そのスレッドで run() メソッドが実行されます。\n以後、メインスレッド（AAAを表示）と新しいスレッド（BBBを表示）が並行に動きます。",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>スレッドの作成と実行</span>"
     ]
@@ -153,8 +163,18 @@
     "objectID": "chapters/03-create-thread.html#sec-extends-thread",
     "href": "chapters/03-create-thread.html#sec-extends-thread",
     "title": "3  スレッドの作成と実行",
-    "section": "3.2 方法2：Threadクラスを継承する",
-    "text": "3.2 方法2：Threadクラスを継承する\nThread クラスを継承（extends）したクラスを作り、run() メソッドを上書き（オーバーライド）します。\n\n\nSubThread.java\n\npublic class SubThread extends Thread {\n\n    // 新しいスレッドが実行する処理\n    public void run() {\n        while (true) {\n            System.out.println(\"BBB\");\n        }\n    }\n\n    public static void main(String[] args) {\n        SubThread t = new SubThread();\n        t.start();  // SubThread自身がThreadなので、そのままstart()できる\n\n        // ここから下はメインスレッドが実行する\n        while (true) {\n            System.out.println(\"AAA\");\n        }\n    }\n}\n\nSubThread はすでに Thread の機能を引き継いでいるため、方法1のように別途 Thread オブジェクトを作る必要はありません。自分自身のオブジェクトを作って start() を呼ぶだけで起動できます。",
+    "section": "3.3 方法2：Threadクラスを継承する",
+    "text": "3.3 方法2：Threadクラスを継承する\nThread クラスを継承したクラスを作り、run() メソッドを上書き（オーバーライド）します。\n\n\nSubThread.java\n\npublic class SubThread extends Thread {\n\n    // 新しいスレッドが実行する処理\n    public void run() {\n        while (true) {\n            System.out.println(\"BBB\");\n        }\n    }\n\n    public static void main(String[] args) {\n        SubThread t = new SubThread();\n        t.start();  // SubThread自身がThreadなので、そのままstart()できる\n\n        // ここから下はメインスレッドが実行する\n        while (true) {\n            System.out.println(\"AAA\");\n        }\n    }\n}\n\nSubThread はすでに Thread の機能を引き継いでいるため、方法1のように別途 Thread オブジェクトを作る必要はありません。自分自身のオブジェクトを作って start() を呼ぶだけで起動できます。",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>スレッドの作成と実行</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-create-thread.html#sec-similarity",
+    "href": "chapters/03-create-thread.html#sec-similarity",
+    "title": "3  スレッドの作成と実行",
+    "section": "3.4 2つの方法の共通点",
+    "text": "3.4 2つの方法の共通点\nどちらも、「スレッドに実行させたい処理を run() メソッドに書き、start() で起動する」という点で共通しています。\n\n\n\n\n\n\n警告よくある誤り：run() を直接呼ぶ\n\n\n\nstart() ではなく run() を直接呼ぶと、新しいスレッドは作られず、メインスレッドが run() を普通のメソッドとして実行するだけになります。スレッドを起動するときは、必ず start() を呼んでください。",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>スレッドの作成と実行</span>"
     ]
@@ -163,8 +183,8 @@
     "objectID": "chapters/03-create-thread.html#sec-runnable-vs-thread",
     "href": "chapters/03-create-thread.html#sec-runnable-vs-thread",
     "title": "3  スレッドの作成と実行",
-    "section": "3.3 2つの方法の使い分け",
-    "text": "3.3 2つの方法の使い分け\n\n\n\n\n\n\n\n\n観点\n方法1：implements Runnable\n方法2：extends Thread\n\n\n\n\n他のクラスの継承\nできる（Javaは単一継承なので、継承枠を空けておける）\nできない（継承枠を Thread が使ってしまう）\n\n\n複数のインタフェース\n他のインタフェースと同時に実装できる\n同様に実装できる\n\n\nThread のメソッドの呼び出し\nThread.currentThread().getName() のように経由が必要\ngetName()、sleep() などを直接呼べる\n\n\n向いている場面\n一般的な場面（推奨されることが多い）\nスレッド自体を細かく操作したい場面、短いサンプル\n\n\n\nJavaはクラスの多重継承を認めていないため、継承できるスーパークラスは1つだけです。方法2を使うと、その1つを Thread に使ってしまいます。他のクラスを継承したい場合は、方法1を選んでください。\n\n\n\n\n\n\nノート参考：ラムダ式を使った書き方\n\n\n\nJava 8以降では、ラムダ式を使って短く書くこともできます。\nThread thread = new Thread(() -&gt; System.out.println(\"BBB\"));\nthread.start();",
+    "section": "3.5 2つの方法の使い分け",
+    "text": "3.5 2つの方法の使い分け\nJavaはクラスの多重継承を認めていないため、継承できるスーパークラスは1つだけです。方法2を使うと、その1つを Thread に使ってしまいます。他のクラスを継承したい場合は、方法1を選んでください。\n\n\n\n\n\n\n\n\n\n方法1：implements Runnable\n方法2：extends Thread\n\n\n\n\n他クラスの継承\n可能\n不可能\n\n\n他インタフェースの実装\n可能\n可能\n\n\nThread のメソッドの呼び出し\nThread.currentThread().getName() のように経由が必要\ngetName()、sleep() などを直接呼べる\n\n\n向いている場面\n一般的な場面（推奨されることが多い）\nスレッドを細かく操作したい場面\n\n\n\n\n\n\n\n\n\nノート参考：ラムダ式を使った書き方\n\n\n\nJava 8以降では、ラムダ式を使って短く書くこともできます。\nThread thread = new Thread(() -&gt; System.out.println(\"BBB\"));\nthread.start();",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>スレッドの作成と実行</span>"
     ]
@@ -173,260 +193,270 @@
     "objectID": "chapters/03-create-thread.html#sec-output",
     "href": "chapters/03-create-thread.html#sec-output",
     "title": "3  スレッドの作成と実行",
-    "section": "3.4 実行結果の見方",
-    "text": "3.4 実行結果の見方\n方法1または方法2のプログラムを実行すると、環境によって多少異なりますが、次のような出力が続きます。\nAAA\nAAA\nAAA\nBBB\nBBB\nBBB\nAAA\n...\n\n現在の多くのコンピュータはマルチコアなので、2つ程度のスレッドであれば、切り替えではなくほぼ並列に同時実行されます。\n同じ文字がまとまって出力されるのは、各スレッドがある程度の時間続けて実行されてから、別のスレッドに切り替わるためです。AAAとBBBの順番は実行のたびに変わります。\n使えるコアが1つしかない場合や、他のプログラムがコアを占有している場合には、どちらか一方の文字列ばかりが出力されることもあります。",
+    "section": "3.6 実行結果の見方",
+    "text": "3.6 実行結果の見方\n方法1または方法2のプログラムを実行すると、環境によって多少異なりますが、次のような出力が続きます。\nAAA\nAAA\nAAA\nBBB\nBBB\nBBB\nAAA\n.\n.\n.\n\n現在の多くのコンピュータはマルチコアなので、2つ程度のスレッドであれば、切り替えではなくほぼ並列に同時実行されます。\n同じ文字がまとまって出力されるのは、各スレッドがある程度の時間続けて実行されてから、別のスレッドに切り替わるためです。AAAとBBBの順番は実行のたびに変わります。\n使えるコアが1つしかない場合や、他のプログラムがコアを占有している場合には、どちらか一方の文字列ばかりが出力されることもあります。",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>スレッドの作成と実行</span>"
     ]
   },
   {
-    "objectID": "chapters/04-sleep.html",
-    "href": "chapters/04-sleep.html",
-    "title": "4  スレッドの一時停止（sleep）",
+    "objectID": "chapters/03-create-thread.html#sec-sleep",
+    "href": "chapters/03-create-thread.html#sec-sleep",
+    "title": "3  スレッドの作成と実行",
+    "section": "3.7 スレッドの一時停止（sleep）",
+    "text": "3.7 スレッドの一時停止（sleep）\nsleep を呼ぶと、そのメソッドを呼んだスレッドが、指定した時間だけ休止します。\n\n\nSubThread_sleep.java\n\npublic class SubThread_sleep extends Thread {\n\n    public void run() {\n        while (true) {\n            System.out.println(\"BBB\");\n            try {\n                sleep(100);  // このスレッドを100ミリ秒（0.1秒）休止\n            } catch (InterruptedException e) {\n                return;      // 休止中に中断されたら、run()を終えてスレッドを終了\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        new SubThread_sleep().start();\n\n        while (true) {\n            System.out.println(\"AAA\");\n            try {\n                Thread.sleep(100);  // メインスレッドを100ミリ秒休止\n            } catch (InterruptedException e) {\n                return;\n            }\n        }\n    }\n}\n\n実行すると、AAAとBBBが約0.1秒ごとに、ほぼ交互に表示されます。\n\n\n\n\n\n\nノートsleep() のポイント\n\n\n\n\nsleep() の引数の単位はミリ秒です（1000ミリ秒 = 1秒）。\nsleep() は、休止中に他のスレッドから中断（interrupt()）されると InterruptedException という例外を投げます。この例外はチェック例外（例外処理が必須の例外）なので、try〜catch で必ず処理する必要があります。\nThread を継承したクラスの中では sleep(100) と書けますが、それ以外の場所（main メソッドなど）では Thread.sleep(100) と書きます。",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>スレッドの作成と実行</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-race-condition.html",
+    "href": "chapters/04-race-condition.html",
+    "title": "4  競合状態と排他制御",
     "section": "",
-    "text": "sleep(ミリ秒) を呼ぶと、そのメソッドを呼んだスレッドが、指定した時間だけ休止します。\n\n\nSubThread_sleep.java\n\npublic class SubThread_sleep extends Thread {\n\n    public void run() {\n        while (true) {\n            System.out.println(\"BBB\");\n            try {\n                sleep(100);  // このスレッドを100ミリ秒（0.1秒）休止\n            } catch (InterruptedException e) {\n                return;      // 休止中に中断されたら、run()を終えてスレッドを終了\n            }\n        }\n    }\n\n    public static void main(String[] args) {\n        new SubThread_sleep().start();\n\n        while (true) {\n            System.out.println(\"AAA\");\n            try {\n                Thread.sleep(100);  // メインスレッドを100ミリ秒休止\n            } catch (InterruptedException e) {\n                return;\n            }\n        }\n    }\n}\n\n実行すると、AAAとBBBが約0.1秒ごとに、ほぼ交互に表示されます。\n\n\n\n\n\n\nノートsleep() のポイント\n\n\n\n\nsleep() の引数の単位はミリ秒です（1000ミリ秒 = 1秒）。\nsleep() は、休止中に他のスレッドから中断（interrupt()）されると InterruptedException という例外を投げます。この例外はチェック例外なので、try〜catch で必ず処理する必要があります。\nsleep() は Thread クラスの static メソッドです。Thread を継承したクラスの中では sleep(100) と書けますが、それ以外の場所（main メソッドなど）では Thread.sleep(100) と書きます。",
+    "text": "4.1 概要\nある変数を複数のスレッドから同時に更新した際に、更新の一部が失われることがあります（競合状態）。 一度に1つのスレッドだけがその処理を実行できるようにすることで、これを防ぐことができます（排他制御）。",
     "crumbs": [
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>スレッドの一時停止（sleep）</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>競合状態と排他制御</span>"
     ]
   },
   {
-    "objectID": "chapters/05-race-condition.html",
-    "href": "chapters/05-race-condition.html",
-    "title": "5  競合状態と排他制御",
-    "section": "",
-    "text": "5.1 問題の再現\n複数のスレッドが同じ変数を同時に書き換えると、更新の一部が失われることがあります（競合状態、レースコンディション）。これを防ぐには、synchronized を使って一度に1つのスレッドだけがその処理を実行できるようにする（排他制御）必要があります。\n3つのスレッドが、共有する変数 c をそれぞれ10000回ずつ1増やすプログラムです。正しく動けば、最終的な c は 30000 になるはずです。\n何度か実行すると、30000になることもありますが、30000未満（例：最終結果: 29974）になることがあります。",
+    "objectID": "chapters/04-race-condition.html#sec-race-demo",
+    "href": "chapters/04-race-condition.html#sec-race-demo",
+    "title": "4  競合状態と排他制御",
+    "section": "4.2 問題の再現",
+    "text": "4.2 問題の再現\n\n3つのスレッドがあり、変数 c を共有しているとします。\n各スレッドは、変数 c の値を1増やす処理を、それぞれ10000回ずつ行います。\n正しく動けば、最終的な c は 30000 になるはずです。\n\n\n\nCount.java（排他制御なし）\n\npublic class Count {\n    int c = 0;  // 3つのスレッドが共有する変数\n\n    public static void main(String[] args) throws InterruptedException {\n        Count count = new Count();\n        CounterThread t1 = new CounterThread(count);\n        CounterThread t2 = new CounterThread(count);\n        CounterThread t3 = new CounterThread(count);\n        t1.start();\n        t2.start();\n        t3.start();\n\n        // 3つのスレッドがすべて終わるまで待つ（join は第6章で詳しく説明）\n        t1.join();\n        t2.join();\n        t3.join();\n        System.out.println(\"最終結果: \" + count.c);  // 期待している値は30000\n    }\n}\n\nclass CounterThread extends Thread {\n    Count count;\n\n    public CounterThread(Count count) {\n        this.count = count;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 10000; i++) {\n            count.c++;  // 共有変数を1増やす\n        }\n    }\n}\n\n何度か実行すると、30000になることもありますが、30000未満になることがあります。",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>競合状態と排他制御</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>競合状態と排他制御</span>"
     ]
   },
   {
-    "objectID": "chapters/05-race-condition.html#sec-race-demo",
-    "href": "chapters/05-race-condition.html#sec-race-demo",
-    "title": "5  競合状態と排他制御",
-    "section": "",
-    "text": "Count.java（排他制御なし）\n\npublic class Count {\n    int c = 0;  // 3つのスレッドが共有する変数\n\n    public static void main(String[] args) throws InterruptedException {\n        Count count = new Count();\n        CounterThread t1 = new CounterThread(count);\n        CounterThread t2 = new CounterThread(count);\n        CounterThread t3 = new CounterThread(count);\n        t1.start();\n        t2.start();\n        t3.start();\n\n        // 3つのスレッドがすべて終わるまで待つ（join は第6章で詳しく説明）\n        t1.join();\n        t2.join();\n        t3.join();\n        System.out.println(\"最終結果: \" + count.c);  // 期待値は30000\n    }\n}\n\nclass CounterThread extends Thread {\n    Count count;\n\n    public CounterThread(Count count) {\n        this.count = count;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 10000; i++) {\n            count.c++;  // 共有変数を1増やす\n        }\n    }\n}",
+    "objectID": "chapters/04-race-condition.html#sec-race-cause",
+    "href": "chapters/04-race-condition.html#sec-race-cause",
+    "title": "4  競合状態と排他制御",
+    "section": "4.3 なぜ値が失われるのか",
+    "text": "4.3 なぜ値が失われるのか\ncount.c++; は1行の文ですが、実際には次の3つの操作に分かれて実行されます。\n\n読み込み：変数 c の値を読み込む。\n計算：読み込んだ値に1を足す。\n書き込み：計算結果を変数 c に書き込む。\n\nあるスレッドが1〜3を終える前に、別のスレッドが割り込むと、次のように更新が失われます（c の初期値を10とします）。\n\n\n\n\n\n\nsequenceDiagram\n    autonumber\n    participant T1 as スレッド1\n    participant C as 共有変数 c（ヒープ）\n    participant T2 as スレッド2\n\n    Note over C: c = 10\n\n    rect rgba(37, 99, 235, 0.15)\n    T1-&gt;&gt;C: c を読む\n    C--&gt;&gt;T1: 10\n    end\n\n    rect rgba(234, 88, 12, 0.15)\n    T2-&gt;&gt;C: c を読む\n    C--&gt;&gt;T2: 10\n    end\n\n    Note over T1: 10 + 1 = 11\n    Note over T2: 10 + 1 = 11\n\n    rect rgba(37, 99, 235, 0.15)\n    T1-&gt;&gt;C: 11 を書く\n    end\n    Note over C: c = 11\n\n    rect rgba(234, 88, 12, 0.15)\n    T2-&gt;&gt;C: 11 を書く\n    end\n    Note over C: c = 11（本来は 12）&lt;br/&gt;スレッド1の更新は失われた\n\n\n\n\n図 4.1: 2つのスレッドの競合（スレッド1の更新が失われる）\n\n\n\n\n\n2つのスレッドがそれぞれ1回ずつ足したのに、結果的に c は1しか増えていません。\n\n\n\n\n\n\n重要共有変数の書き換えには必ず注意する\n\n\n\nスレッドの利点は、同じ変数を共有できることです。しかし、共有変数を複数のスレッドで書き換えるときは、正しく対処しなければ、必ずこの問題が起こりうると考えてください。",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>競合状態と排他制御</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>競合状態と排他制御</span>"
     ]
   },
   {
-    "objectID": "chapters/05-race-condition.html#sec-race-cause",
-    "href": "chapters/05-race-condition.html#sec-race-cause",
-    "title": "5  競合状態と排他制御",
-    "section": "5.2 なぜ値が失われるのか",
-    "text": "5.2 なぜ値が失われるのか\ncount.c++; は1行の文ですが、実際には次の3つの操作に分かれて実行されます。\n\n読み込み：変数 c の値を読み込む。\n計算：読み込んだ値に1を足す。\n書き込み：計算結果を変数 c に書き込む。\n\nあるスレッドが1〜3を終える前に、別のスレッドが割り込むと、次のように更新が失われます（c の初期値を10とします）。\n\n更新が失われる実行順の例\n\n\n順番\nスレッド1\nスレッド2\n変数 c の値\n\n\n\n\n1\nc を読む（10）\n\n10\n\n\n2\n\nc を読む（10）\n10\n\n\n3\n1を足す（11）\n\n10\n\n\n4\n\n1を足す（11）\n10\n\n\n5\nc に11を書く\n\n11\n\n\n6\n\nc に11を書く\n11（本来は12）\n\n\n\n2つのスレッドがそれぞれ1回ずつ足したのに、c は1しか増えていません。\n\n\n\n\n\n\n重要共有変数の書き換えには必ず注意する\n\n\n\nスレッドの利点は、同じ変数を共有できることです。しかし、共有変数を複数のスレッドで書き換えるときは、必ずこの問題が起こりうると考えてください。",
+    "objectID": "chapters/04-race-condition.html#sec-sync-block",
+    "href": "chapters/04-race-condition.html#sec-sync-block",
+    "title": "4  競合状態と排他制御",
+    "section": "4.4 synchronizedブロックによる排他制御",
+    "text": "4.4 synchronizedブロックによる排他制御\nJavaのすべてのオブジェクトは、ロック（鍵）を1つずつ持っています。\n\nスレッドは synchronized (オブジェクト) { … } のブロックに入るときに、そのオブジェクトのロックを取得します。\nブロックを出るときに、ロックを解放します。\nあるスレッドがロックを持っている間、他のスレッドは同じロックを取得できず、解放されるまで待たされます。\n\nこれを使って、c++ の3つの操作を「同時に1つのスレッドだけが行う」ようにします。\n\n\nCount.java（synchronizedブロック版）の変更箇所\n\npublic class Count {\n    int c = 0;\n\n    // c を1増やす処理を、Count クラスのメソッドにまとめる\n    public void inc() {\n        synchronized (this) {  // この Count オブジェクトのロックを取得\n            c++;               // 読み込み・計算・書き込みを1つのスレッドだけが行う\n        }                      // ここでロックを解放\n    }\n    // main メソッドは5.1と同じ\n}\n\nclass CounterThread extends Thread {\n    // …（フィールドとコンストラクタは5.1と同じ）\n    public void run() {\n        for (int i = 0; i &lt; 10000; i++) {\n            count.inc();  // c++ の代わりに inc() を呼ぶ\n        }\n    }\n}\n\nこれで、何度実行しても最終結果は必ず30000になります。\nロックを持つスレッドが「読み込み・計算・書き込み」を終えてからロックを解放するため、前節の図のように複数のスレッドが読み込みだけを終えた状態にはなりません。\nこのように、ある処理を同時に1つのスレッドしか実行できないようにする制御を排他制御と呼びます。\n\n\n\n\n\n\n警告排他制御は「すべての」アクセスに必要\n\n\n\ninc() とは別の場所で count.c を synchronized なしに読み書きした場合には、依然として競合が起こりえます。",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>競合状態と排他制御</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>競合状態と排他制御</span>"
     ]
   },
   {
-    "objectID": "chapters/05-race-condition.html#sec-sync-block",
-    "href": "chapters/05-race-condition.html#sec-sync-block",
-    "title": "5  競合状態と排他制御",
-    "section": "5.3 synchronizedブロックによる排他制御",
-    "text": "5.3 synchronizedブロックによる排他制御\nJavaのすべてのオブジェクトは、ロック（鍵）を1つずつ持っています。\n\nスレッドは synchronized (オブジェクト) { … } のブロックに入るときに、そのオブジェクトのロックを取得します。\nブロックを出るときに、ロックを解放します。\nあるスレッドがロックを持っている間、他のスレッドは同じロックを取得できず、解放されるまで待たされます。\n\nこれを使って、c++ の3つの操作を「1つのスレッドが最後まで続けて行う」ようにします。\n\n\nCount.java（synchronizedブロック版）の変更箇所\n\npublic class Count {\n    int c = 0;\n\n    // c を1増やす処理を、Count クラスのメソッドにまとめる\n    public void inc() {\n        synchronized (this) {  // この Count オブジェクトのロックを取得\n            c++;               // 読み込み・計算・書き込みを1つのスレッドだけが行う\n        }                      // ここでロックを解放\n    }\n    // main メソッドは5.1と同じ\n}\n\nclass CounterThread extends Thread {\n    // …（フィールドとコンストラクタは5.1と同じ）\n    public void run() {\n        for (int i = 0; i &lt; 10000; i++) {\n            count.inc();  // c++ の代わりに inc() を呼ぶ\n        }\n    }\n}\n\nこれで、何度実行しても最終結果は必ず30000になります。ロックを持つスレッドが「読み込み・計算・書き込み」を終えてからロックを解放するため、前節の表のように複数のスレッドが読み込みだけを終えた状態にはなりません。このように、ある処理を同時に1つのスレッドしか実行できないようにする制御を排他制御と呼びます。\n\n\n\n\n\n\n警告排他制御は「すべての」アクセスに必要\n\n\n\nたとえば inc() を使っていても、別の場所で count.c を synchronized なしに読み出すと、途中の値や古い値が見えることがあります。",
+    "objectID": "chapters/04-race-condition.html#sec-sync-method",
+    "href": "chapters/04-race-condition.html#sec-sync-method",
+    "title": "4  競合状態と排他制御",
+    "section": "4.5 synchronizedメソッド",
+    "text": "4.5 synchronizedメソッド\nメソッド全体を排他制御したいときは、メソッドの宣言に synchronized を付けます。\npublic synchronized void inc() {\n    c++;\n}\nこれは、メソッドの中身全体を synchronized (this) { … } で囲んだのと同じ意味です。",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>競合状態と排他制御</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>競合状態と排他制御</span>"
     ]
   },
   {
-    "objectID": "chapters/05-race-condition.html#sec-sync-method",
-    "href": "chapters/05-race-condition.html#sec-sync-method",
-    "title": "5  競合状態と排他制御",
-    "section": "5.4 synchronizedメソッド",
-    "text": "5.4 synchronizedメソッド\nメソッド全体を排他制御したいときは、メソッドの宣言に synchronized を付けます。\npublic synchronized void inc() {\n    c++;\n}\nこれは、メソッドの中身全体を synchronized (this) { … } で囲んだのと同じ意味です。\n\n\n\n\n\n\n\n\n観点\nsynchronizedブロック\nsynchronizedメソッド\n\n\n\n\nロックの対象\n任意のオブジェクトを指定できる\nthis（そのオブジェクト）に固定。static メソッドの場合はクラス\n\n\n排他制御する範囲\n必要な部分だけを囲める\nメソッド全体\n\n\n書きやすさ\nやや長い\n簡潔\n\n\n\nメソッド全体を排他制御すると、本来は排他制御の必要がない処理まで1つのスレッドしか実行できなくなり、処理が遅くなることがあります。排他制御の範囲は必要な部分だけに絞るのが基本です。",
+    "objectID": "chapters/04-race-condition.html#sec-comparing",
+    "href": "chapters/04-race-condition.html#sec-comparing",
+    "title": "4  競合状態と排他制御",
+    "section": "4.6 2つの方法の比較",
+    "text": "4.6 2つの方法の比較\n\n\n\n観点\nsynchronizedブロック\nsynchronizedメソッド\n\n\n\n\nロックの対象\n任意のオブジェクト\nthis（そのオブジェクト）\n\n\n排他制御する範囲\n必要な部分だけを囲める\nメソッド全体\n\n\n書きやすさ\nやや長い\n簡潔\n\n\n\nメソッド全体を排他制御すると、本来は排他制御の必要がない処理まで1つのスレッドしか実行できなくなり、処理が遅くなることがあります。\n排他制御の範囲は必要な部分だけに絞るのが基本です。",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>競合状態と排他制御</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>競合状態と排他制御</span>"
     ]
   },
   {
-    "objectID": "chapters/05-race-condition.html#sec-volatile",
-    "href": "chapters/05-race-condition.html#sec-volatile",
-    "title": "5  競合状態と排他制御",
-    "section": "5.5 volatile変数（発展）",
-    "text": "5.5 volatile変数（発展）\nvolatile は、変数の可視性（あるスレッドが書き込んだ値を、他のスレッドがすぐに読めること）を保証する修飾子です。\n各スレッドは、処理を速くするために共有変数の値を一時的に手元（CPUのキャッシュなど）に保持することがあります。そのため、あるスレッドが書き換えた値が、別のスレッドからしばらく見えないことがあります。volatile を付けた変数は、読み書きのたびに共有メモリ上の値が使われるため、常に最新の値が見えます。\n\n\n\n\n\n\n警告volatile は競合状態を防げない\n\n\n\nvolatile int c としても、c++ の「読み込み・計算・書き込み」の間に他のスレッドが割り込むことは防げません。そのため、最終結果は30000にならないことがあります。\n\n\n\n\n\n\n\n\n\n\n修飾子\n可視性（最新の値が見える）\n原子性（一連の操作を途中で割り込まれない）\n\n\n\n\nvolatile\n保証される\n保証されない\n\n\nsynchronized\n保証される\n保証される\n\n\n\nvolatile が適しているのは、「1つのスレッドが書き、他のスレッドは読むだけ」の変数です。代表例は、スレッドを止めるためのフラグです。\n\n\nWorker.java\n\nclass Worker extends Thread {\n    volatile boolean running = true;  // 他のスレッドから false にされる\n\n    public void run() {\n        while (running) {\n            // 処理\n        }\n        // running が false になると、ループを抜けてスレッドが終了する\n    }\n}\n\n\n\n\n\n\n\nノート参考：AtomicInteger\n\n\n\nカウンタのように「読んで、変えて、書く」変数を安全に扱うには、synchronized のほか、java.util.concurrent.atomic.AtomicInteger の incrementAndGet() を使う方法もあります。\n\n\n初めのうちは、共有変数を書き換える処理は synchronized で守ると覚えておけば十分です。",
+    "objectID": "chapters/04-race-condition.html#sec-volatile",
+    "href": "chapters/04-race-condition.html#sec-volatile",
+    "title": "4  競合状態と排他制御",
+    "section": "4.7 volatile変数（発展）",
+    "text": "4.7 volatile変数（発展）\nvolatile は、変数の可視性（あるスレッドが書き込んだ値が、他のスレッドがすぐに確認できること）を保証する修飾子です。\n\n各スレッドは、処理を速くするために共有変数の値を一時的に手元（CPUのキャッシュなど）に保持することがあります。\nそのため、あるスレッドが変数の値を書き換えても、しばらくの間、他のスレッドからは手元の古い値しか確認できないことがあります。\nvolatile を付けた変数が読み書きされる場合は、常に共有メモリ上の値が確認されるので、この問題に対処できます。\n\n\n\n\n\n\n\n警告しかし、 volatile では競合状態を防げない\n\n\n\nvolatile int c としても、c++ の「読み込み・計算・書き込み」の間に他のスレッドが割り込むことは防げません。そのため、最終結果は30000にならないことがあります。\n\n\n\n\n\n\n\n\n\n\n修飾子\n可視性（最新の値が見える）\n原子性（一連の操作を途中で割り込まれない）\n\n\n\n\nvolatile\n保証される\n保証されない\n\n\nsynchronized\n保証される\n保証される\n\n\n\nvolatile が適しているのは、「1つのスレッドが書き、他のスレッドは読むだけ」の変数です。代表例は、スレッドを止めるためのフラグです。\n\n\nWorker.java\n\nclass Worker extends Thread {\n    volatile boolean running = true;  // 他のスレッドから false にされる\n\n    public void run() {\n        while (running) {\n            // 処理\n        }\n        // running が false になると、ループを抜けてスレッドが終了する\n    }\n}\n\n\n\n\n\n\n\nノート参考：AtomicInteger\n\n\n\nカウンタのように「読んで、変えて、書く」変数を安全に扱うには、synchronized のほか、java.util.concurrent.atomic.AtomicInteger の incrementAndGet() を使う方法もあります。\n\n\n初めのうちは、共有変数を書き換える処理は synchronized で守ると覚えておけば十分です。",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>競合状態と排他制御</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>競合状態と排他制御</span>"
     ]
   },
   {
-    "objectID": "chapters/05-race-condition.html#sec-thread-id",
-    "href": "chapters/05-race-condition.html#sec-thread-id",
-    "title": "5  競合状態と排他制御",
-    "section": "5.6 補足：スレッドの識別番号",
-    "text": "5.6 補足：スレッドの識別番号\n各スレッドには一意の識別番号（スレッドID）があり、getId() で取得できます。スレッドIDは正の long 型の値で、そのスレッドが存在する間は変わりません。スレッドの終了後は、同じ値が再利用されることがあります。どのスレッドが出力したかを確かめたいときは、次のように表示するとよいでしょう。\nSystem.out.println(getId() + \":\" + count.c);\n※ Java 19以降では、getId() の代わりに threadId() を使うことが推奨されています。",
+    "objectID": "chapters/04-race-condition.html#sec-thread-id",
+    "href": "chapters/04-race-condition.html#sec-thread-id",
+    "title": "4  競合状態と排他制御",
+    "section": "4.8 補足：スレッドの識別番号",
+    "text": "4.8 補足：スレッドの識別番号\n各スレッドには一意の識別番号（スレッドID）があり、getId() で取得できます。スレッドIDは正の long 型の値で、そのスレッドが存在する間は変わりません。スレッドの終了後は、同じ値が再利用されることがあります。どのスレッドが出力したかを確かめたいときは、次のように表示するとよいでしょう。\nSystem.out.println(getId() + \":\" + count.c);\n※ Java 19以降では、getId() の代わりに threadId() を使うことが推奨されています。",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>競合状態と排他制御</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>競合状態と排他制御</span>"
     ]
   },
   {
-    "objectID": "chapters/05-race-condition.html#sec-ex1",
-    "href": "chapters/05-race-condition.html#sec-ex1",
-    "title": "5  競合状態と排他制御",
+    "objectID": "chapters/04-race-condition.html#sec-ex1",
+    "href": "chapters/04-race-condition.html#sec-ex1",
+    "title": "4  競合状態と排他制御",
     "section": "練習問題1：スレッド安全なキュー",
     "text": "練習問題1：スレッド安全なキュー\n次のキュー（IntQueue）を、複数のスレッドから同時に操作しても正しく動くように変更してください。\n仕様\n\nキューには正の整数だけを入れられる。\ntail は現在の末尾の位置を表す。キューが空のときは tail = -1 とする。\nenqueue（追加）用のスレッドを2つ、dequeue（取り出し）用のスレッドを2つ、並行に動かす。\n\n課題\n\n変更前のプログラムを実行し、表示結果を記録する。\n適切な排他制御を加えて実行し、1の結果と比べる。\nメソッド全体を synchronized にするのが最も手軽ですが、synchronized ブロックで囲むならどの範囲を囲むべきかを考察する。\n\n\n\nIntQueue.java\n\npublic class IntQueue {\n    final int SIZE = 10;\n    private int[] values = new int[SIZE];\n    private int tail = -1;  // 末尾の位置（空のときは -1）\n\n    boolean enqueue(int data) {\n        if (data &lt; 0) {\n            return false;           // 負の値は受け付けない\n        }\n        if (tail == SIZE - 1) {\n            return false;           // 満杯\n        }\n        tail++;\n        values[tail] = data;\n        System.out.println(\"enqueue :\" + data + \" tail:\" + tail);\n        return true;\n    }\n\n    int dequeue() {\n        if (isEmpty()) {\n            return -1;              // 空\n        }\n        int data = values[0];\n        for (int i = 0; i &lt; SIZE - 1; i++) {\n            values[i] = values[i + 1];  // 要素を1つずつ前に詰める\n        }\n        tail--;\n        System.out.println(\"dequeue :\" + data + \" tail:\" + tail);\n        return data;\n    }\n\n    boolean isEmpty() {\n        return (tail == -1);\n    }\n\n    public static void main(String[] args) {\n        IntQueue q = new IntQueue();\n        new EnQueueThread(q).start();\n        new EnQueueThread(q).start();\n        new DeQueueThread(q).start();\n        new DeQueueThread(q).start();\n    }\n}\n\nclass EnQueueThread extends Thread {\n    IntQueue q;\n\n    public EnQueueThread(IntQueue q) {\n        this.q = q;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 100; i++) {\n            int data = (int) (Math.random() * 100 + 1);  // 1〜100の乱数\n            q.enqueue(data);\n        }\n    }\n}\n\nclass DeQueueThread extends Thread {\n    IntQueue q;\n\n    public DeQueueThread(IntQueue q) {\n        this.q = q;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 100; i++) {\n            q.dequeue();\n        }\n    }\n}\n\n\n\n\n\n\n\nヒントヒント（クリックで表示）\n\n\n\n\n\n「tail を確認する処理」と「tail を書き換える処理」の間に、別のスレッドが割り込むと何が起こるかを考えてください。たとえば、満杯の確認の直後に別のスレッドが追加すると、配列の範囲外に書き込む可能性があります。",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>競合状態と排他制御</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>競合状態と排他制御</span>"
     ]
   },
   {
-    "objectID": "chapters/05-race-condition.html#sec-ex2",
-    "href": "chapters/05-race-condition.html#sec-ex2",
-    "title": "5  競合状態と排他制御",
+    "objectID": "chapters/04-race-condition.html#sec-ex2",
+    "href": "chapters/04-race-condition.html#sec-ex2",
+    "title": "4  競合状態と排他制御",
     "section": "練習問題2：ATMによる送金",
     "text": "練習問題2：ATMによる送金\nATM と Customer の2つのクラスを使い、口座間でお金を移動するプログラムを完成させてください。\n仕様\n\n口座は100個あり、各口座の初期残高は10万円とする。\n顧客30人（Customer スレッド30個）が同時にATMを操作する。\n各顧客は、0〜9ミリ秒に1回、ランダムに選んだ口座からランダムに選んだ口座へ、ランダムな金額（0〜9999円）を移動する。これを1人1000回行う。\n全員の操作が終わった後、全口座の残高と総額を printMoney() で表示し、総額が 10万円 × 100口座 = 1000万円のままであることを確認する。\n\n課題：printMoney() と move() の中身を書き、排他制御なしの場合と、ありの場合で総額を比べてください。\n\n\nATM.java\n\npublic class ATM {\n    static int SIZE = 100;\n    int[] account;\n\n    public ATM() {\n        account = new int[SIZE];\n        for (int i = 0; i &lt; SIZE; i++) {\n            account[i] = 100000;  // 初期残高10万円\n        }\n    }\n\n    void printMoney() {\n        // ここを記述：各口座の残高と総額を表示する\n    }\n\n    void move(int from, int to, int money) {\n        // ここを記述：口座 from から口座 to へ money 円を移動する\n    }\n\n    public static void main(String[] args) {\n        ATM atm = new ATM();\n        for (int i = 0; i &lt; 30; i++) {\n            new Customer(atm).start();\n        }\n    }\n}\n\nclass Customer extends Thread {\n    ATM atm;\n\n    public Customer(ATM atm) {\n        this.atm = atm;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 1000; i++) {\n            int from = (int) (Math.random() * ATM.SIZE);\n            int to = (int) (Math.random() * ATM.SIZE);\n            int money = (int) (Math.random() * 10000);\n            atm.move(from, to, money);\n            try {\n                sleep((int) (Math.random() * 10));  // 0〜9ミリ秒休止\n            } catch (InterruptedException e) {\n                System.err.println(e);\n            }\n        }\n        atm.printMoney();  // 各顧客が操作を終えるたびに表示（最後の表示が最終結果）\n    }\n}\n\n\n\n\n\n\n\nヒントヒント（クリックで表示）\n\n\n\n\n\nprintMoney() は顧客が操作を終えるたびに呼ばれるため、全部で30回表示されます。最後に表示される総額が最終結果です。全員の終了を待ってから1回だけ表示したい場合は、第6章の join() を使って main メソッドを書き換えてください。\n\n\n\n発展：残高が足りない場合は移動しないようにすると、より現実的になります。その場合も、総額が変わらないことを確認してください。",
     "crumbs": [
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>競合状態と排他制御</span>"
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>競合状態と排他制御</span>"
     ]
   },
   {
-    "objectID": "chapters/06-synchronization.html",
-    "href": "chapters/06-synchronization.html",
-    "title": "6  スレッドの同期（join・wait・notify）",
+    "objectID": "chapters/05-synchronization.html",
+    "href": "chapters/05-synchronization.html",
+    "title": "5  スレッドの同期（join・wait・notify）",
     "section": "",
-    "text": "6.1 join：スレッドの終了を待つ\n同期とは、2つ以上の処理のタイミングを合わせることです。Javaでは、どのスレッドをどの順番で実行するかは基本的に実行時のシステムが決めますが、join()・wait()・notify() を使うと、プログラムの側で実行の順番を制御できます。\nt.join() を呼ぶと、呼び出したスレッドは、スレッド t が終了するまで待ちます。join() より後の処理は、t が終了してから実行されます。\n手順\njoin(long ミリ秒) のように引数を指定すると、対象のスレッドが終わらなくても、指定時間が過ぎれば待機をやめて処理を再開します。",
+    "text": "5.1 join：スレッドの終了を待つ\n同期とは、2つ以上の処理のタイミングを合わせることです。Javaでは、どのスレッドをどの順番で実行するかは基本的に実行時のシステムが決めますが、join()・wait()・notify() を使うと、プログラムの側で実行の順番を制御できます。\nt.join() を呼ぶと、呼び出したスレッドは、スレッド t が終了するまで待ちます。join() より後の処理は、t が終了してから実行されます。\n手順\njoin(long ミリ秒) のように引数を指定すると、対象のスレッドが終わらなくても、指定時間が過ぎれば待機をやめて処理を再開します。",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期（join・wait・notify）</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>スレッドの同期（join・wait・notify）</span>"
     ]
   },
   {
-    "objectID": "chapters/06-synchronization.html#sec-join",
-    "href": "chapters/06-synchronization.html#sec-join",
-    "title": "6  スレッドの同期（join・wait・notify）",
+    "objectID": "chapters/05-synchronization.html#sec-join",
+    "href": "chapters/05-synchronization.html#sec-join",
+    "title": "5  スレッドの同期（join・wait・notify）",
     "section": "",
     "text": "JoinTest.java\n\npublic class JoinTest extends Thread {\n\n    public void run() {\n        for (int i = 0; i &lt; 10; i++) {\n            System.out.println(i);\n        }\n    }\n\n    public static void main(String[] args) {\n        JoinTest jt = new JoinTest();\n        jt.start();\n\n        /* 手順2で、このコメントを外す\n        try {\n            jt.join();  // jt スレッドが終わるまで、メインスレッドはここで待つ\n        } catch (InterruptedException e) {\n        }\n        */\n\n        System.out.println(\"END\");\n    }\n}\n\n\n\nそのまま実行する。メインスレッドの「END」の出力と、jt スレッドの0〜9の出力は並行に行われるため、ENDが表示される位置は実行のたびに変わります（最初に表示されることが多いでしょう）。\nコメントを外して jt.join() を有効にし、再度実行する。メインスレッドは jt が終わるまで待つので、ENDは必ず最後に表示されます。\n\n\n\n\n\n\n\n\n警告スレッドを stop() で止めてはいけない\n\n\n\nThread クラスには stop() メソッドがありますが、使ってはいけません。stop() はスレッドを処理の途中で強制終了するため、共有変数を書き換えの途中のまま残すおそれがあります。現在のJavaでは非推奨であり、新しいバージョンでは呼び出すと例外が発生します。\nスレッドは run() メソッドの最後まで実行すると自動的に終了します。run() が自然に終わるように設計するのが原則です（5.5節の running フラグの例を参照）。",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期（join・wait・notify）</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>スレッドの同期（join・wait・notify）</span>"
     ]
   },
   {
-    "objectID": "chapters/06-synchronization.html#sec-wait-notify",
-    "href": "chapters/06-synchronization.html#sec-wait-notify",
-    "title": "6  スレッドの同期（join・wait・notify）",
-    "section": "6.2 wait と notify：条件が整うまで待つ",
-    "text": "6.2 wait と notify：条件が整うまで待つ\njoin() はスレッドの終了まで待つメソッドでした。これに対して wait() は、他のスレッドから通知が来るまで待つメソッドです。「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。\n\n\n\n\n\n\n\nメソッド\n働き\n\n\n\n\nwait()\n持っているロックを解放してから待機状態に入る。引数でミリ秒を指定すると、その時間が過ぎたときにも待機を終える\n\n\nnotify()\n同じオブジェクトで wait() しているスレッドのうち、1つだけを起こす（どれを起こすかはシステムが決める）\n\n\nnotifyAll()\n同じオブジェクトで wait() しているスレッドをすべて起こす\n\n\n\n\n\n\n\n\n\n重要重要な規則\n\n\n\n\nwait()・notify()・notifyAll() は、そのオブジェクトのロックを持っている状態、つまり synchronized ブロック（またはメソッド）の中でしか呼べません。外で呼ぶと IllegalMonitorStateException が発生します。\nwait() を呼んだスレッドはロックを手放すため、その間に他のスレッドが synchronized の中に入れます。\nnotify() で起こされたスレッドは、すぐには再開しません。ロックをもう一度取得できてから、wait() の次の行から再開します。\n\n\n\n\n\n\n\n\nstateDiagram-v2\n    direction LR\n    state \"実行中（ロックを持っている）\" as Running\n    state \"待機中（ロックを解放して待つ）\" as Waiting\n    state \"ロック再取得待ち\" as Relock\n    Running --&gt; Waiting: wait()\n    Waiting --&gt; Relock: notify() / notifyAll()\n    Relock --&gt; Running: ロックを取得したら、wait() の次の行から再開\n\n\n wait / notify によるスレッドの状態の移り変わり",
+    "objectID": "chapters/05-synchronization.html#sec-wait-notify",
+    "href": "chapters/05-synchronization.html#sec-wait-notify",
+    "title": "5  スレッドの同期（join・wait・notify）",
+    "section": "5.2 wait と notify：条件が整うまで待つ",
+    "text": "5.2 wait と notify：条件が整うまで待つ\njoin() はスレッドの終了まで待つメソッドでした。これに対して wait() は、他のスレッドから通知が来るまで待つメソッドです。「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。\n\n\n\n\n\n\n\nメソッド\n働き\n\n\n\n\nwait()\n持っているロックを解放してから待機状態に入る。引数でミリ秒を指定すると、その時間が過ぎたときにも待機を終える\n\n\nnotify()\n同じオブジェクトで wait() しているスレッドのうち、1つだけを起こす（どれを起こすかはシステムが決める）\n\n\nnotifyAll()\n同じオブジェクトで wait() しているスレッドをすべて起こす\n\n\n\n\n\n\n\n\n\n重要重要な規則\n\n\n\n\nwait()・notify()・notifyAll() は、そのオブジェクトのロックを持っている状態、つまり synchronized ブロック（またはメソッド）の中でしか呼べません。外で呼ぶと IllegalMonitorStateException が発生します。\nwait() を呼んだスレッドはロックを手放すため、その間に他のスレッドが synchronized の中に入れます。\nnotify() で起こされたスレッドは、すぐには再開しません。ロックをもう一度取得できてから、wait() の次の行から再開します。\n\n\n\n\n\n\n\n\nstateDiagram-v2\n    direction LR\n    state \"実行中（ロックを持っている）\" as Running\n    state \"待機中（ロックを解放して待つ）\" as Waiting\n    state \"ロック再取得待ち\" as Relock\n    Running --&gt; Waiting: wait()\n    Waiting --&gt; Relock: notify() / notifyAll()\n    Relock --&gt; Running: ロックを取得したら、wait() の次の行から再開\n\n\n wait / notify によるスレッドの状態の移り変わり \n\n\n\n\n\n\n\n\nstateDiagram-v2\n    direction LR\n    state \"実行中（ロックを持っている）\" as Running\n    state \"待機中（ロックを解放して待つ）\" as Waiting\n    state \"ロック再取得待ち\" as Relock\n    Running --&gt; Waiting: wait()\n    Waiting --&gt; Relock: notify() / notifyAll()\n    Relock --&gt; Running: ロックを取得したら、wait() の次の行から再開\n\n    classDef running fill:#DCFCE7,stroke:#15803D,stroke-width:3px,color:#14532D,font-size:17px\n    classDef waiting fill:#FEF3C7,stroke:#B45309,stroke-width:3px,color:#78350F,font-size:17px\n    classDef relock  fill:#DBEAFE,stroke:#1D4ED8,stroke-width:3px,color:#1E3A8A,font-size:17px\n    class Running running\n    class Waiting waiting\n    class Relock relock\n\n\n wait / notify によるスレッドの状態の移り変わり",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期（join・wait・notify）</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>スレッドの同期（join・wait・notify）</span>"
     ]
   },
   {
-    "objectID": "chapters/06-synchronization.html#sec-wait-notify-sample",
-    "href": "chapters/06-synchronization.html#sec-wait-notify-sample",
-    "title": "6  スレッドの同期（join・wait・notify）",
-    "section": "6.3 サンプル：上限と下限のあるカウンタ",
-    "text": "6.3 サンプル：上限と下限のあるカウンタ\n2つのスレッドが、変数 n をそれぞれ1000回ずつ増やす（インクリメント）・減らす（デクリメント）プログラムです。ただし、n は0以上10以下に保ちます。\n\nn が10のときに増やそうとしたら、wait() で待つ。\nn が0のときに減らそうとしたら、wait() で待つ。\n増減に成功したら notify() を呼び、待っている相手のスレッドを起こす。\n\n\n\nWaitNotifyTest.java\n\npublic class WaitNotifyTest {\n    int n = 0;\n\n    synchronized void inc() {\n        while (n == 10) {  // 上限に達している間は待つ（if ではなく while）\n            System.out.println(\"nが10なので、加算を待機\");\n            try {\n                wait();    // ロックを解放して待機\n            } catch (InterruptedException e) {\n                return;\n            }\n        }\n        n++;\n        System.out.println(\"Inc:\" + n);\n        notify();          // 減算を待っているスレッドを起こす\n    }\n\n    synchronized void dec() {\n        while (n == 0) {   // 下限に達している間は待つ\n            System.out.println(\"nが0なので、減算を待機\");\n            try {\n                wait();\n            } catch (InterruptedException e) {\n                return;\n            }\n        }\n        n--;\n        System.out.println(\"Dec:\" + n);\n        notify();          // 加算を待っているスレッドを起こす\n    }\n\n    public static void main(String[] args) {\n        WaitNotifyTest wt = new WaitNotifyTest();\n        new IncThread(wt).start();\n        new DecThread(wt).start();\n    }\n}\n\nclass IncThread extends Thread {\n    WaitNotifyTest wt;\n\n    public IncThread(WaitNotifyTest wt) {\n        this.wt = wt;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 1000; i++) {\n            wt.inc();\n        }\n    }\n}\n\nclass DecThread extends Thread {\n    WaitNotifyTest wt;\n\n    public DecThread(WaitNotifyTest wt) {\n        this.wt = wt;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 1000; i++) {\n            wt.dec();\n        }\n    }\n}\n\n\nなぜ if ではなく while で条件を確かめるのか\nwait() から戻ったときに、待っていた条件が満たされているとは限りません。理由は2つあります。\n\n起こされてからロックを再取得するまでの間に、別のスレッドが先に値を変えている可能性がある（増やす側・減らす側のスレッドが複数ある場合に起こりやすい）。\nJavaの仕様上、通知がなくても wait() から戻ることがある（見せかけの起床、spurious wakeup）。\n\n\n\n\n\n\n\n重要wait() は必ず while ループの中で呼ぶ\n\n\n\nwhile で囲んでおけば、戻った後にもう一度条件を確かめ、満たされていなければ再び待ちます。\n\n\n\n\nnotify() と notifyAll() の使い分け\nこのサンプルのように、待つ可能性のあるスレッドが1種類ずつなら notify() で足ります。待つ理由が異なるスレッドが混在する場合は、notify() では目的と違うスレッドだけが起こされて、全員が待ち続けることがあります。その場合は notifyAll() を使うのが安全です。",
+    "objectID": "chapters/05-synchronization.html#sec-wait-notify-sample",
+    "href": "chapters/05-synchronization.html#sec-wait-notify-sample",
+    "title": "5  スレッドの同期（join・wait・notify）",
+    "section": "5.3 サンプル：上限と下限のあるカウンタ",
+    "text": "5.3 サンプル：上限と下限のあるカウンタ\n2つのスレッドが、変数 n をそれぞれ1000回ずつ増やす（インクリメント）・減らす（デクリメント）プログラムです。ただし、n は0以上10以下に保ちます。\n\nn が10のときに増やそうとしたら、wait() で待つ。\nn が0のときに減らそうとしたら、wait() で待つ。\n増減に成功したら notify() を呼び、待っている相手のスレッドを起こす。\n\n\n\nWaitNotifyTest.java\n\npublic class WaitNotifyTest {\n    int n = 0;\n\n    synchronized void inc() {\n        while (n == 10) {  // 上限に達している間は待つ（if ではなく while）\n            System.out.println(\"nが10なので、加算を待機\");\n            try {\n                wait();    // ロックを解放して待機\n            } catch (InterruptedException e) {\n                return;\n            }\n        }\n        n++;\n        System.out.println(\"Inc:\" + n);\n        notify();          // 減算を待っているスレッドを起こす\n    }\n\n    synchronized void dec() {\n        while (n == 0) {   // 下限に達している間は待つ\n            System.out.println(\"nが0なので、減算を待機\");\n            try {\n                wait();\n            } catch (InterruptedException e) {\n                return;\n            }\n        }\n        n--;\n        System.out.println(\"Dec:\" + n);\n        notify();          // 加算を待っているスレッドを起こす\n    }\n\n    public static void main(String[] args) {\n        WaitNotifyTest wt = new WaitNotifyTest();\n        new IncThread(wt).start();\n        new DecThread(wt).start();\n    }\n}\n\nclass IncThread extends Thread {\n    WaitNotifyTest wt;\n\n    public IncThread(WaitNotifyTest wt) {\n        this.wt = wt;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 1000; i++) {\n            wt.inc();\n        }\n    }\n}\n\nclass DecThread extends Thread {\n    WaitNotifyTest wt;\n\n    public DecThread(WaitNotifyTest wt) {\n        this.wt = wt;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 1000; i++) {\n            wt.dec();\n        }\n    }\n}\n\n\nなぜ if ではなく while で条件を確かめるのか\nwait() から戻ったときに、待っていた条件が満たされているとは限りません。理由は2つあります。\n\n起こされてからロックを再取得するまでの間に、別のスレッドが先に値を変えている可能性がある（増やす側・減らす側のスレッドが複数ある場合に起こりやすい）。\nJavaの仕様上、通知がなくても wait() から戻ることがある（見せかけの起床、spurious wakeup）。\n\n\n\n\n\n\n\n重要wait() は必ず while ループの中で呼ぶ\n\n\n\nwhile で囲んでおけば、戻った後にもう一度条件を確かめ、満たされていなければ再び待ちます。\n\n\n\n\nnotify() と notifyAll() の使い分け\nこのサンプルのように、待つ可能性のあるスレッドが1種類ずつなら notify() で足ります。待つ理由が異なるスレッドが混在する場合は、notify() では目的と違うスレッドだけが起こされて、全員が待ち続けることがあります。その場合は notifyAll() を使うのが安全です。",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期（join・wait・notify）</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>スレッドの同期（join・wait・notify）</span>"
     ]
   },
   {
-    "objectID": "chapters/06-synchronization.html#sec-ex3",
-    "href": "chapters/06-synchronization.html#sec-ex3",
-    "title": "6  スレッドの同期（join・wait・notify）",
+    "objectID": "chapters/05-synchronization.html#sec-ex3",
+    "href": "chapters/05-synchronization.html#sec-ex3",
+    "title": "5  スレッドの同期（join・wait・notify）",
     "section": "練習問題3：条件が整うまで待つキュー",
     "text": "練習問題3：条件が整うまで待つキュー\n練習問題1の IntQueue を、次のように変更してください。\n\nキューが空のときに dequeue() が呼ばれたら、要素が追加されるまで wait() で待つ。\nキューが満杯のときに enqueue() が呼ばれたら、要素が取り出されるまで wait() で待つ。\nその結果、各スレッドが必ず100回ずつ enqueue() または dequeue() を成功させるようにする。\n\n実行結果の例\n$ java IntQueue\n（中略）\ndequeue :42 tail:3\ndequeue :49 tail:2\ndequeue :22 tail:1\ndequeue :80 tail:0\ndequeue :47 tail:-1\ndequeue :Queue Empty.. wait enqueue()\nenqueue :98 tail:0\n（中略）\nenqueue :76 tail:6\nenqueue :19 tail:7\nenqueue :100 tail:8\nenqueue :58 tail:9\nenqueue :Queue Full.. wait dequeue()\ndequeue :33 tail:8\ndequeue :53 tail:7\n\n\n\n\n\n\nヒントヒント（クリックで表示）\n\n\n\n\n\n\n6.3節のサンプルと同じく、待つ条件は while で確かめてください。\nこの問題では、追加側と取り出し側のスレッドが2つずつあります。notify() だと、同じ側のスレッド（例：取り出し側のスレッドが、別の取り出し側のスレッド）を起こしてしまい、全員が待ち続ける可能性があります。notifyAll() を使うのが安全です。\nすべてのスレッドが終了し、プログラムが正常に終わることも確認してください。",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期（join・wait・notify）</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>スレッドの同期（join・wait・notify）</span>"
     ]
   },
   {
-    "objectID": "chapters/07-deadlock.html",
-    "href": "chapters/07-deadlock.html",
-    "title": "7  デッドロック",
+    "objectID": "chapters/06-deadlock.html",
+    "href": "chapters/06-deadlock.html",
+    "title": "6  デッドロック",
     "section": "",
-    "text": "7.1 デッドロックが起こる4つの条件\nデッドロックとは、2つ以上のスレッド（またはプロセス）が互いに相手の持つ資源の解放を待ち合い、どれも先に進めなくなる状態です。並行プログラミングで最も代表的な落とし穴です。\n身近な例は、4方向から同時に車が進入した交差点です。どの車も「右側の車が先に行くのを待つ」と、全員が待ち続けて誰も動けなくなります。\n次の4つの条件がすべてそろったときに、デッドロックが起こりえます。逆に、どれか1つでも崩せばデッドロックは起こりません。",
+    "text": "6.1 デッドロックが起こる4つの条件\nデッドロックとは、2つ以上のスレッド（またはプロセス）が互いに相手の持つ資源の解放を待ち合い、どれも先に進めなくなる状態です。並行プログラミングで最も代表的な落とし穴です。\n身近な例は、4方向から同時に車が進入した交差点です。どの車も「右側の車が先に行くのを待つ」と、全員が待ち続けて誰も動けなくなります。\n次の4つの条件がすべてそろったときに、デッドロックが起こりえます。逆に、どれか1つでも崩せばデッドロックは起こりません。",
     "crumbs": [
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>デッドロック</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>デッドロック</span>"
     ]
   },
   {
-    "objectID": "chapters/07-deadlock.html#sec-deadlock-conditions",
-    "href": "chapters/07-deadlock.html#sec-deadlock-conditions",
-    "title": "7  デッドロック",
+    "objectID": "chapters/06-deadlock.html#sec-deadlock-conditions",
+    "href": "chapters/06-deadlock.html#sec-deadlock-conditions",
+    "title": "6  デッドロック",
     "section": "",
     "text": "条件\n意味\n食事の例（7.2節）\n\n\n\n\n相互排除\n資源を同時に使えるのは1人だけ\nナイフもフォークも1本しかない\n\n\n保持と待機\n資源を持ったまま、別の資源を待つ\nフォークを持ったまま、ナイフを待つ\n\n\n横取り不可\n他人が持つ資源を奪えない\n他人のナイフを取り上げられない\n\n\n循環待ち\n待ちの関係が輪になる\nAはBのナイフを、BはAのフォークを待つ",
     "crumbs": [
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>デッドロック</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>デッドロック</span>"
     ]
   },
   {
-    "objectID": "chapters/07-deadlock.html#sec-deadlock-sample",
-    "href": "chapters/07-deadlock.html#sec-deadlock-sample",
-    "title": "7  デッドロック",
-    "section": "7.2 サンプル：ナイフとフォークで食事する人々",
-    "text": "7.2 サンプル：ナイフとフォークで食事する人々\n次のプログラムは、デッドロックを起こす可能性があるプログラムです。\n\n8人の人（スレッド）がいて、ナイフとフォークは1本ずつしかない。\n食事をするには、ナイフとフォークの両方を持っている必要がある。\nfork と knife には、それを持っている人のID番号が入る。0は「誰も持っていない」ことを表す。\n食事が終わったら、ナイフとフォークを返す（0に戻す）。各人は10回食事をする。\n\n\n\nDeadLockTest.java\n\npublic class DeadLockTest {\n    int fork = 0;   // フォークを持っている人のID（0なら誰も持っていない）\n    int knife = 0;  // ナイフを持っている人のID\n\n    synchronized void getFork(int n) {\n        if (fork != 0) {\n            return;  // 誰かが持っているので取れない\n        }\n        fork = n;\n        System.out.println(n + \" get Fork\");\n    }\n\n    synchronized void getKnife(int n) {\n        if (knife != 0) {\n            return;\n        }\n        knife = n;\n        System.out.println(n + \" get Knife\");\n    }\n\n    synchronized void reset(int n) {  // 自分が持っている道具を返す\n        if (fork == n) fork = 0;\n        if (knife == n) knife = 0;\n    }\n\n    synchronized boolean canEat(int n) {  // 両方持っていれば食事できる\n        return (fork == n) && (knife == n);\n    }\n\n    public static void main(String[] args) {\n        DeadLockTest dlt = new DeadLockTest();\n        for (int i = 1; i &lt; 9; i++) {\n            new HumanThread(dlt, i).start();\n        }\n    }\n}\n\nclass HumanThread extends Thread {\n    DeadLockTest dlt;\n    int id;\n\n    public HumanThread(DeadLockTest dlt, int id) {\n        this.dlt = dlt;\n        this.id = id;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 10; i++) {\n            while (!dlt.canEat(id)) {  // 両方そろうまで取りに行き続ける\n                dlt.getFork(id);\n                dlt.getKnife(id);\n            }\n            System.out.println(id + \" ate a meal.\");\n            dlt.reset(id);\n        }\n    }\n}\n\n何が起こるか：たとえば、人1がフォークを、人2がナイフを取ったとします。人1はナイフを、人2はフォークを待ち続けますが、どちらも自分の道具を手放しません。7.1節の4条件がすべてそろうため、誰も食事ができなくなり、プログラムは終わらなくなります。\n各メソッドは synchronized なので、第5章の競合状態は起こりません。それでもデッドロックは起こります。つまり、排他制御が正しくても、資源の取り方（アルゴリズム）に問題があればデッドロックは起こるのです。\n※ このサンプルでは、スレッドは wait() で止まるのではなく、ループを回り続けながら待ちます。そのため、止まっているように見えてもCPUは使われ続けます。\n\n\n\n\n\n\n警告デッドロックの怖さ\n\n\n\n実行のタイミングによっては、問題なく最後まで動くこともあります。そのため、テストで見つからずに残りやすく、原因の特定が難しい不具合になります。プログラムを設計する段階で、デッドロックが起こりえないかを確かめることが重要です。",
+    "objectID": "chapters/06-deadlock.html#sec-deadlock-sample",
+    "href": "chapters/06-deadlock.html#sec-deadlock-sample",
+    "title": "6  デッドロック",
+    "section": "6.2 サンプル：ナイフとフォークで食事する人々",
+    "text": "6.2 サンプル：ナイフとフォークで食事する人々\n次のプログラムは、デッドロックを起こす可能性があるプログラムです。\n\n8人の人（スレッド）がいて、ナイフとフォークは1本ずつしかない。\n食事をするには、ナイフとフォークの両方を持っている必要がある。\nfork と knife には、それを持っている人のID番号が入る。0は「誰も持っていない」ことを表す。\n食事が終わったら、ナイフとフォークを返す（0に戻す）。各人は10回食事をする。\n\n\n\nDeadLockTest.java\n\npublic class DeadLockTest {\n    int fork = 0;   // フォークを持っている人のID（0なら誰も持っていない）\n    int knife = 0;  // ナイフを持っている人のID\n\n    synchronized void getFork(int n) {\n        if (fork != 0) {\n            return;  // 誰かが持っているので取れない\n        }\n        fork = n;\n        System.out.println(n + \" get Fork\");\n    }\n\n    synchronized void getKnife(int n) {\n        if (knife != 0) {\n            return;\n        }\n        knife = n;\n        System.out.println(n + \" get Knife\");\n    }\n\n    synchronized void reset(int n) {  // 自分が持っている道具を返す\n        if (fork == n) fork = 0;\n        if (knife == n) knife = 0;\n    }\n\n    synchronized boolean canEat(int n) {  // 両方持っていれば食事できる\n        return (fork == n) && (knife == n);\n    }\n\n    public static void main(String[] args) {\n        DeadLockTest dlt = new DeadLockTest();\n        for (int i = 1; i &lt; 9; i++) {\n            new HumanThread(dlt, i).start();\n        }\n    }\n}\n\nclass HumanThread extends Thread {\n    DeadLockTest dlt;\n    int id;\n\n    public HumanThread(DeadLockTest dlt, int id) {\n        this.dlt = dlt;\n        this.id = id;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 10; i++) {\n            while (!dlt.canEat(id)) {  // 両方そろうまで取りに行き続ける\n                dlt.getFork(id);\n                dlt.getKnife(id);\n            }\n            System.out.println(id + \" ate a meal.\");\n            dlt.reset(id);\n        }\n    }\n}\n\n何が起こるか：たとえば、人1がフォークを、人2がナイフを取ったとします。人1はナイフを、人2はフォークを待ち続けますが、どちらも自分の道具を手放しません。7.1節の4条件がすべてそろうため、誰も食事ができなくなり、プログラムは終わらなくなります。\n各メソッドは synchronized なので、第5章の競合状態は起こりません。それでもデッドロックは起こります。つまり、排他制御が正しくても、資源の取り方（アルゴリズム）に問題があればデッドロックは起こるのです。\n※ このサンプルでは、スレッドは wait() で止まるのではなく、ループを回り続けながら待ちます。そのため、止まっているように見えてもCPUは使われ続けます。\n\n\n\n\n\n\n警告デッドロックの怖さ\n\n\n\n実行のタイミングによっては、問題なく最後まで動くこともあります。そのため、テストで見つからずに残りやすく、原因の特定が難しい不具合になります。プログラムを設計する段階で、デッドロックが起こりえないかを確かめることが重要です。",
     "crumbs": [
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>デッドロック</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>デッドロック</span>"
     ]
   },
   {
-    "objectID": "chapters/07-deadlock.html#sec-ex4",
-    "href": "chapters/07-deadlock.html#sec-ex4",
-    "title": "7  デッドロック",
+    "objectID": "chapters/06-deadlock.html#sec-ex4",
+    "href": "chapters/06-deadlock.html#sec-ex4",
+    "title": "6  デッドロック",
     "section": "練習問題4：デッドロックしない設計",
     "text": "練習問題4：デッドロックしない設計\n7.2節のサンプルを、デッドロックが起こらない設計に書き換えてください。\n\n\n\n\n\n\nヒントヒント（クリックで表示）\n\n\n\n\n\n7.1節の4条件のうち、どれか1つを崩せばよいことを使います。たとえば次のような方針が考えられます。\n\nナイフとフォークを1回の排他制御の中で両方同時に取る（両方そろわなければ、どちらも取らない）。\n片方しか取れなかったら、取った道具をすぐに返してやり直す。\n全員が必ず「フォーク → ナイフ」の同じ順番で取る。つまり、フォークを取れた人だけがナイフを取りに行き、フォークを持っていない人はナイフに手を出さない（待ちの輪ができなくなる）。",
     "crumbs": [
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>デッドロック</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>デッドロック</span>"
     ]
   },
   {
-    "objectID": "chapters/08-parallel.html",
-    "href": "chapters/08-parallel.html",
-    "title": "8  並列処理による高速化",
+    "objectID": "chapters/07-parallel.html",
+    "href": "chapters/07-parallel.html",
+    "title": "7  並列処理による高速化",
     "section": "",
-    "text": "8.1 CPU（コア）数の確認\nJavaのスレッドは、使えるコアが複数あれば自動的に並列に実行されます。書き方はこれまでの並行プログラミングと同じです。この章では、スレッド数を増やすと実行時間がどれだけ短くなるかを、実際に測って確かめます。\nまず、使っているコンピュータが同時にいくつの処理を実行できるかを確認します。Linuxでは次のコマンドで確認できます。\nJavaのプログラムの中からは、Runtime.getRuntime().availableProcessors() で同じ値を取得できます。\n上の例の計算機では、OSから8個の論理プロセッサが見えています。したがって、8スレッドまでは同時に実行できます。",
+    "text": "7.1 CPU（コア）数の確認\nJavaのスレッドは、使えるコアが複数あれば自動的に並列に実行されます。書き方はこれまでの並行プログラミングと同じです。この章では、スレッド数を増やすと実行時間がどれだけ短くなるかを、実際に測って確かめます。\nまず、使っているコンピュータが同時にいくつの処理を実行できるかを確認します。Linuxでは次のコマンドで確認できます。\nJavaのプログラムの中からは、Runtime.getRuntime().availableProcessors() で同じ値を取得できます。\n上の例の計算機では、OSから8個の論理プロセッサが見えています。したがって、8スレッドまでは同時に実行できます。",
     "crumbs": [
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>並列処理による高速化</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>並列処理による高速化</span>"
     ]
   },
   {
-    "objectID": "chapters/08-parallel.html#sec-cpu-count",
-    "href": "chapters/08-parallel.html#sec-cpu-count",
-    "title": "8  並列処理による高速化",
+    "objectID": "chapters/07-parallel.html#sec-cpu-count",
+    "href": "chapters/07-parallel.html#sec-cpu-count",
+    "title": "7  並列処理による高速化",
     "section": "",
     "text": "$ nproc                              # 同時に実行できる処理の数（論理プロセッサ数）\n8\n$ grep processor /proc/cpuinfo       # 論理プロセッサの一覧\nprocessor       : 0\nprocessor       : 1\n（中略）\nprocessor       : 7\n\n\n\n\n\n\n\n\nノート物理コアと論理プロセッサ\n\n\n\nIntel製CPUなどには、1つの物理コアを2つの論理プロセッサに見せる技術（ハイパースレッディング）があります。たとえば「4コア8スレッド」のCPUは、物理コアは4つですが、OSからは8個の論理プロセッサとして見えます。\n論理プロセッサは物理コアの計算部分を共有するため、物理コア数を超えてスレッドを増やしても、速度はあまり伸びないことが多い点に注意してください。",
     "crumbs": [
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>並列処理による高速化</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>並列処理による高速化</span>"
     ]
   },
   {
-    "objectID": "chapters/08-parallel.html#sec-para-sample",
-    "href": "chapters/08-parallel.html#sec-para-sample",
-    "title": "8  並列処理による高速化",
-    "section": "8.2 サンプル：配列の要素を分担して増やす",
-    "text": "8.2 サンプル：配列の要素を分担して増やす\n100万個の要素をもつ配列の各要素を、10000回ずつ1増やすプログラムです。コマンドライン引数でスレッド数を指定し、配列をスレッド数で等分して、各スレッドに担当させます。\n\n\nParaSample.java\n\npublic class ParaSample {\n    static final int SIZE = 1000000;\n    int[] array = new int[SIZE];\n\n    public static void main(String[] args) throws InterruptedException {\n        int num = Integer.parseInt(args[0]);  // スレッド数\n        ParaSample ps = new ParaSample();\n        ParaSampleThread[] threads = new ParaSampleThread[num];\n\n        long startTime = System.currentTimeMillis();  // 計測開始\n\n        // 配列を num 個に分け、各スレッドに担当範囲 [start, end) を割り当てる\n        for (int i = 0; i &lt; num; i++) {\n            int start = SIZE / num * i;\n            int end = (i == num - 1) ? SIZE : SIZE / num * (i + 1);  // 最後のスレッドは端数も担当\n            threads[i] = new ParaSampleThread(start, end, ps);\n            threads[i].start();\n        }\n\n        // すべてのスレッドの終了を待つ\n        for (int i = 0; i &lt; num; i++) {\n            threads[i].join();\n        }\n\n        long endTime = System.currentTimeMillis();    // 計測終了\n        System.out.println(\"処理時間: \" + (endTime - startTime) + \" ミリ秒\");\n    }\n}\n\nclass ParaSampleThread extends Thread {\n    int start;\n    int end;\n    ParaSample ps;\n\n    public ParaSampleThread(int start, int end, ParaSample ps) {\n        this.start = start;\n        this.end = end;\n        this.ps = ps;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 10000; i++) {\n            for (int j = start; j &lt; end; j++) {\n                ps.array[j]++;  // 担当範囲の要素だけを増やす\n            }\n        }\n    }\n}\n\n各スレッドは配列の別々の範囲だけを書き換えるため、同じ要素を複数のスレッドが触ることはありません。そのため、第5章の排他制御は不要です。\n※ 担当範囲の終わりは、最後のスレッドだけ SIZE にしています。たとえば3スレッドの場合、1000000 ÷ 3 の余り（1要素）が、どのスレッドにも割り当てられずに残るのを防ぐためです。",
+    "objectID": "chapters/07-parallel.html#sec-para-sample",
+    "href": "chapters/07-parallel.html#sec-para-sample",
+    "title": "7  並列処理による高速化",
+    "section": "7.2 サンプル：配列の要素を分担して増やす",
+    "text": "7.2 サンプル：配列の要素を分担して増やす\n100万個の要素をもつ配列の各要素を、10000回ずつ1増やすプログラムです。コマンドライン引数でスレッド数を指定し、配列をスレッド数で等分して、各スレッドに担当させます。\n\n\nParaSample.java\n\npublic class ParaSample {\n    static final int SIZE = 1000000;\n    int[] array = new int[SIZE];\n\n    public static void main(String[] args) throws InterruptedException {\n        int num = Integer.parseInt(args[0]);  // スレッド数\n        ParaSample ps = new ParaSample();\n        ParaSampleThread[] threads = new ParaSampleThread[num];\n\n        long startTime = System.currentTimeMillis();  // 計測開始\n\n        // 配列を num 個に分け、各スレッドに担当範囲 [start, end) を割り当てる\n        for (int i = 0; i &lt; num; i++) {\n            int start = SIZE / num * i;\n            int end = (i == num - 1) ? SIZE : SIZE / num * (i + 1);  // 最後のスレッドは端数も担当\n            threads[i] = new ParaSampleThread(start, end, ps);\n            threads[i].start();\n        }\n\n        // すべてのスレッドの終了を待つ\n        for (int i = 0; i &lt; num; i++) {\n            threads[i].join();\n        }\n\n        long endTime = System.currentTimeMillis();    // 計測終了\n        System.out.println(\"処理時間: \" + (endTime - startTime) + \" ミリ秒\");\n    }\n}\n\nclass ParaSampleThread extends Thread {\n    int start;\n    int end;\n    ParaSample ps;\n\n    public ParaSampleThread(int start, int end, ParaSample ps) {\n        this.start = start;\n        this.end = end;\n        this.ps = ps;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 10000; i++) {\n            for (int j = start; j &lt; end; j++) {\n                ps.array[j]++;  // 担当範囲の要素だけを増やす\n            }\n        }\n    }\n}\n\n各スレッドは配列の別々の範囲だけを書き換えるため、同じ要素を複数のスレッドが触ることはありません。そのため、第5章の排他制御は不要です。\n※ 担当範囲の終わりは、最後のスレッドだけ SIZE にしています。たとえば3スレッドの場合、1000000 ÷ 3 の余り（1要素）が、どのスレッドにも割り当てられずに残るのを防ぐためです。",
     "crumbs": [
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>並列処理による高速化</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>並列処理による高速化</span>"
     ]
   },
   {
-    "objectID": "chapters/08-parallel.html#sec-measure",
-    "href": "chapters/08-parallel.html#sec-measure",
-    "title": "8  並列処理による高速化",
-    "section": "8.3 実行時間の測り方",
-    "text": "8.3 実行時間の測り方\n方法1：プログラムの中で測る（8.2節のサンプルで使っている方法）\nlong startTime = System.currentTimeMillis();\n// 計測したい処理\nlong endTime = System.currentTimeMillis();\nSystem.out.println((endTime - startTime) + \" ミリ秒\");\n方法2：time コマンドで測る（JVMの起動時間も含めた、プログラム全体の時間）\n$ time java ParaSample 1 &gt; /dev/null\nreal    0m5.886s\nuser    0m6.210s\nsys     0m1.472s\n\n$ time java ParaSample 2 &gt; /dev/null\nreal    0m2.988s\nuser    0m5.863s\nsys     0m0.015s\n\n$ time java ParaSample 3 &gt; /dev/null\nreal    0m2.034s\nuser    0m5.849s\nsys     0m0.016s\n\n\n\n\n\n\n\n\n項目\n意味\nスレッドを増やすと\n\n\n\n\nreal\n開始から終了までの実際の経過時間\n短くなる（並列化の効果はここに表れる）\n\n\nuser\nCPUがプログラムの処理に使った時間（全コアの合計）\nほとんど変わらない\n\n\nsys\nCPUがOSの処理（入出力など）に使った時間\n処理内容による\n\n\n\nuser がほとんど変わらないのは、仕事の総量が変わらないからです。半分ずつの仕事を2人で分担しても、1人で全部やっても、仕事の総量は同じなのと同じ理屈です。\n&gt; /dev/null は、プログラムの出力を画面に表示せずに捨てる指定です。画面表示（入出力）にかかる時間を除いて、計算の時間を測りたいときに使います。",
+    "objectID": "chapters/07-parallel.html#sec-measure",
+    "href": "chapters/07-parallel.html#sec-measure",
+    "title": "7  並列処理による高速化",
+    "section": "7.3 実行時間の測り方",
+    "text": "7.3 実行時間の測り方\n方法1：プログラムの中で測る（8.2節のサンプルで使っている方法）\nlong startTime = System.currentTimeMillis();\n// 計測したい処理\nlong endTime = System.currentTimeMillis();\nSystem.out.println((endTime - startTime) + \" ミリ秒\");\n方法2：time コマンドで測る（JVMの起動時間も含めた、プログラム全体の時間）\n$ time java ParaSample 1 &gt; /dev/null\nreal    0m5.886s\nuser    0m6.210s\nsys     0m1.472s\n\n$ time java ParaSample 2 &gt; /dev/null\nreal    0m2.988s\nuser    0m5.863s\nsys     0m0.015s\n\n$ time java ParaSample 3 &gt; /dev/null\nreal    0m2.034s\nuser    0m5.849s\nsys     0m0.016s\n\n\n\n\n\n\n\n\n項目\n意味\nスレッドを増やすと\n\n\n\n\nreal\n開始から終了までの実際の経過時間\n短くなる（並列化の効果はここに表れる）\n\n\nuser\nCPUがプログラムの処理に使った時間（全コアの合計）\nほとんど変わらない\n\n\nsys\nCPUがOSの処理（入出力など）に使った時間\n処理内容による\n\n\n\nuser がほとんど変わらないのは、仕事の総量が変わらないからです。半分ずつの仕事を2人で分担しても、1人で全部やっても、仕事の総量は同じなのと同じ理屈です。\n&gt; /dev/null は、プログラムの出力を画面に表示せずに捨てる指定です。画面表示（入出力）にかかる時間を除いて、計算の時間を測りたいときに使います。",
     "crumbs": [
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>並列処理による高速化</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>並列処理による高速化</span>"
     ]
   },
   {
-    "objectID": "chapters/08-parallel.html#sec-suitability",
-    "href": "chapters/08-parallel.html#sec-suitability",
-    "title": "8  並列処理による高速化",
-    "section": "8.4 並列処理に向くプログラム、向かないプログラム",
-    "text": "8.4 並列処理に向くプログラム、向かないプログラム\n\n\n\n向いているプログラム\n向いていないプログラム\n\n\n\n\n各処理が互いに独立している（他の処理の結果を待たない）\n各処理が互いに依存している（他の処理の結果を待つ必要がある）\n\n\n各スレッドの仕事量がほぼ等しい\n各スレッドの仕事量に大きな偏りがある\n\n\n例：8.2節のように、配列を範囲で分けて処理する\n例：前の計算結果を使って次の計算をする処理\n\n\n\n依存関係があると、待ち時間が生じて速度が伸びません。仕事量に偏りがあると、全体の終了時刻は最も遅いスレッドで決まります。また、プログラムの中に並列化できない部分があると、スレッドをいくら増やしてもその部分の時間は短くなりません（これをアムダールの法則と呼びます）。\n並列化を考えるときは、まず他の処理から独立して実行できる部分を探すことから始めましょう。",
+    "objectID": "chapters/07-parallel.html#sec-suitability",
+    "href": "chapters/07-parallel.html#sec-suitability",
+    "title": "7  並列処理による高速化",
+    "section": "7.4 並列処理に向くプログラム、向かないプログラム",
+    "text": "7.4 並列処理に向くプログラム、向かないプログラム\n\n\n\n向いているプログラム\n向いていないプログラム\n\n\n\n\n各処理が互いに独立している（他の処理の結果を待たない）\n各処理が互いに依存している（他の処理の結果を待つ必要がある）\n\n\n各スレッドの仕事量がほぼ等しい\n各スレッドの仕事量に大きな偏りがある\n\n\n例：8.2節のように、配列を範囲で分けて処理する\n例：前の計算結果を使って次の計算をする処理\n\n\n\n依存関係があると、待ち時間が生じて速度が伸びません。仕事量に偏りがあると、全体の終了時刻は最も遅いスレッドで決まります。また、プログラムの中に並列化できない部分があると、スレッドをいくら増やしてもその部分の時間は短くなりません（これをアムダールの法則と呼びます）。\n並列化を考えるときは、まず他の処理から独立して実行できる部分を探すことから始めましょう。",
     "crumbs": [
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>並列処理による高速化</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>並列処理による高速化</span>"
     ]
   },
   {
-    "objectID": "chapters/08-parallel.html#sec-exercise",
-    "href": "chapters/08-parallel.html#sec-exercise",
-    "title": "8  並列処理による高速化",
+    "objectID": "chapters/07-parallel.html#sec-exercise",
+    "href": "chapters/07-parallel.html#sec-exercise",
+    "title": "7  並列処理による高速化",
     "section": "演習：スレッド数と処理時間の関係",
     "text": "演習：スレッド数と処理時間の関係\nスレッド数を増やしていくと、どこまで速くなるかを調べてください。\n\nnproc で、使用している計算機の論理プロセッサ数を確認する。\nスレッド数を 1, 2, 4, 8, 16, 32 と変えて、それぞれ3回ずつ実行時間を測り、平均を求める。\n速度向上率（1スレッドの時間 ÷ nスレッドの時間）を計算し、下の表を埋める。\n速度向上が止まるスレッド数と、その理由を、8.1節と8.4節の内容をもとに考察する。\n\n\n\n\n\n\n\n\n\n\n\n\nスレッド数\n1回目（ミリ秒）\n2回目（ミリ秒）\n3回目（ミリ秒）\n平均（ミリ秒）\n速度向上率\n\n\n\n\n1\n\n\n\n\n1.00\n\n\n2\n\n\n\n\n\n\n\n4\n\n\n\n\n\n\n\n8\n\n\n\n\n\n\n\n16\n\n\n\n\n\n\n\n32",
     "crumbs": [
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>並列処理による高速化</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>並列処理による高速化</span>"
     ]
   },
   {

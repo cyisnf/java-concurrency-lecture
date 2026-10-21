@@ -114,6 +114,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "サーチ"
   }
 }</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -345,32 +348,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/04-sleep.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">スレッドの一時停止（sleep）</span></span></a>
+  <a href="../chapters/04-race-condition.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/05-race-condition.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
+  <a href="../chapters/05-synchronization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
+  <a href="../chapters/06-deadlock.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/07-deadlock.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../chapters/08-parallel.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
+  <a href="../chapters/07-parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -429,20 +426,77 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>プロセスもスレッドも「プログラムを実行する単位」ですが、<strong>メモリを他と共有するかどうか</strong>が決定的に異なります。</p>
 <section id="sec-process" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="sec-process"><span class="header-section-number">2.1</span> プロセス</h2>
-<p><strong>プロセス</strong>とは、OSにおけるプログラムの実行単位です。ターミナルで <code>java</code> や <code>gcc</code> などのコマンドを入力すると、それぞれのプログラムが1つのプロセスとして実行されます。UNIX系のOSでは、<code>ps</code> コマンドで実行中のプロセスを一覧できます。</p>
+<p><strong>プロセス</strong>とは、OS が管理しているプログラムの実行単位です。</p>
+<ul>
+<li><p>例えば、ターミナルから自作の java プログラムを実行すると、それが1つのプロセスとして実行されます。</p></li>
+<li><p>UNIX系OSでは、<code>ps</code> コマンドで実行中のプロセスを一覧できます。</p></li>
+</ul>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ps</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<p>CPUの数よりも多いプロセスを同時に動かすときは、<a href="../chapters/01-concurrent-parallel.html">第1章</a>で説明した並行処理をOSが行っています。あるプロセスが待機している時間（アイドル時間）に別のプロセスを進めることで、すべてが同時に動いているように見せています。この機能をもつOSを<strong>マルチタスクOS</strong>と呼び、Windows、Linux、macOS、Androidなど現在の主要なOSのほとんどが該当します。</p>
 </section>
 <section id="sec-thread" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="sec-thread"><span class="header-section-number">2.2</span> スレッド</h2>
-<p><strong>スレッド</strong>も、プロセスと同じくプログラムを実行する単位です。1つのプロセスの中に、複数のスレッドを作ることができます。プロセスとの違いは、<strong>同じプロセス内のスレッドどうしは、同じメモリ領域（同じ変数）を読み書きできる</strong>点です。</p>
-<p>Javaには、複数のスレッドを簡単に扱う仕組み（<strong>マルチスレッド</strong>）が用意されています。この資料では、Javaのマルチスレッドプログラミングを通して並行プログラミングを学びます。</p>
+<p><strong>スレッド</strong>とは、プロセスよりも細かいプログラムの実行単位です。</p>
+<ul>
+<li><p>1つのプロセスに複数のスレッドを内包させることができます。</p></li>
+<li><p>Javaにはスレッドを簡単に扱う仕組みが用意されています。</p></li>
+</ul>
 </section>
 <section id="sec-process-vs-thread" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="sec-process-vs-thread"><span class="header-section-number">2.3</span> プロセスとスレッドの比較</h2>
+<p>両者はともに「プログラムを実行する単位」ですが、重要な違いの一つは<strong>（ヒープと呼ばれる）メモリを他と共有できるかどうか</strong>です。</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-process-thread" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-process-thread-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-process-thread">flowchart TB
+    subgraph OS["OS"]
+        direction LR
+        subgraph PA["プロセスA（java）"]
+            direction TB
+            HA[("メモリ（ヒープ）")]
+            M1["メインスレッド"] &lt;--&gt; HA
+            T1["スレッド1"] &lt;--&gt; HA
+            T2["スレッド2"] &lt;--&gt; HA
+        end
+        subgraph PB["プロセスB（gcc）"]
+            direction TB
+            HB[("メモリ（ヒープ）")]
+            M2["メインスレッド"] &lt;--&gt; HB
+        end
+        PA ~~~ PB
+    end
+
+    %% 見た目の種類を定義する（塗り・枠線・枠の太さ・文字色・文字サイズ）
+    classDef memory fill:#CCFBF1,stroke:#0F766E,stroke-width:3px,color:#134E4A,font-size:17px
+    classDef thread fill:#FFEDD5,stroke:#C2410C,stroke-width:3px,color:#7C2D12,font-size:17px
+
+    %% 箱に種類を割り当てる
+    class HA,HB memory
+    class M1,T1,T2,M2 thread
+
+    %% 外枠（OS とプロセス）の見た目
+    style OS fill:#EDEDED,stroke:#64748B,stroke-width:2px,stroke-dasharray:6 4
+    style PA fill:#EDE9FE,stroke:#6D28D9,stroke-width:3px,color:#3B0764
+    style PB fill:#EDE9FE,stroke:#6D28D9,stroke-width:3px,color:#3B0764
+
+    %% すべての矢印を太く、青くする
+    linkStyle default stroke:#2563EB,stroke-width:3px
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-process-thread-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;2.1: プロセスとスレッドの包含関係
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-process-thread" class="quarto-xref">図&nbsp;<span>2.1</span></a> のように、1つのプロセスの中に複数のスレッドがあり、スレッドどうしはヒープを介してデータを共有できます。</p>
+<p>データがヒープ上にあったとしても、そのデータを1つのスレッドだけが扱うように設計することで、スレッド専用のデータとして扱う（＝他スレッドにデータを共有しない）こともできます。</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -458,23 +512,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>メモリ領域</td>
-<td>プロセスごとに専用。他のプロセスのメモリは、OSの管理により読み書きできない</td>
-<td>同じプロセス内のスレッドで共有。同じ変数を読み書きできる</td>
+<td>包含関係</td>
+<td>上位</td>
+<td>下位</td>
 </tr>
 <tr class="even">
-<td>作成・切り替えの負担</td>
-<td>比較的大きい</td>
-<td>比較的小さい</td>
+<td>メモリ領域</td>
+<td>OSの管理により、他のプロセスのメモリは読み書きできない</td>
+<td>プロセス内で、他のスレッドと同じメモリに読み書きできる</td>
 </tr>
 <tr class="odd">
 <td>自由度</td>
-<td>低い（互いに干渉しにくく安全）</td>
-<td>高い（共有できる反面、干渉を防ぐ工夫が必要）</td>
+<td>低い</td>
+<td>高い</td>
+</tr>
+<tr class="even">
+<td>安全性</td>
+<td>互いに干渉しにくく安全</td>
+<td>意図しない干渉が発生する危険</td>
 </tr>
 </tbody>
 </table>
-<p>スレッドでも、スレッドごとに別の変数を用意すれば、プロセスのように専用のメモリだけを使わせることができます。一方で、同じ変数を複数のスレッドから読み書きすることもできます。</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -485,7 +543,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>スレッドは自由度が高い分、正しく扱うための知識と技術が必要になります。その具体的な問題と対策は<a href="../chapters/05-race-condition.html">第5章</a>で扱います。</p>
+<p>スレッドは自由度が高い分、正しく扱うための知識と技術が必要になります。その具体的な問題と対策は<a href="05-race-condition.qmd">第5章</a>で扱います。</p>
 </div>
 </div>
 

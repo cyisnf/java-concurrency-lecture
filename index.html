@@ -310,32 +310,26 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chapters/04-sleep.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">スレッドの一時停止（sleep）</span></span></a>
+  <a href="./chapters/04-race-condition.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chapters/05-race-condition.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
+  <a href="./chapters/05-synchronization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chapters/06-synchronization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
+  <a href="./chapters/06-deadlock.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./chapters/07-deadlock.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./chapters/08-parallel.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
+  <a href="./chapters/07-parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -399,7 +393,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">公開</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2026年10月16日</p>
+      <p class="date">2026年10月21日</p>
     </div>
   </div>
   
@@ -416,12 +410,7 @@ ul.task-list li input[type="checkbox"] {
 <p>この資料では、Javaのスレッドを使って「複数の処理を同時に進めるプログラム」（並行プログラム）の書き方と、その際に起こる問題への対処法を学びます。</p>
 <section id="学習目標" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="学習目標">学習目標</h2>
-<ol type="1">
-<li>並行処理と並列処理の違いを理解する。</li>
-<li>プロセスとスレッドの違いを理解する。</li>
-<li>Javaでスレッドを作成し、実行できる。</li>
-<li>複数のスレッドが同じ変数を扱うときの問題を理解し対処できる。</li>
-</ol>
+<p>Javaのスレッドを用いて、共有データを安全に扱う並行プログラムを設計・作成し、並列化の効果を評価する。</p>
 </section>
 <section id="前提知識" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="前提知識">前提知識</h2>
@@ -471,31 +460,26 @@ ul.task-list li input[type="checkbox"] {
 <td></td>
 </tr>
 <tr class="even">
-<td><a href="./chapters/04-sleep.html">第4章</a></td>
-<td>スレッドの一時停止（sleep）</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><a href="./chapters/05-race-condition.html">第5章</a></td>
+<td><a href="./chapters/04-race-condition.html">第4章</a></td>
 <td>競合状態と排他制御</td>
 <td>練習問題1・2</td>
 </tr>
-<tr class="even">
-<td><a href="./chapters/06-synchronization.html">第6章</a></td>
+<tr class="odd">
+<td><a href="./chapters/05-synchronization.html">第5章</a></td>
 <td>スレッドの同期（join・wait・notify）</td>
 <td>練習問題3</td>
 </tr>
-<tr class="odd">
-<td><a href="./chapters/07-deadlock.html">第7章</a></td>
+<tr class="even">
+<td><a href="./chapters/06-deadlock.html">第6章</a></td>
 <td>デッドロック</td>
 <td>練習問題4</td>
 </tr>
-<tr class="even">
-<td><a href="./chapters/08-parallel.html">第8章</a></td>
+<tr class="odd">
+<td><a href="./chapters/07-parallel.html">第7章</a></td>
 <td>並列処理による高速化</td>
 <td>演習</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="./appendix/glossary.html">付録A</a></td>
 <td>用語集</td>
 <td></td>

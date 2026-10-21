@@ -71,7 +71,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../chapters/04-sleep.html" rel="next">
+<link href="../chapters/04-race-condition.html" rel="next">
 <link href="../chapters/02-process-thread.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -345,32 +345,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/04-sleep.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">スレッドの一時停止（sleep）</span></span></a>
+  <a href="../chapters/04-race-condition.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/05-race-condition.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
+  <a href="../chapters/05-synchronization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
+  <a href="../chapters/06-deadlock.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/07-deadlock.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../chapters/08-parallel.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
+  <a href="../chapters/07-parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -400,10 +394,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-runnable" id="toc-sec-runnable" class="nav-link active" data-scroll-target="#sec-runnable"><span class="header-section-number">3.1</span> 方法1：Runnableインタフェースを実装する</a></li>
-  <li><a href="#sec-extends-thread" id="toc-sec-extends-thread" class="nav-link" data-scroll-target="#sec-extends-thread"><span class="header-section-number">3.2</span> 方法2：Threadクラスを継承する</a></li>
-  <li><a href="#sec-runnable-vs-thread" id="toc-sec-runnable-vs-thread" class="nav-link" data-scroll-target="#sec-runnable-vs-thread"><span class="header-section-number">3.3</span> 2つの方法の使い分け</a></li>
-  <li><a href="#sec-output" id="toc-sec-output" class="nav-link" data-scroll-target="#sec-output"><span class="header-section-number">3.4</span> 実行結果の見方</a></li>
+  <li><a href="#sec-abstract" id="toc-sec-abstract" class="nav-link active" data-scroll-target="#sec-abstract"><span class="header-section-number">3.1</span> 概要</a></li>
+  <li><a href="#sec-runnable" id="toc-sec-runnable" class="nav-link" data-scroll-target="#sec-runnable"><span class="header-section-number">3.2</span> 方法1：Runnable インタフェースを実装する</a></li>
+  <li><a href="#sec-extends-thread" id="toc-sec-extends-thread" class="nav-link" data-scroll-target="#sec-extends-thread"><span class="header-section-number">3.3</span> 方法2：Threadクラスを継承する</a></li>
+  <li><a href="#sec-similarity" id="toc-sec-similarity" class="nav-link" data-scroll-target="#sec-similarity"><span class="header-section-number">3.4</span> 2つの方法の共通点</a></li>
+  <li><a href="#sec-runnable-vs-thread" id="toc-sec-runnable-vs-thread" class="nav-link" data-scroll-target="#sec-runnable-vs-thread"><span class="header-section-number">3.5</span> 2つの方法の使い分け</a></li>
+  <li><a href="#sec-output" id="toc-sec-output" class="nav-link" data-scroll-target="#sec-output"><span class="header-section-number">3.6</span> 実行結果の見方</a></li>
+  <li><a href="#sec-sleep" id="toc-sec-sleep" class="nav-link" data-scroll-target="#sec-sleep"><span class="header-section-number">3.7</span> スレッドの一時停止（sleep）</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/03-create-thread.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
@@ -430,9 +427,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Javaでスレッドを作る方法は2つあります。<strong>(1) <code>Runnable</code> インタフェースを実装する方法</strong>と、<strong>(2) <code>Thread</code> クラスを継承する方法</strong>です。どちらも「新しいスレッドに実行させたい処理を <code>run()</code> メソッドに書き、<code>start()</code> で起動する」という点は共通です。</p>
-<section id="sec-runnable" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="sec-runnable"><span class="header-section-number">3.1</span> 方法1：Runnableインタフェースを実装する</h2>
+<section id="sec-abstract" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="sec-abstract"><span class="header-section-number">3.1</span> 概要</h2>
+<p>Javaでスレッドを作る 2 つの方法を説明します。</p>
+<ol type="1">
+<li><code>Runnable</code> インタフェースを実装する方法</li>
+<li><code>Thread</code> クラスを継承する方法</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">ヒント</span>継承と実装
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>継承（extends）：</strong></p>
+<ul>
+<li>親クラスの機能を引き継ぎ、さらに機能を拡張すること。</li>
+<li>Javaのクラスは1つのクラスしか継承できない。</li>
+</ul>
+<p><strong>実装（implements）：</strong></p>
+<ul>
+<li>実装クラスが持つべきメソッドを定めたもの（これをインターフェイスと呼ぶ）に対して、その処理内容を記述すること。</li>
+<li>1つのクラスは複数のインターフェイスを実装できる。</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="sec-runnable" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="sec-runnable"><span class="header-section-number">3.2</span> 方法1：Runnable インタフェースを実装する</h2>
 <p><code>Runnable</code> インタフェースを実装したクラスを作り、そのオブジェクトを <code>Thread</code> のコンストラクタに渡します。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -461,40 +487,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>処理の流れは次のとおりです。</p>
 <ol type="1">
-<li><code>main</code> メソッドは、プログラム開始時に自動で作られる<strong>メインスレッド</strong>で実行されます。</li>
-<li><code>thread.start()</code> を呼ぶと、新しいスレッドが起動し、そのスレッドが <code>run()</code> メソッドを実行します。</li>
+<li>プログラム開始時に自動で<strong>メインスレッド</strong>が作られ、そのスレッドで <code>main</code> メソッドが実行されます。</li>
+<li><code>thread.start()</code> によって<strong>新しいスレッド</strong>が作られ、そのスレッドで <code>run()</code> メソッドが実行されます。</li>
 <li>以後、メインスレッド（AAAを表示）と新しいスレッド（BBBを表示）が並行に動きます。</li>
 </ol>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">警告</span>よくある誤り：run() を直接呼ぶ
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>start()</code> ではなく <code>run()</code> を直接呼ぶと、新しいスレッドは作られず、メインスレッドが <code>run()</code> を普通のメソッドとして実行するだけになります。スレッドを起動するときは、必ず <code>start()</code> を呼んでください。</p>
-</div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ノート</span>プログラムの止め方
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>このプログラムは無限ループのため、自動では終了しません。ターミナルで <strong>Ctrl + C</strong> を押して停止してください。</p>
-</div>
-</div>
 </section>
-<section id="sec-extends-thread" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="sec-extends-thread"><span class="header-section-number">3.2</span> 方法2：Threadクラスを継承する</h2>
-<p><code>Thread</code> クラスを継承（<code>extends</code>）したクラスを作り、<code>run()</code> メソッドを上書き（オーバーライド）します。</p>
+<section id="sec-extends-thread" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="sec-extends-thread"><span class="header-section-number">3.3</span> 方法2：Threadクラスを継承する</h2>
+<p><code>Thread</code> クラスを継承したクラスを作り、<code>run()</code> メソッドを上書き（オーバーライド）します。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>SubThread.java</strong></pre>
@@ -521,8 +521,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p><code>SubThread</code> はすでに <code>Thread</code> の機能を引き継いでいるため、方法1のように別途 <code>Thread</code> オブジェクトを作る必要はありません。自分自身のオブジェクトを作って <code>start()</code> を呼ぶだけで起動できます。</p>
 </section>
-<section id="sec-runnable-vs-thread" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="sec-runnable-vs-thread"><span class="header-section-number">3.3</span> 2つの方法の使い分け</h2>
+<section id="sec-similarity" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="sec-similarity"><span class="header-section-number">3.4</span> 2つの方法の共通点</h2>
+<p>どちらも、「スレッドに実行させたい処理を <code>run()</code> メソッドに書き、<code>start()</code> で起動する」という点で共通しています。</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">警告</span>よくある誤り：run() を直接呼ぶ
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>start()</code> ではなく <code>run()</code> を直接呼ぶと、新しいスレッドは作られず、メインスレッドが <code>run()</code> を普通のメソッドとして実行するだけになります。スレッドを起動するときは、必ず <code>start()</code> を呼んでください。</p>
+</div>
+</div>
+</section>
+<section id="sec-runnable-vs-thread" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="sec-runnable-vs-thread"><span class="header-section-number">3.5</span> 2つの方法の使い分け</h2>
+<p>Javaはクラスの<strong>多重継承を認めていない</strong>ため、継承できるスーパークラスは1つだけです。方法2を使うと、その1つを <code>Thread</code> に使ってしまいます。他のクラスを継承したい場合は、方法1を選んでください。</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -531,21 +549,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </colgroup>
 <thead>
 <tr class="header">
-<th>観点</th>
-<th>方法1：<code>implements Runnable</code></th>
-<th>方法2：<code>extends Thread</code></th>
+<th></th>
+<th>方法1：<br>implements Runnable</th>
+<th>方法2：<br>extends Thread</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>他のクラスの継承</td>
-<td>できる（Javaは単一継承なので、継承枠を空けておける）</td>
-<td>できない（継承枠を <code>Thread</code> が使ってしまう）</td>
+<td>他クラスの継承</td>
+<td>可能</td>
+<td>不可能</td>
 </tr>
 <tr class="even">
-<td>複数のインタフェース</td>
-<td>他のインタフェースと同時に実装できる</td>
-<td>同様に実装できる</td>
+<td>他インタフェースの実装</td>
+<td>可能</td>
+<td>可能</td>
 </tr>
 <tr class="odd">
 <td><code>Thread</code> のメソッドの呼び出し</td>
@@ -555,11 +573,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="even">
 <td>向いている場面</td>
 <td>一般的な場面（推奨されることが多い）</td>
-<td>スレッド自体を細かく操作したい場面、短いサンプル</td>
+<td>スレッドを細かく操作したい場面</td>
 </tr>
 </tbody>
 </table>
-<p>Javaはクラスの<strong>多重継承を認めていない</strong>ため、継承できるスーパークラスは1つだけです。方法2を使うと、その1つを <code>Thread</code> に使ってしまいます。他のクラスを継承したい場合は、方法1を選んでください。</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -576,8 +593,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="sec-output" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="sec-output"><span class="header-section-number">3.4</span> 実行結果の見方</h2>
+<section id="sec-output" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="sec-output"><span class="header-section-number">3.6</span> 実行結果の見方</h2>
 <p><a href="#sec-runnable">方法1</a>または<a href="#sec-extends-thread">方法2</a>のプログラムを実行すると、環境によって多少異なりますが、次のような出力が続きます。</p>
 <pre><code>AAA
 AAA
@@ -586,12 +603,67 @@ BBB
 BBB
 BBB
 AAA
-...</code></pre>
+.
+.
+.</code></pre>
 <ul>
 <li>現在の多くのコンピュータはマルチコアなので、2つ程度のスレッドであれば、切り替えではなく<strong>ほぼ並列に</strong>同時実行されます。</li>
 <li>同じ文字がまとまって出力されるのは、各スレッドがある程度の時間続けて実行されてから、別のスレッドに切り替わるためです。AAAとBBBの順番は実行のたびに変わります。</li>
 <li>使えるコアが1つしかない場合や、他のプログラムがコアを占有している場合には、どちらか一方の文字列ばかりが出力されることもあります。</li>
 </ul>
+</section>
+<section id="sec-sleep" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="sec-sleep"><span class="header-section-number">3.7</span> スレッドの一時停止（sleep）</h2>
+<p><code>sleep</code> を呼ぶと、<strong>そのメソッドを呼んだスレッド</strong>が、指定した時間だけ休止します。</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>SubThread_sleep.java</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-filename="SubThread_sleep.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> SubThread_sleep <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> <span class="op">(</span><span class="kw">true</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"BBB"</span><span class="op">);</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span> <span class="op">{</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                <span class="fu">sleep</span><span class="op">(</span><span class="dv">100</span><span class="op">);</span>  <span class="co">// このスレッドを100ミリ秒（0.1秒）休止</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">InterruptedException</span> e<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span><span class="op">;</span>      <span class="co">// 休止中に中断されたら、run()を終えてスレッドを終了</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        <span class="kw">new</span> <span class="fu">SubThread_sleep</span><span class="op">().</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> <span class="op">(</span><span class="kw">true</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"AAA"</span><span class="op">);</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span> <span class="op">{</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>                <span class="bu">Thread</span><span class="op">.</span><span class="fu">sleep</span><span class="op">(</span><span class="dv">100</span><span class="op">);</span>  <span class="co">// メインスレッドを100ミリ秒休止</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">InterruptedException</span> e<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>実行すると、AAAとBBBが約0.1秒ごとに、ほぼ交互に表示されます。</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">ノート</span>sleep() のポイント
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><code>sleep()</code> の引数の単位は<strong>ミリ秒</strong>です（1000ミリ秒 = 1秒）。</li>
+<li><code>sleep()</code> は、休止中に他のスレッドから中断（<code>interrupt()</code>）されると <code>InterruptedException</code> という例外を投げます。この例外は<strong>チェック例外</strong>（例外処理が必須の例外）なので、<code>try</code>〜<code>catch</code> で必ず処理する必要があります。</li>
+<li><code>Thread</code> を継承したクラスの中では <code>sleep(100)</code> と書けますが、それ以外の場所（<code>main</code> メソッドなど）では <code>Thread.sleep(100)</code> と書きます。</li>
+</ul>
+</div>
+</div>
 
 
 </section>
@@ -1017,8 +1089,8 @@ AAA
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../chapters/04-sleep.html" class="pagination-link" aria-label="スレッドの一時停止（sleep）">
-        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">スレッドの一時停止（sleep）</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../chapters/04-race-condition.html" class="pagination-link" aria-label="競合状態と排他制御">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>6&nbsp; スレッドの同期（join・wait・notify） – Javaによる並行プログラミング入門</title>
+<title>5&nbsp; スレッドの同期（join・wait・notify） – Javaによる並行プログラミング入門</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -71,8 +71,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../chapters/07-deadlock.html" rel="next">
-<link href="../chapters/05-race-condition.html" rel="prev">
+<link href="../chapters/06-deadlock.html" rel="next">
+<link href="../chapters/04-race-condition.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -293,7 +293,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/06-synchronization.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/05-synchronization.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
@@ -348,32 +348,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/04-sleep.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">スレッドの一時停止（sleep）</span></span></a>
+  <a href="../chapters/04-race-condition.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/05-race-condition.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span></a>
+  <a href="../chapters/05-synchronization.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
+  <a href="../chapters/06-deadlock.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/07-deadlock.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../chapters/08-parallel.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
+  <a href="../chapters/07-parallel.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -403,16 +397,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-join" id="toc-sec-join" class="nav-link active" data-scroll-target="#sec-join"><span class="header-section-number">6.1</span> join：スレッドの終了を待つ</a></li>
-  <li><a href="#sec-wait-notify" id="toc-sec-wait-notify" class="nav-link" data-scroll-target="#sec-wait-notify"><span class="header-section-number">6.2</span> wait と notify：条件が整うまで待つ</a></li>
-  <li><a href="#sec-wait-notify-sample" id="toc-sec-wait-notify-sample" class="nav-link" data-scroll-target="#sec-wait-notify-sample"><span class="header-section-number">6.3</span> サンプル：上限と下限のあるカウンタ</a>
+  <li><a href="#sec-join" id="toc-sec-join" class="nav-link active" data-scroll-target="#sec-join"><span class="header-section-number">5.1</span> join：スレッドの終了を待つ</a></li>
+  <li><a href="#sec-wait-notify" id="toc-sec-wait-notify" class="nav-link" data-scroll-target="#sec-wait-notify"><span class="header-section-number">5.2</span> wait と notify：条件が整うまで待つ</a></li>
+  <li><a href="#sec-wait-notify-sample" id="toc-sec-wait-notify-sample" class="nav-link" data-scroll-target="#sec-wait-notify-sample"><span class="header-section-number">5.3</span> サンプル：上限と下限のあるカウンタ</a>
   <ul class="collapse">
   <li><a href="#なぜ-if-ではなく-while-で条件を確かめるのか" id="toc-なぜ-if-ではなく-while-で条件を確かめるのか" class="nav-link" data-scroll-target="#なぜ-if-ではなく-while-で条件を確かめるのか">なぜ if ではなく while で条件を確かめるのか</a></li>
   <li><a href="#notify-と-notifyall-の使い分け" id="toc-notify-と-notifyall-の使い分け" class="nav-link" data-scroll-target="#notify-と-notifyall-の使い分け">notify() と notifyAll() の使い分け</a></li>
   </ul></li>
   <li><a href="#sec-ex3" id="toc-sec-ex3" class="nav-link" data-scroll-target="#sec-ex3">練習問題3：条件が整うまで待つキュー</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/06-synchronization.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/05-synchronization.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -420,7 +414,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-synchronization" class="quarto-section-identifier"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></h1>
+<h1 class="title"><span id="sec-synchronization" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></h1>
 </div>
 
 
@@ -464,8 +458,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<section id="sec-join" class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="sec-join"><span class="header-section-number">6.1</span> join：スレッドの終了を待つ</h2>
+<section id="sec-join" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="sec-join"><span class="header-section-number">5.1</span> join：スレッドの終了を待つ</h2>
 <p><code>t.join()</code> を呼ぶと、呼び出したスレッドは、スレッド <code>t</code> が終了するまで待ちます。<code>join()</code> より後の処理は、<code>t</code> が終了してから実行されます。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -511,12 +505,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="callout-body-container callout-body">
 <p><code>Thread</code> クラスには <code>stop()</code> メソッドがありますが、使ってはいけません。<code>stop()</code> はスレッドを処理の途中で強制終了するため、共有変数を書き換えの途中のまま残すおそれがあります。現在のJavaでは非推奨であり、新しいバージョンでは呼び出すと例外が発生します。</p>
-<p>スレッドは <code>run()</code> メソッドの最後まで実行すると自動的に終了します。<strong><code>run()</code> が自然に終わるように設計する</strong>のが原則です（<a href="../chapters/05-race-condition.html#sec-volatile">5.5節</a>の <code>running</code> フラグの例を参照）。</p>
+<p>スレッドは <code>run()</code> メソッドの最後まで実行すると自動的に終了します。<strong><code>run()</code> が自然に終わるように設計する</strong>のが原則です（<a href="05-race-condition.qmd#sec-volatile">5.5節</a>の <code>running</code> フラグの例を参照）。</p>
 </div>
 </div>
 </section>
-<section id="sec-wait-notify" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="sec-wait-notify"><span class="header-section-number">6.2</span> wait と notify：条件が整うまで待つ</h2>
+<section id="sec-wait-notify" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="sec-wait-notify"><span class="header-section-number">5.2</span> wait と notify：条件が整うまで待つ</h2>
 <p><code>join()</code> はスレッドの終了まで待つメソッドでした。これに対して <code>wait()</code> は、<strong>他のスレッドから通知が来るまで</strong>待つメソッドです。「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。</p>
 <table class="caption-top table">
 <colgroup>
@@ -580,9 +574,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram-v2
+    direction LR
+    state "実行中（ロックを持っている）" as Running
+    state "待機中（ロックを解放して待つ）" as Waiting
+    state "ロック再取得待ち" as Relock
+    Running --&gt; Waiting: wait()
+    Waiting --&gt; Relock: notify() / notifyAll()
+    Relock --&gt; Running: ロックを取得したら、wait() の次の行から再開
+
+    classDef running fill:#DCFCE7,stroke:#15803D,stroke-width:3px,color:#14532D,font-size:17px
+    classDef waiting fill:#FEF3C7,stroke:#B45309,stroke-width:3px,color:#78350F,font-size:17px
+    classDef relock  fill:#DBEAFE,stroke:#1D4ED8,stroke-width:3px,color:#1E3A8A,font-size:17px
+    class Running running
+    class Waiting waiting
+    class Relock relock
+</pre>
+</div>
+<p></p><figcaption> wait / notify によるスレッドの状態の移り変わり</figcaption> </figure><p></p>
+</div>
+</div>
+</div>
 </section>
-<section id="sec-wait-notify-sample" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="sec-wait-notify-sample"><span class="header-section-number">6.3</span> サンプル：上限と下限のあるカウンタ</h2>
+<section id="sec-wait-notify-sample" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="sec-wait-notify-sample"><span class="header-section-number">5.3</span> サンプル：上限と下限のあるカウンタ</h2>
 <p>2つのスレッドが、変数 <code>n</code> をそれぞれ1000回ずつ増やす（インクリメント）・減らす（デクリメント）プログラムです。ただし、<code>n</code> は0以上10以下に保ちます。</p>
 <ul>
 <li><code>n</code> が10のときに増やそうとしたら、<code>wait()</code> で待つ。</li>
@@ -687,7 +707,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="sec-ex3" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="sec-ex3">練習問題3：条件が整うまで待つキュー</h2>
-<p><a href="../chapters/05-race-condition.html#sec-ex1">練習問題1</a>の <code>IntQueue</code> を、次のように変更してください。</p>
+<p><a href="05-race-condition.qmd#sec-ex1">練習問題1</a>の <code>IntQueue</code> を、次のように変更してください。</p>
 <ul>
 <li>キューが<strong>空</strong>のときに <code>dequeue()</code> が呼ばれたら、要素が追加されるまで <code>wait()</code> で待つ。</li>
 <li>キューが<strong>満杯</strong>のときに <code>enqueue()</code> が呼ばれたら、要素が取り出されるまで <code>wait()</code> で待つ。</li>
@@ -1151,13 +1171,13 @@ dequeue :53 tail:7</code></pre>
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapters/05-race-condition.html" class="pagination-link" aria-label="競合状態と排他制御">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span>
+      <a href="../chapters/04-race-condition.html" class="pagination-link" aria-label="競合状態と排他制御">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">競合状態と排他制御</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../chapters/07-deadlock.html" class="pagination-link" aria-label="デッドロック">
-        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">デッドロック</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../chapters/06-deadlock.html" class="pagination-link" aria-label="デッドロック">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">デッドロック</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1166,4 +1186,4 @@ dequeue :53 tail:7</code></pre>
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/06-synchronization.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/05-synchronization.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></div></div></footer></body></html>
