@@ -79,6 +79,25 @@ stateDiagram-v2
     Relock --> Running: ロックを取得したら、wait() の次の行から再開
 ```
 
+```{mermaid}
+%%| fig-cap: "wait / notify によるスレッドの状態の移り変わり"
+stateDiagram-v2
+    direction LR
+    state "実行中（ロックを持っている）" as Running
+    state "待機中（ロックを解放して待つ）" as Waiting
+    state "ロック再取得待ち" as Relock
+    Running --> Waiting: wait()
+    Waiting --> Relock: notify() / notifyAll()
+    Relock --> Running: ロックを取得したら、wait() の次の行から再開
+
+    classDef running fill:#DCFCE7,stroke:#15803D,stroke-width:3px,color:#14532D,font-size:17px
+    classDef waiting fill:#FEF3C7,stroke:#B45309,stroke-width:3px,color:#78350F,font-size:17px
+    classDef relock  fill:#DBEAFE,stroke:#1D4ED8,stroke-width:3px,color:#1E3A8A,font-size:17px
+    class Running running
+    class Waiting waiting
+    class Relock relock
+```
+
 ## サンプル：上限と下限のあるカウンタ {#sec-wait-notify-sample}
 
 2つのスレッドが、変数 `n` をそれぞれ1000回ずつ増やす（インクリメント）・減らす（デクリメント）プログラムです。ただし、`n` は0以上10以下に保ちます。

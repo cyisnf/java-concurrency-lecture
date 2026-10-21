@@ -25,11 +25,10 @@ book:
     - chapters/01-concurrent-parallel.qmd
     - chapters/02-process-thread.qmd
     - chapters/03-create-thread.qmd
-    - chapters/04-sleep.qmd
-    - chapters/05-race-condition.qmd
-    - chapters/06-synchronization.qmd
-    - chapters/07-deadlock.qmd
-    - chapters/08-parallel.qmd
+    - chapters/04-race-condition.qmd
+    - chapters/05-synchronization.qmd
+    - chapters/06-deadlock.qmd
+    - chapters/07-parallel.qmd
   appendices:
     - appendix/glossary.qmd
 

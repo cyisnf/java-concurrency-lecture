@@ -4,10 +4,7 @@
 
 ## 学習目標 {.unnumbered}
 
-1. 並行処理と並列処理の違いを理解する。
-2. プロセスとスレッドの違いを理解する。
-3. Javaでスレッドを作成し、実行できる。
-4. 複数のスレッドが同じ変数を扱うときの問題を理解し対処できる。
+Javaのスレッドを用いて、共有データを安全に扱う並行プログラムを設計・作成し、並列化の効果を評価する。
 
 ## 前提知識 {.unnumbered}
 
@@ -29,11 +26,10 @@ Javaのクラス、継承、インタフェース、例外処理（`try`〜`catc
 | [第1章](chapters/01-concurrent-parallel.qmd) | 並行と並列 | |
 | [第2章](chapters/02-process-thread.qmd) | プロセスとスレッド | |
 | [第3章](chapters/03-create-thread.qmd) | スレッドの作成と実行 | |
-| [第4章](chapters/04-sleep.qmd) | スレッドの一時停止（sleep） | |
-| [第5章](chapters/05-race-condition.qmd) | 競合状態と排他制御 | 練習問題1・2 |
-| [第6章](chapters/06-synchronization.qmd) | スレッドの同期（join・wait・notify） | 練習問題3 |
-| [第7章](chapters/07-deadlock.qmd) | デッドロック | 練習問題4 |
-| [第8章](chapters/08-parallel.qmd) | 並列処理による高速化 | 演習 |
+| [第4章](chapters/04-race-condition.qmd) | 競合状態と排他制御 | 練習問題1・2 |
+| [第5章](chapters/05-synchronization.qmd) | スレッドの同期（join・wait・notify） | 練習問題3 |
+| [第6章](chapters/06-deadlock.qmd) | デッドロック | 練習問題4 |
+| [第7章](chapters/07-parallel.qmd) | 並列処理による高速化 | 演習 |
 | [付録A](appendix/glossary.qmd) | 用語集 | |
 
 資料の誤りに気づいた場合は、各ページの目次の下にあるリンクから、GitHubのIssueで知らせてください。
