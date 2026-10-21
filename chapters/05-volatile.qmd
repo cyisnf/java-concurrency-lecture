@@ -1,0 +1,227 @@
+
+## 原子性と可視性
+
+## volatile変数（発展） {#sec-volatile}
+
+`volatile` は、変数の**可視性[^visibility]**を保証する修飾子です。
+
+[^visibility]: あるスレッドが書き込んだ値を、他のスレッドから見ることができる性質
+
+- 各スレッドは、処理を速くするために、共有変数の値を**一時的に手元（CPUのレジスタなど）に保持**することがあります。
+- また、コンパイラが最適化のために、変数の**読み込みを省略**することもあります。
+- そのため、あるスレッドが変数の値を書き換えても、他のスレッドからは古い値しか見えないことがあります。
+- `volatile` を付けた変数を読み込むときは、**常に最新の値**が読まれるため、あるスレッドで書き込んだ値は他のスレッドからでも必ず見えるようになります。
+
+### volatile と synchronized の比較 {#sec-volatile-vs-sync}
+
+|  | 可視性[^visibility] | 原子性[^atomicity] |
+| --- | --- | --- |
+| `synchronized` | ○ 保証される | ○ 保証される |
+| `volatile` | ○ 保証される | **✕ 保証されない** |
+[^atomicity]: 一連の操作の途中で割り込まれないこと
+
+::: {.callout-warning}
+## volatile では競合状態を防げない
+`volatile int c` としても、`c++` の「読み込み・計算・書き込み」の間に他のスレッドが割り込むことは防げません。そのため、最終結果は30000にならないことがあります。
+:::
+
+### volatile の用途 {#sec-volatile-usage}
+`volatile` が適しているのは、「**1つのスレッドが書き、他のスレッドは読むだけ**」の変数です。代表例は、スレッドを止めるためのフラグです。
+
+```{.java filename="Worker.java"}
+class Worker extends Thread {
+    volatile boolean running = true;  // 他のスレッドから false にされる
+
+    public void run() {
+        while (running) {
+            // 処理
+        }
+        // running が false になると、ループを抜けてスレッドが終了する
+    }
+}
+```
+
+::: {.callout-note}
+## 参考：AtomicInteger
+カウンタのように「読んで、変えて、書く」変数を安全に扱うには、`synchronized` のほか、`java.util.concurrent.atomic.AtomicInteger` の `incrementAndGet()` を使う方法もあります。
+:::
+
+初めのうちは、**共有変数を書き換える処理は `synchronized` で守る**と覚えておけば十分です。
+
+## 補足：スレッドの識別番号 {#sec-thread-id}
+
+各スレッドには一意の識別番号（スレッドID）があり、`getId()` で取得できます。スレッドIDは正の `long` 型の値で、そのスレッドが存在する間は変わりません。スレッドの終了後は、同じ値が再利用されることがあります。どのスレッドが出力したかを確かめたいときは、次のように表示するとよいでしょう。
+
+```java
+System.out.println(getId() + ":" + count.c);
+```
+
+※ Java 19以降では、`getId()` の代わりに `threadId()` を使うことが推奨されています。
+
+## 練習問題1：スレッド安全なキュー {#sec-ex1 .unnumbered}
+
+次のキュー（`IntQueue`）を、複数のスレッドから同時に操作しても正しく動くように変更してください。
+
+**仕様**
+
+- キューには正の整数だけを入れられる。
+- `tail` は現在の末尾の位置を表す。キューが空のときは `tail = -1` とする。
+- `enqueue`（追加）用のスレッドを2つ、`dequeue`（取り出し）用のスレッドを2つ、並行に動かす。
+
+**課題**
+
+1. 変更前のプログラムを実行し、表示結果を記録する。
+2. 適切な排他制御を加えて実行し、1の結果と比べる。
+3. メソッド全体を `synchronized` にするのが最も手軽ですが、**`synchronized` ブロックで囲むならどの範囲を囲むべきか**を考察する。
+
+```{.java filename="IntQueue.java"}
+public class IntQueue {
+    final int SIZE = 10;
+    private int[] values = new int[SIZE];
+    private int tail = -1;  // 末尾の位置（空のときは -1）
+
+    boolean enqueue(int data) {
+        if (data < 0) {
+            return false;           // 負の値は受け付けない
+        }
+        if (tail == SIZE - 1) {
+            return false;           // 満杯
+        }
+        tail++;
+        values[tail] = data;
+        System.out.println("enqueue :" + data + " tail:" + tail);
+        return true;
+    }
+
+    int dequeue() {
+        if (isEmpty()) {
+            return -1;              // 空
+        }
+        int data = values[0];
+        for (int i = 0; i < SIZE - 1; i++) {
+            values[i] = values[i + 1];  // 要素を1つずつ前に詰める
+        }
+        tail--;
+        System.out.println("dequeue :" + data + " tail:" + tail);
+        return data;
+    }
+
+    boolean isEmpty() {
+        return (tail == -1);
+    }
+
+    public static void main(String[] args) {
+        IntQueue q = new IntQueue();
+        new EnQueueThread(q).start();
+        new EnQueueThread(q).start();
+        new DeQueueThread(q).start();
+        new DeQueueThread(q).start();
+    }
+}
+
+class EnQueueThread extends Thread {
+    IntQueue q;
+
+    public EnQueueThread(IntQueue q) {
+        this.q = q;
+    }
+
+    public void run() {
+        for (int i = 0; i < 100; i++) {
+            int data = (int) (Math.random() * 100 + 1);  // 1〜100の乱数
+            q.enqueue(data);
+        }
+    }
+}
+
+class DeQueueThread extends Thread {
+    IntQueue q;
+
+    public DeQueueThread(IntQueue q) {
+        this.q = q;
+    }
+
+    public void run() {
+        for (int i = 0; i < 100; i++) {
+            q.dequeue();
+        }
+    }
+}
+```
+
+::: {.callout-tip collapse="true"}
+## ヒント（クリックで表示）
+「`tail` を確認する処理」と「`tail` を書き換える処理」の間に、別のスレッドが割り込むと何が起こるかを考えてください。たとえば、満杯の確認の直後に別のスレッドが追加すると、配列の範囲外に書き込む可能性があります。
+:::
+
+## 練習問題2：ATMによる送金 {#sec-ex2 .unnumbered}
+
+`ATM` と `Customer` の2つのクラスを使い、口座間でお金を移動するプログラムを完成させてください。
+
+**仕様**
+
+- 口座は100個あり、各口座の初期残高は10万円とする。
+- 顧客30人（`Customer` スレッド30個）が同時にATMを操作する。
+- 各顧客は、0〜9ミリ秒に1回、ランダムに選んだ口座からランダムに選んだ口座へ、ランダムな金額（0〜9999円）を移動する。これを1人1000回行う。
+- 全員の操作が終わった後、全口座の残高と総額を `printMoney()` で表示し、**総額が 10万円 × 100口座 = 1000万円のまま**であることを確認する。
+
+**課題**：`printMoney()` と `move()` の中身を書き、排他制御なしの場合と、ありの場合で総額を比べてください。
+
+```{.java filename="ATM.java"}
+public class ATM {
+    static int SIZE = 100;
+    int[] account;
+
+    public ATM() {
+        account = new int[SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            account[i] = 100000;  // 初期残高10万円
+        }
+    }
+
+    void printMoney() {
+        // ここを記述：各口座の残高と総額を表示する
+    }
+
+    void move(int from, int to, int money) {
+        // ここを記述：口座 from から口座 to へ money 円を移動する
+    }
+
+    public static void main(String[] args) {
+        ATM atm = new ATM();
+        for (int i = 0; i < 30; i++) {
+            new Customer(atm).start();
+        }
+    }
+}
+
+class Customer extends Thread {
+    ATM atm;
+
+    public Customer(ATM atm) {
+        this.atm = atm;
+    }
+
+    public void run() {
+        for (int i = 0; i < 1000; i++) {
+            int from = (int) (Math.random() * ATM.SIZE);
+            int to = (int) (Math.random() * ATM.SIZE);
+            int money = (int) (Math.random() * 10000);
+            atm.move(from, to, money);
+            try {
+                sleep((int) (Math.random() * 10));  // 0〜9ミリ秒休止
+            } catch (InterruptedException e) {
+                System.err.println(e);
+            }
+        }
+        atm.printMoney();  // 各顧客が操作を終えるたびに表示（最後の表示が最終結果）
+    }
+}
+```
+
+::: {.callout-tip collapse="true"}
+## ヒント（クリックで表示）
+`printMoney()` は顧客が操作を終えるたびに呼ばれるため、全部で30回表示されます。最後に表示される総額が最終結果です。全員の終了を待ってから1回だけ表示したい場合は、[第6章](06-synchronization.qmd)の `join()` を使って `main` メソッドを書き換えてください。
+:::
+
+**発展**：残高が足りない場合は移動しないようにすると、より現実的になります。その場合も、総額が変わらないことを確認してください。
