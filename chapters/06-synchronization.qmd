@@ -1,15 +1,22 @@
-# スレッドの同期（join・wait・notify） {#sec-synchronization}
+# スレッドの同期（join, wait, notify） {#sec-synchronization}
 
-**同期**とは、2つ以上の処理のタイミングを合わせることです。Javaでは、どのスレッドをどの順番で実行するかは基本的に実行時のシステムが決めますが、`join()`・`wait()`・`notify()` を使うと、プログラムの側で実行の順番を制御できます。
+## 概要 {#sec-sync-abstract}
 
-| メソッド | 何を待つか | 待機の解除 |
-| --- | --- | --- |
-| `join()` | 指定したスレッドが**終了する**まで | 対象のスレッドが終了したとき |
-| `wait()` | 他のスレッドから**通知される**まで | `notify()` または `notifyAll()` が呼ばれたとき |
+**同期**とは、2つ以上の処理のタイミングを合わせることです。
+
+- Javaでは、どのスレッドをどの順番で実行するかは基本的にシステムが自動で決めます。
+- しかし、`join()`, `wait()`, `notify()` を使うと、プログラムの側で実行の順番を制御できます。
+
+| メソッド |  待機の解除 |
+| --- | --- |
+| `join()` | 指定したスレッドが終了したとき |
+| `wait()` | 他のスレッドから通知されたとき（`notify()` または `notifyAll()` が呼ばれたとき） |
 
 ## join：スレッドの終了を待つ {#sec-join}
 
-`t.join()` を呼ぶと、呼び出したスレッドは、スレッド `t` が終了するまで待ちます。`join()` より後の処理は、`t` が終了してから実行されます。
+`join()` は**指定したスレッドが終了するまで**待つメソッドです。
+
+`t.join()` 以降の処理は、スレッド `t` が終了してから実行されます。
 
 ```{.java filename="JoinTest.java"}
 public class JoinTest extends Thread {
@@ -26,7 +33,7 @@ public class JoinTest extends Thread {
 
         /* 手順2で、このコメントを外す
         try {
-            jt.join();  // jt スレッドが終わるまで、メインスレッドはここで待つ
+            jt.join();  // スレッド jt が終わるまで、メインスレッドはここで待つ
         } catch (InterruptedException e) {
         }
         */
@@ -38,7 +45,7 @@ public class JoinTest extends Thread {
 
 **手順**
 
-1. そのまま実行する。メインスレッドの「END」の出力と、`jt` スレッドの0〜9の出力は並行に行われるため、ENDが表示される位置は実行のたびに変わります（最初に表示されることが多いでしょう）。
+1. そのまま実行する。メインスレッドの「END」の出力と、スレッド `jt` の0〜9の出力は並行に行われるため、ENDが表示される位置は実行のたびに変わります（最初に表示されることが多いでしょう）。
 2. コメントを外して `jt.join()` を有効にし、再度実行する。メインスレッドは `jt` が終わるまで待つので、**ENDは必ず最後に**表示されます。
 
 `join(long ミリ秒)` のように引数を指定すると、対象のスレッドが終わらなくても、指定時間が過ぎれば待機をやめて処理を再開します。
@@ -47,12 +54,14 @@ public class JoinTest extends Thread {
 ## スレッドを stop() で止めてはいけない
 `Thread` クラスには `stop()` メソッドがありますが、使ってはいけません。`stop()` はスレッドを処理の途中で強制終了するため、共有変数を書き換えの途中のまま残すおそれがあります。現在のJavaでは非推奨であり、新しいバージョンでは呼び出すと例外が発生します。
 
-スレッドは `run()` メソッドの最後まで実行すると自動的に終了します。**`run()` が自然に終わるように設計する**のが原則です（[5.5節](05-race-condition.qmd#sec-volatile)の `running` フラグの例を参照）。
+スレッドは `run()` メソッドの最後まで実行すると自動的に終了します。**`run()` が自然に終わるように設計する**のが原則です（[5.3節](05-volatile.html#sec-visibility)の `running` フラグの例を参照）。
 :::
 
 ## wait と notify：条件が整うまで待つ {#sec-wait-notify}
 
-`join()` はスレッドの終了まで待つメソッドでした。これに対して `wait()` は、**他のスレッドから通知が来るまで**待つメソッドです。「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。
+`wait()` は、**他のスレッドから通知が来るまで**待つメソッドです。
+
+「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。
 
 | メソッド | 働き |
 | --- | --- |
@@ -62,7 +71,7 @@ public class JoinTest extends Thread {
 
 ::: {.callout-important}
 ## 重要な規則
-- `wait()`・`notify()`・`notifyAll()` は、そのオブジェクトのロックを持っている状態、つまり `synchronized` ブロック（またはメソッド）の中でしか呼べません。外で呼ぶと `IllegalMonitorStateException` が発生します。
+- `wait()`, `notify()`, `notifyAll()` は、そのオブジェクトのロックを持っている状態、つまり **`synchronized` ブロック（またはメソッド）の中でしか**呼べません。外で呼ぶと `IllegalMonitorStateException` が発生します。
 - `wait()` を呼んだスレッドはロックを手放すため、その間に他のスレッドが `synchronized` の中に入れます。
 - `notify()` で起こされたスレッドは、すぐには再開しません。**ロックをもう一度取得できてから**、`wait()` の次の行から再開します。
 :::
@@ -71,24 +80,12 @@ public class JoinTest extends Thread {
 %%| fig-cap: "wait / notify によるスレッドの状態の移り変わり"
 stateDiagram-v2
     direction LR
-    state "実行中（ロックを持っている）" as Running
-    state "待機中（ロックを解放して待つ）" as Waiting
+    state "実行中<br/>（ロックを持っている）" as Running
+    state "待機中<br/>（ロックを解放して待つ）" as Waiting
     state "ロック再取得待ち" as Relock
     Running --> Waiting: wait()
     Waiting --> Relock: notify() / notifyAll()
-    Relock --> Running: ロックを取得したら、wait() の次の行から再開
-```
-
-```{mermaid}
-%%| fig-cap: "wait / notify によるスレッドの状態の移り変わり"
-stateDiagram-v2
-    direction LR
-    state "実行中（ロックを持っている）" as Running
-    state "待機中（ロックを解放して待つ）" as Waiting
-    state "ロック再取得待ち" as Relock
-    Running --> Waiting: wait()
-    Waiting --> Relock: notify() / notifyAll()
-    Relock --> Running: ロックを取得したら、wait() の次の行から再開
+    Relock --> Running: ロックを取得したら、<br/>wait() の次の行から再開
 
     classDef running fill:#DCFCE7,stroke:#15803D,stroke-width:3px,color:#14532D,font-size:17px
     classDef waiting fill:#FEF3C7,stroke:#B45309,stroke-width:3px,color:#78350F,font-size:17px
@@ -100,7 +97,7 @@ stateDiagram-v2
 
 ## サンプル：上限と下限のあるカウンタ {#sec-wait-notify-sample}
 
-2つのスレッドが、変数 `n` をそれぞれ1000回ずつ増やす（インクリメント）・減らす（デクリメント）プログラムです。ただし、`n` は0以上10以下に保ちます。
+2つのスレッドが、変数 `n` をそれぞれ1000回ずつインクリメント（`n++`）／デクリメント（`n--`）するプログラムです。ただし、`n` が取りうる値は [0, 10] の範囲に保たれます。
 
 - `n` が10のときに増やそうとしたら、`wait()` で待つ。
 - `n` が0のときに減らそうとしたら、`wait()` で待つ。

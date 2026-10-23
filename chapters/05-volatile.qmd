@@ -1,52 +1,219 @@
+# 原子性と可視性 {#sec-atomicity-visibility}
 
-## 原子性と可視性
+## 概要 {#sec-av-abstract}
 
-## volatile変数（発展） {#sec-volatile}
+[第4章](04-race-condition.qmd)では、**競合状態**という問題を、`synchronized` による**排他制御**で防ぎました。
+この章では、排他制御によって何が保証されていたのかを、**原子性**と**可視性**という2つの性質に分けて整理します。
 
-`volatile` は、変数の**可視性[^visibility]**を保証する修飾子です。
+そのうえで、可視性だけを保証する `volatile` 修飾子を学び、**`volatile` では競合状態を防げない**理由を説明します。
 
-[^visibility]: あるスレッドが書き込んだ値を、他のスレッドから見ることができる性質
+## 問題・目的・手段の関係 {#sec-problem-goal-means}
 
-- 各スレッドは、処理を速くするために、共有変数の値を**一時的に手元（CPUのレジスタなど）に保持**することがあります。
-- また、コンパイラが最適化のために、変数の**読み込みを省略**することもあります。
-- そのため、あるスレッドが変数の値を書き換えても、他のスレッドからは古い値しか見えないことがあります。
-- `volatile` を付けた変数を読み込むときは、**常に最新の値**が読まれるため、あるスレッドで書き込んだ値は他のスレッドからでも必ず見えるようになります。
+第4章の内容は、「問題」「目的」「手段」の3つの関係として整理できます。
 
-### volatile と synchronized の比較 {#sec-volatile-vs-sync}
-
-|  | 可視性[^visibility] | 原子性[^atomicity] |
+| 区分 | 名前 | 内容 |
 | --- | --- | --- |
-| `synchronized` | ○ 保証される | ○ 保証される |
-| `volatile` | ○ 保証される | **✕ 保証されない** |
-[^atomicity]: 一連の操作の途中で割り込まれないこと
+| 問題 | 競合状態 | 複数のスレッドが共有変数を同時に更新し、更新の一部が失われる |
+| 目的 | 原子性 | 一連の操作を、途中で他のスレッドに割り込まれずに行う |
+| 手段 | 排他制御 | `synchronized` を使い、その処理を同時に1つのスレッドだけに実行させる |
 
-::: {.callout-warning}
-## volatile では競合状態を防げない
-`volatile int c` としても、`c++` の「読み込み・計算・書き込み」の間に他のスレッドが割り込むことは防げません。そのため、最終結果は30000にならないことがあります。
-:::
+```{mermaid}
+%%| label: fig-problem-goal-means
+%%| fig-cap: "競合状態・原子性・排他制御の関係"
+flowchart LR
+    P["問題<br/>（競合状態）"] -->|防ぐために必要な性質| G["目的<br/>（原子性）"]
+    G -->|実現する手段| M["手段<br/>（排他制御 / synchronized）"]
+```
 
-### volatile の用途 {#sec-volatile-usage}
-`volatile` が適しているのは、「**1つのスレッドが書き、他のスレッドは読むだけ**」の変数です。代表例は、スレッドを止めるためのフラグです。
+### 原子性とは {#sec-atomicity}
 
-```{.java filename="Worker.java"}
-class Worker extends Thread {
-    volatile boolean running = true;  // 他のスレッドから false にされる
+**原子性**とは、**操作の途中に他のスレッドが割り込めない**性質です。
+「原子」という言葉は、「それ以上分けられないもの」という意味で使われています。
+
+[4.3節](04-race-condition.qmd#sec-race-cause)で見たとおり、`c++` は「読み込み・計算・書き込み」の3つの操作に分かれるため、原子性がありません。
+そのため @fig-race のように、スレッド1の読み込みと書き込みの間にスレッド2が割り込み、更新が失われました。
+
+つまり、**競合状態は、原子性のない操作を、複数のスレッドが同時に行うことで起こる問題**です。
+逆に、`c++` の3つの操作を原子的に（途中で割り込まれずに）行うことができれば、競合状態は起こりません。
+したがって、原子性は、競合状態を防ぐために達成すべき**目的**です。
+
+### 排他制御は原子性を実現する手段 {#sec-mutex-for-atomicity}
+
+Javaでは、`c++` と書いただけでは原子性は得られません。そこで[第4章](04-race-condition.qmd#sec-sync-block)では、`c++` を `synchronized` で囲みました。
+
+- ロックを持つスレッドが3つの操作をすべて終えるまで、他のスレッドは同じロックを使う処理に入れません。
+- その結果、他のスレッドから見ると、3つの操作がまとめて一度に行われたように見えます。
+
+このように、**排他制御は、原子性を実現するための手段**です。
+
+## 可視性 {#sec-visibility}
+
+共有変数を複数のスレッドで扱うときには、**競合状態とは別の問題**もあります。
+それは、あるスレッドが書き込んだ値が、他のスレッドから**いつまでも見えない**ことがある、という問題です。
+
+**可視性**とは、あるスレッドが書き込んだ値を、他のスレッドが読めることが保証される性質です。
+
+
+### 問題の再現 {#sec-visibility-demo}
+
+次のプログラムでは、メインスレッドが1秒後に `running` を `false` にして、スレッド `t` に停止を指示します。
+スレッド `t` は `running` が `true` の間だけループを続けるので、本来は1秒後に終了するはずです。
+
+```{.java filename="StopTest.java（volatileなし）"}
+public class StopTest {
+    public static void main(String[] args) throws InterruptedException {
+        LoopThread t = new LoopThread();
+        t.start();
+        Thread.sleep(1000);   // 1秒待つ
+        t.running = false;    // スレッド t に停止を指示する
+        System.out.println("メイン：停止を指示しました");
+        t.join();             // スレッド t の終了を待つ
+        System.out.println("メイン：スレッド t が終了しました");
+    }
+}
+
+class LoopThread extends Thread {
+    boolean running = true;  // メインスレッドから false にされる（volatile を付けていない）
 
     public void run() {
+        long n = 0;
         while (running) {
-            // 処理
+            n++;  // 何らかの処理
         }
-        // running が false になると、ループを抜けてスレッドが終了する
+        // running が false になれば、ループを抜けてスレッドが終了する
     }
 }
 ```
 
+実行すると、「メイン：停止を指示しました」と表示された後、**プログラムが終わらない**ことがあります（Ctrl + C で停止してください）。
+メインスレッドは確かに `running` を `false` にしたのに、スレッド `t` にはその書き込みが見えていないのです。
+
+### なぜ値が見えないのか {#sec-visibility-cause}
+
+- 各スレッドは、処理を速くするために、共有変数の値を**一時的に手元（CPUのレジスタなど）に保持**することがあります。
+- また、Javaの実行環境（JITコンパイラ）は、最適化のために、ループの中で変数を毎回読み込むのを省略し、**最初に1回だけ読み込む**ように書き換えることがあります。
+- その結果、スレッド `t` は最初に読んだ `true` を使い続け、他のスレッドによる書き換えに気づきません。
+
+```{mermaid}
+%%| label: fig-visibility
+%%| fig-cap: "可視性の問題（メインスレッドの書き込みが スレッド t に見えない）"
+sequenceDiagram
+    autonumber
+    participant W as スレッド t
+    participant R as 共有変数 running（ヒープ）
+    participant M as メインスレッド
+
+    Note over R: running = true
+
+    rect rgba(37, 99, 235, 0.15)
+    W->>R: running を読む
+    R-->>W: true
+    end
+    Note over W: 以後、手元の true を使い続ける
+
+    rect rgba(234, 88, 12, 0.15)
+    M->>R: false を書く
+    end
+    Note over R: running = false
+
+    Note over W: while (true) を繰り返す<br/>書き換えが見えず、終了しない
+```
+
+@fig-race と比べてください。@fig-race では、2つのスレッドが**最新の値を正しく読んだうえで**、互いの操作の間に割り込んだことが問題でした。
+一方、@fig-visibility では割り込みは起きておらず、**書き込まれた値が見えない**ことが問題です。
+この2つは、原因の異なる別々の問題です。
+
+### synchronized は可視性も保証する {#sec-sync-visibility}
+
+`synchronized` は、原子性だけでなく、可視性も保証します。
+あるスレッドがロックを解放する前に書き込んだ値は、その後で同じロックを取得したスレッドから必ず見えます。
+
+[第4章](04-race-condition.qmd#sec-sync-block)の `Count` が `synchronized` によって正しく30000になったのは、次の2つがどちらも保証されていたためです。
+
+- **原子性**：「読み込み・計算・書き込み」の途中に、他のスレッドが割り込まない。
+- **可視性**：ロックを取得したスレッドは、前にロックを持っていたスレッドが書き込んだ最新の値を読める。
+
+## volatile変数 {#sec-volatile}
+
+`volatile` は、変数の**可視性を保証する**修飾子です。
+
+- `volatile` を付けた変数への書き込みは、すぐに他のスレッドから見えるようになります。
+- `volatile` を付けた変数を読み込むときは、**常に最新の値**が読まれます。手元に保持した古い値が使われたり、読み込みが省略されたりすることはありません。
+
+[前節](#sec-visibility-demo)の `StopTest` は、`running` に `volatile` を付けるだけで正しく終了するようになります。
+
+```{.java filename="StopTest.java（volatile版）の変更箇所"}
+class LoopThread extends Thread {
+    volatile boolean running = true;  // volatile を付ける
+    // …（run メソッドは変更なし）
+}
+```
+
+スレッド `t` は、ループのたびに `running` の最新の値を読むため、メインスレッドが `false` を書き込んだ後にループを抜けて終了します。
+
+## volatileでは競合状態を防げない {#sec-volatile-not-atomic}
+
+では、[第4章](04-race-condition.qmd#sec-race-demo)の `Count` の変数 `c` に `volatile` を付ければ、競合状態は防げるでしょうか。
+
+```{.java filename="Count.java（volatile版）の変更箇所"}
+public class Count {
+    volatile int c = 0;  // volatile を付ける（synchronized は使わない）
+    // …（main メソッドと CounterThread クラスは4.2節と同じ）
+}
+```
+
+実行すると、`volatile` を付けない場合と同じく、最終結果が**30000未満**になることがあります。
+
+その理由は、@fig-race をもう一度見るとわかります。
+
+- 手順2でスレッド2が読んだ10は、その時点での**最新の値**です。つまり、この図では可視性の問題は起きていません。
+- 問題は、スレッド1の「読み込み」と「書き込み」の間に、スレッド2が割り込んだことです。つまり、**原子性がない**ことが原因です。
+- `volatile` は、1回1回の読み込み・書き込みで最新の値を使うようにするだけです。「読み込み・計算・書き込み」の3つの操作を、ひとまとまりにする働きはありません。
+
+したがって、`volatile` を付けても、@fig-race と同じ実行順は起こりえます。
+
+|  | 可視性 | 原子性 | 競合状態を防げるか |
+| --- | --- | --- | --- |
+| `synchronized` | ○ 保証される | ○ 保証される | ○ 防げる |
+| `volatile` | ○ 保証される | **✕ 保証されない** | **✕ 防げない** |
+
+: synchronized と volatile の比較 {#tbl-sync-vs-volatile}
+
+::: {.callout-important}
+## volatile で競合状態を防げない理由
+1. 競合状態を防ぐには、**原子性**が必要である。
+2. `volatile` は**可視性**を保証するが、**原子性**は保証しない。
+3. したがって、`volatile` では競合状態を防げない。競合状態を防ぐには、`synchronized` による排他制御を使う。
+:::
+
+## volatile の用途 {#sec-volatile-usage}
+
+`volatile` だけで正しく扱えるのは、次の2つの条件を満たす変数です。
+
+- **1つのスレッドだけが書き込み**、他のスレッドは読むだけである。
+- 書き込む値が、**変数の現在の値に依存しない**（`running = false` のような単純な代入であり、`c = c + 1` のように「読んでから書く」操作ではない）。
+
+代表例は、[5.3節](#sec-visibility-demo)の `running` のような、スレッドを止めるためのフラグです。
+
 ::: {.callout-note}
 ## 参考：AtomicInteger
 カウンタのように「読んで、変えて、書く」変数を安全に扱うには、`synchronized` のほか、`java.util.concurrent.atomic.AtomicInteger` の `incrementAndGet()` を使う方法もあります。
+`incrementAndGet()` は、1増やす操作を原子的に行うメソッドです。ロックを使わずに原子性と可視性を実現する仕組みになっています。
 :::
 
-初めのうちは、**共有変数を書き換える処理は `synchronized` で守る**と覚えておけば十分です。
+初めのうちは、次のように覚えておけば十分です。
+
+- **複数のスレッドから共有変数を書き換える処理には`synchronized` を使う。**
+- `volatile` は、停止フラグのように「1つのスレッドが書き、他のスレッドは読むだけ」の場合にのみ使う。
+
+## この章のまとめ {#sec-av-summary}
+
+| 性質 | 意味 | 欠けていると起こる問題 | 保証する仕組み |
+| --- | --- | --- | --- |
+| 原子性 | 一連の操作が、途中で他のスレッドに割り込まれない | 競合状態（更新が失われる） | `synchronized` |
+| 可視性 | あるスレッドが書き込んだ値を、他のスレッドが読める | 書き込んだ値が見えない（スレッドが止まらないなど） | `synchronized`, `volatile` |
+
+: 原子性と可視性のまとめ {#tbl-av-summary}
 
 ## 補足：スレッドの識別番号 {#sec-thread-id}
 
@@ -57,171 +224,3 @@ System.out.println(getId() + ":" + count.c);
 ```
 
 ※ Java 19以降では、`getId()` の代わりに `threadId()` を使うことが推奨されています。
-
-## 練習問題1：スレッド安全なキュー {#sec-ex1 .unnumbered}
-
-次のキュー（`IntQueue`）を、複数のスレッドから同時に操作しても正しく動くように変更してください。
-
-**仕様**
-
-- キューには正の整数だけを入れられる。
-- `tail` は現在の末尾の位置を表す。キューが空のときは `tail = -1` とする。
-- `enqueue`（追加）用のスレッドを2つ、`dequeue`（取り出し）用のスレッドを2つ、並行に動かす。
-
-**課題**
-
-1. 変更前のプログラムを実行し、表示結果を記録する。
-2. 適切な排他制御を加えて実行し、1の結果と比べる。
-3. メソッド全体を `synchronized` にするのが最も手軽ですが、**`synchronized` ブロックで囲むならどの範囲を囲むべきか**を考察する。
-
-```{.java filename="IntQueue.java"}
-public class IntQueue {
-    final int SIZE = 10;
-    private int[] values = new int[SIZE];
-    private int tail = -1;  // 末尾の位置（空のときは -1）
-
-    boolean enqueue(int data) {
-        if (data < 0) {
-            return false;           // 負の値は受け付けない
-        }
-        if (tail == SIZE - 1) {
-            return false;           // 満杯
-        }
-        tail++;
-        values[tail] = data;
-        System.out.println("enqueue :" + data + " tail:" + tail);
-        return true;
-    }
-
-    int dequeue() {
-        if (isEmpty()) {
-            return -1;              // 空
-        }
-        int data = values[0];
-        for (int i = 0; i < SIZE - 1; i++) {
-            values[i] = values[i + 1];  // 要素を1つずつ前に詰める
-        }
-        tail--;
-        System.out.println("dequeue :" + data + " tail:" + tail);
-        return data;
-    }
-
-    boolean isEmpty() {
-        return (tail == -1);
-    }
-
-    public static void main(String[] args) {
-        IntQueue q = new IntQueue();
-        new EnQueueThread(q).start();
-        new EnQueueThread(q).start();
-        new DeQueueThread(q).start();
-        new DeQueueThread(q).start();
-    }
-}
-
-class EnQueueThread extends Thread {
-    IntQueue q;
-
-    public EnQueueThread(IntQueue q) {
-        this.q = q;
-    }
-
-    public void run() {
-        for (int i = 0; i < 100; i++) {
-            int data = (int) (Math.random() * 100 + 1);  // 1〜100の乱数
-            q.enqueue(data);
-        }
-    }
-}
-
-class DeQueueThread extends Thread {
-    IntQueue q;
-
-    public DeQueueThread(IntQueue q) {
-        this.q = q;
-    }
-
-    public void run() {
-        for (int i = 0; i < 100; i++) {
-            q.dequeue();
-        }
-    }
-}
-```
-
-::: {.callout-tip collapse="true"}
-## ヒント（クリックで表示）
-「`tail` を確認する処理」と「`tail` を書き換える処理」の間に、別のスレッドが割り込むと何が起こるかを考えてください。たとえば、満杯の確認の直後に別のスレッドが追加すると、配列の範囲外に書き込む可能性があります。
-:::
-
-## 練習問題2：ATMによる送金 {#sec-ex2 .unnumbered}
-
-`ATM` と `Customer` の2つのクラスを使い、口座間でお金を移動するプログラムを完成させてください。
-
-**仕様**
-
-- 口座は100個あり、各口座の初期残高は10万円とする。
-- 顧客30人（`Customer` スレッド30個）が同時にATMを操作する。
-- 各顧客は、0〜9ミリ秒に1回、ランダムに選んだ口座からランダムに選んだ口座へ、ランダムな金額（0〜9999円）を移動する。これを1人1000回行う。
-- 全員の操作が終わった後、全口座の残高と総額を `printMoney()` で表示し、**総額が 10万円 × 100口座 = 1000万円のまま**であることを確認する。
-
-**課題**：`printMoney()` と `move()` の中身を書き、排他制御なしの場合と、ありの場合で総額を比べてください。
-
-```{.java filename="ATM.java"}
-public class ATM {
-    static int SIZE = 100;
-    int[] account;
-
-    public ATM() {
-        account = new int[SIZE];
-        for (int i = 0; i < SIZE; i++) {
-            account[i] = 100000;  // 初期残高10万円
-        }
-    }
-
-    void printMoney() {
-        // ここを記述：各口座の残高と総額を表示する
-    }
-
-    void move(int from, int to, int money) {
-        // ここを記述：口座 from から口座 to へ money 円を移動する
-    }
-
-    public static void main(String[] args) {
-        ATM atm = new ATM();
-        for (int i = 0; i < 30; i++) {
-            new Customer(atm).start();
-        }
-    }
-}
-
-class Customer extends Thread {
-    ATM atm;
-
-    public Customer(ATM atm) {
-        this.atm = atm;
-    }
-
-    public void run() {
-        for (int i = 0; i < 1000; i++) {
-            int from = (int) (Math.random() * ATM.SIZE);
-            int to = (int) (Math.random() * ATM.SIZE);
-            int money = (int) (Math.random() * 10000);
-            atm.move(from, to, money);
-            try {
-                sleep((int) (Math.random() * 10));  // 0〜9ミリ秒休止
-            } catch (InterruptedException e) {
-                System.err.println(e);
-            }
-        }
-        atm.printMoney();  // 各顧客が操作を終えるたびに表示（最後の表示が最終結果）
-    }
-}
-```
-
-::: {.callout-tip collapse="true"}
-## ヒント（クリックで表示）
-`printMoney()` は顧客が操作を終えるたびに呼ばれるため、全部で30回表示されます。最後に表示される総額が最終結果です。全員の終了を待ってから1回だけ表示したい場合は、[第6章](06-synchronization.qmd)の `join()` を使って `main` メソッドを書き換えてください。
-:::
-
-**発展**：残高が足りない場合は移動しないようにすると、より現実的になります。その場合も、総額が変わらないことを確認してください。
