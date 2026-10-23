@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>6&nbsp; スレッドの同期（join, wait, notify） – Javaによる並行プログラミング入門</title>
+<title>6&nbsp; スレッドの同期 – Javaによる並行プログラミング入門</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -293,7 +293,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/06-synchronization.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join, wait, notify）</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/06-synchronization.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
@@ -361,7 +361,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join, wait, notify）</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -404,8 +404,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#sec-sync-abstract" id="toc-sec-sync-abstract" class="nav-link active" data-scroll-target="#sec-sync-abstract"><span class="header-section-number">6.1</span> 概要</a></li>
-  <li><a href="#sec-join" id="toc-sec-join" class="nav-link" data-scroll-target="#sec-join"><span class="header-section-number">6.2</span> join：スレッドの終了を待つ</a></li>
-  <li><a href="#sec-wait-notify" id="toc-sec-wait-notify" class="nav-link" data-scroll-target="#sec-wait-notify"><span class="header-section-number">6.3</span> wait と notify：条件が整うまで待つ</a></li>
+  <li><a href="#sec-join" id="toc-sec-join" class="nav-link" data-scroll-target="#sec-join"><span class="header-section-number">6.2</span> join：スレッドの終了を待つ</a>
+  <ul class="collapse">
+  <li><a href="#具体例" id="toc-具体例" class="nav-link" data-scroll-target="#具体例">具体例</a></li>
+  </ul></li>
+  <li><a href="#sec-wait-notify" id="toc-sec-wait-notify" class="nav-link" data-scroll-target="#sec-wait-notify"><span class="header-section-number">6.3</span> wait と notify / notifyAll ：条件が整うまで待つ</a></li>
   <li><a href="#sec-wait-notify-sample" id="toc-sec-wait-notify-sample" class="nav-link" data-scroll-target="#sec-wait-notify-sample"><span class="header-section-number">6.4</span> サンプル：上限と下限のあるカウンタ</a>
   <ul class="collapse">
   <li><a href="#なぜ-if-ではなく-while-で条件を確かめるのか" id="toc-なぜ-if-ではなく-while-で条件を確かめるのか" class="nav-link" data-scroll-target="#なぜ-if-ではなく-while-で条件を確かめるのか">なぜ if ではなく while で条件を確かめるのか</a></li>
@@ -421,7 +424,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-synchronization" class="quarto-section-identifier"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join, wait, notify）</span></span></h1>
+<h1 class="title"><span id="sec-synchronization" class="quarto-section-identifier"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期</span></span></h1>
 </div>
 
 
@@ -471,7 +474,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="sec-join" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="sec-join"><span class="header-section-number">6.2</span> join：スレッドの終了を待つ</h2>
 <p><code>join()</code> は<strong>指定したスレッドが終了するまで</strong>待つメソッドです。</p>
-<p><code>t.join()</code> 以降の処理は、スレッド <code>t</code> が終了してから実行されます。</p>
+<p>処理の流れを <a href="#fig-join" class="quarto-xref">図&nbsp;<span>6.1</span></a> に示します。</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-join" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-join-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-join">sequenceDiagram
+    autonumber
+    participant M as メインスレッド
+    participant J as スレッド t
+
+    rect rgba(234, 88, 12, 0.15)
+    M-&gt;&gt;J: t.join()
+    end
+    Note over M: t が終了するまで待機中
+
+    rect rgba(37, 99, 235, 0.15)
+    Note over J: t の処理が終了&lt;br/&gt;（run() の最後まで実行）
+    J--&gt;&gt;M:
+    end
+
+    Note over M: main() の処理を再開
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-join-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;6.1: join() による待機
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="具体例" class="level3">
+<h3 class="anchored" data-anchor-id="具体例">具体例</h3>
+<p>以下の手順にしたがって、次のコードを実行してください。</p>
+<ol type="1">
+<li>何度か実行して、カウントが終わる前にENDが表示されることを確認する。</li>
+<li>コメントを外して再度実行し、ENDが必ず最後に表示されることを確認する。</li>
+</ol>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>JoinTest.java</strong></pre>
@@ -485,12 +527,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        JoinTest jt <span class="op">=</span> <span class="kw">new</span> <span class="fu">JoinTest</span><span class="op">();</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        jt<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        JoinTest t <span class="op">=</span> <span class="kw">new</span> <span class="fu">JoinTest</span><span class="op">();</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        t<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="co">/* 手順2で、このコメントを外す</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">        try {</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">            jt.join();  // スレッド jt が終わるまで、メインスレッドはここで待つ</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">            t.join();  // スレッド t が終わるまで、メインスレッドはここで待つ</span></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">        } catch (InterruptedException e) {</span></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">        }</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">        */</span></span>
@@ -499,12 +541,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><strong>手順</strong></p>
-<ol type="1">
-<li>そのまま実行する。メインスレッドの「END」の出力と、スレッド <code>jt</code> の0〜9の出力は並行に行われるため、ENDが表示される位置は実行のたびに変わります（最初に表示されることが多いでしょう）。</li>
-<li>コメントを外して <code>jt.join()</code> を有効にし、再度実行する。メインスレッドは <code>jt</code> が終わるまで待つので、<strong>ENDは必ず最後に</strong>表示されます。</li>
-</ol>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+ノート
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p><code>join(long ミリ秒)</code> のように引数を指定すると、対象のスレッドが終わらなくても、指定時間が過ぎれば待機をやめて処理を再開します。</p>
+</div>
+</div>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -520,8 +569,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+</section>
 <section id="sec-wait-notify" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="sec-wait-notify"><span class="header-section-number">6.3</span> wait と notify：条件が整うまで待つ</h2>
+<h2 data-number="6.3" class="anchored" data-anchor-id="sec-wait-notify"><span class="header-section-number">6.3</span> wait と notify / notifyAll ：条件が整うまで待つ</h2>
 <p><code>wait()</code> は、<strong>他のスレッドから通知が来るまで</strong>待つメソッドです。</p>
 <p>「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。</p>
 <table class="caption-top table">
@@ -567,32 +617,84 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </div>
 </div>
+<p>3つのスレッドが同じオブジェクト <code>obj</code> を使って <code>wait()</code>・<code>notify()</code> を呼ぶ場合の流れを、<a href="#fig-notify" class="quarto-xref">図&nbsp;<span>6.2</span></a> に示します。</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
+<div id="fig-notify" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-notify-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">stateDiagram-v2
-    direction LR
-    state "実行中&lt;br/&gt;（ロックを持っている）" as Running
-    state "待機中&lt;br/&gt;（ロックを解放して待つ）" as Waiting
-    state "ロック再取得待ち" as Relock
-    Running --&gt; Waiting: wait()
-    Waiting --&gt; Relock: notify() / notifyAll()
-    Relock --&gt; Running: ロックを取得したら、&lt;br/&gt;wait() の次の行から再開
+<pre class="mermaid mermaid-js" data-label="fig-notify">sequenceDiagram
+    autonumber
+    participant T1 as スレッド1
+    participant O as 共有オブジェクト obj
+    participant T2 as スレッド2
+    participant T3 as スレッド3
 
-    classDef running fill:#DCFCE7,stroke:#15803D,stroke-width:3px,color:#14532D,font-size:17px
-    classDef waiting fill:#FEF3C7,stroke:#B45309,stroke-width:3px,color:#78350F,font-size:17px
-    classDef relock  fill:#DBEAFE,stroke:#1D4ED8,stroke-width:3px,color:#1E3A8A,font-size:17px
-    class Running running
-    class Waiting waiting
-    class Relock relock
+    rect rgba(37, 99, 235, 0.15)
+    T1-&gt;&gt;O: wait()
+    end
+    Note over T1: 待機中
+
+    rect rgba(22, 163, 74, 0.15)
+    T3-&gt;&gt;O: wait()
+    end
+    Note over T3: 待機中
+
+    rect rgba(234, 88, 12, 0.15)
+    T2-&gt;&gt;O: notify()
+    O--&gt;&gt;T1: 起こす
+    end
+    Note over T1: ロックを取得 &amp; 再開
+    Note over T3: 待機中
 </pre>
 </div>
-<p></p><figcaption> wait / notify によるスレッドの状態の移り変わり</figcaption> </figure><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-notify-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;6.2: notify() の図解
+</figcaption>
+</figure>
 </div>
 </div>
 </div>
+<p>手順3の <code>notify()</code> では、待機中の2つのスレッドのうち<strong>1つだけ</strong>（この図ではスレッド1）が起こされます。どちらが起こされるかはシステムが決めるため、スレッド3が起こされる場合もあります。</p>
+<p>続いて、<code>notifyAll()</code> について、同様の流れを <a href="#fig-notifyAll" class="quarto-xref">図&nbsp;<span>6.3</span></a> に示します。</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-notifyAll" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-notifyAll-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-notifyAll">sequenceDiagram
+    autonumber
+    participant T1 as スレッド1
+    participant O as 共有オブジェクト obj
+    participant T2 as スレッド2
+    participant T3 as スレッド3
+
+    rect rgba(37, 99, 235, 0.15)
+    T1-&gt;&gt;O: wait()
+    end
+    Note over T1: 待機中
+
+    rect rgba(234, 88, 12, 0.15)
+    T2-&gt;&gt;O: notifyAll()
+    O--&gt;&gt;T1: 起こす
+    O--&gt;&gt;T3: 起こす
+    end
+    Note over T1: ロックを取得 &amp; 再開
+    Note over T3: ロックを取得 &amp; 再開
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-notifyAll-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;6.3: notifyAll() の図解
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>手順3の <code>notifyAll()</code> では、待機中のスレッドが<strong>すべて</strong>起こされます。ただし、ロックを持てるのは一度に1つだけなので、実際に再開するのは1つずつです。</p>
 </section>
 <section id="sec-wait-notify-sample" class="level2" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="sec-wait-notify-sample"><span class="header-section-number">6.4</span> サンプル：上限と下限のあるカウンタ</h2>
@@ -725,7 +827,7 @@ enqueue :Queue Full.. wait dequeue()
 dequeue :33 tail:8
 dequeue :53 tail:7</code></pre>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -734,7 +836,7 @@ dequeue :53 tail:7</code></pre>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="#sec-wait-notify-sample">6.3節</a>のサンプルと同じく、待つ条件は <code>while</code> で確かめてください。</li>

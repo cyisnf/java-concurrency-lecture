@@ -372,61 +372,61 @@
   {
     "objectID": "chapters/06-synchronization.html",
     "href": "chapters/06-synchronization.html",
-    "title": "6  スレッドの同期（join, wait, notify）",
+    "title": "6  スレッドの同期",
     "section": "",
     "text": "6.1 概要\n同期とは、2つ以上の処理のタイミングを合わせることです。",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期（join, wait, notify）</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期</span>"
     ]
   },
   {
     "objectID": "chapters/06-synchronization.html#sec-sync-abstract",
     "href": "chapters/06-synchronization.html#sec-sync-abstract",
-    "title": "6  スレッドの同期（join, wait, notify）",
+    "title": "6  スレッドの同期",
     "section": "",
     "text": "Javaでは、どのスレッドをどの順番で実行するかは基本的にシステムが自動で決めます。\nしかし、join(), wait(), notify() を使うと、プログラムの側で実行の順番を制御できます。\n\n\n\n\n\n\n\n\nメソッド\n待機の解除\n\n\n\n\njoin()\n指定したスレッドが終了したとき\n\n\nwait()\n他のスレッドから通知されたとき（notify() または notifyAll() が呼ばれたとき）",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期（join, wait, notify）</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期</span>"
     ]
   },
   {
     "objectID": "chapters/06-synchronization.html#sec-join",
     "href": "chapters/06-synchronization.html#sec-join",
-    "title": "6  スレッドの同期（join, wait, notify）",
+    "title": "6  スレッドの同期",
     "section": "6.2 join：スレッドの終了を待つ",
-    "text": "6.2 join：スレッドの終了を待つ\njoin() は指定したスレッドが終了するまで待つメソッドです。\nt.join() 以降の処理は、スレッド t が終了してから実行されます。\n\n\nJoinTest.java\n\npublic class JoinTest extends Thread {\n\n    public void run() {\n        for (int i = 0; i &lt; 10; i++) {\n            System.out.println(i);\n        }\n    }\n\n    public static void main(String[] args) {\n        JoinTest jt = new JoinTest();\n        jt.start();\n\n        /* 手順2で、このコメントを外す\n        try {\n            jt.join();  // スレッド jt が終わるまで、メインスレッドはここで待つ\n        } catch (InterruptedException e) {\n        }\n        */\n\n        System.out.println(\"END\");\n    }\n}\n\n手順\n\nそのまま実行する。メインスレッドの「END」の出力と、スレッド jt の0〜9の出力は並行に行われるため、ENDが表示される位置は実行のたびに変わります（最初に表示されることが多いでしょう）。\nコメントを外して jt.join() を有効にし、再度実行する。メインスレッドは jt が終わるまで待つので、ENDは必ず最後に表示されます。\n\njoin(long ミリ秒) のように引数を指定すると、対象のスレッドが終わらなくても、指定時間が過ぎれば待機をやめて処理を再開します。\n\n\n\n\n\n\n警告スレッドを stop() で止めてはいけない\n\n\n\nThread クラスには stop() メソッドがありますが、使ってはいけません。stop() はスレッドを処理の途中で強制終了するため、共有変数を書き換えの途中のまま残すおそれがあります。現在のJavaでは非推奨であり、新しいバージョンでは呼び出すと例外が発生します。\nスレッドは run() メソッドの最後まで実行すると自動的に終了します。run() が自然に終わるように設計するのが原則です（5.3節の running フラグの例を参照）。",
+    "text": "6.2 join：スレッドの終了を待つ\njoin() は指定したスレッドが終了するまで待つメソッドです。\n処理の流れを 図 6.1 に示します。\n\n\n\n\n\n\nsequenceDiagram\n    autonumber\n    participant M as メインスレッド\n    participant J as スレッド t\n\n    rect rgba(234, 88, 12, 0.15)\n    M-&gt;&gt;J: t.join()\n    end\n    Note over M: t が終了するまで待機中\n\n    rect rgba(37, 99, 235, 0.15)\n    Note over J: t の処理が終了&lt;br/&gt;（run() の最後まで実行）\n    J--&gt;&gt;M:\n    end\n\n    Note over M: main() の処理を再開\n\n\n\n\n図 6.1: join() による待機\n\n\n\n\n\n\n具体例\n以下の手順にしたがって、次のコードを実行してください。\n\n何度か実行して、カウントが終わる前にENDが表示されることを確認する。\nコメントを外して再度実行し、ENDが必ず最後に表示されることを確認する。\n\n\n\nJoinTest.java\n\npublic class JoinTest extends Thread {\n\n    public void run() {\n        for (int i = 0; i &lt; 10; i++) {\n            System.out.println(i);\n        }\n    }\n\n    public static void main(String[] args) {\n        JoinTest t = new JoinTest();\n        t.start();\n\n        /* 手順2で、このコメントを外す\n        try {\n            t.join();  // スレッド t が終わるまで、メインスレッドはここで待つ\n        } catch (InterruptedException e) {\n        }\n        */\n\n        System.out.println(\"END\");\n    }\n}\n\n\n\n\n\n\n\nノート\n\n\n\njoin(long ミリ秒) のように引数を指定すると、対象のスレッドが終わらなくても、指定時間が過ぎれば待機をやめて処理を再開します。\n\n\n\n\n\n\n\n\n警告スレッドを stop() で止めてはいけない\n\n\n\nThread クラスには stop() メソッドがありますが、使ってはいけません。stop() はスレッドを処理の途中で強制終了するため、共有変数を書き換えの途中のまま残すおそれがあります。現在のJavaでは非推奨であり、新しいバージョンでは呼び出すと例外が発生します。\nスレッドは run() メソッドの最後まで実行すると自動的に終了します。run() が自然に終わるように設計するのが原則です（5.3節の running フラグの例を参照）。",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期（join, wait, notify）</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期</span>"
     ]
   },
   {
     "objectID": "chapters/06-synchronization.html#sec-wait-notify",
     "href": "chapters/06-synchronization.html#sec-wait-notify",
-    "title": "6  スレッドの同期（join, wait, notify）",
-    "section": "6.3 wait と notify：条件が整うまで待つ",
-    "text": "6.3 wait と notify：条件が整うまで待つ\nwait() は、他のスレッドから通知が来るまで待つメソッドです。\n「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。\n\n\n\n\n\n\n\nメソッド\n働き\n\n\n\n\nwait()\n持っているロックを解放してから待機状態に入る。引数でミリ秒を指定すると、その時間が過ぎたときにも待機を終える\n\n\nnotify()\n同じオブジェクトで wait() しているスレッドのうち、1つだけを起こす（どれを起こすかはシステムが決める）\n\n\nnotifyAll()\n同じオブジェクトで wait() しているスレッドをすべて起こす\n\n\n\n\n\n\n\n\n\n重要重要な規則\n\n\n\n\nwait(), notify(), notifyAll() は、そのオブジェクトのロックを持っている状態、つまり synchronized ブロック（またはメソッド）の中でしか呼べません。外で呼ぶと IllegalMonitorStateException が発生します。\nwait() を呼んだスレッドはロックを手放すため、その間に他のスレッドが synchronized の中に入れます。\nnotify() で起こされたスレッドは、すぐには再開しません。ロックをもう一度取得できてから、wait() の次の行から再開します。\n\n\n\n\n\n\n\n\nstateDiagram-v2\n    direction LR\n    state \"実行中&lt;br/&gt;（ロックを持っている）\" as Running\n    state \"待機中&lt;br/&gt;（ロックを解放して待つ）\" as Waiting\n    state \"ロック再取得待ち\" as Relock\n    Running --&gt; Waiting: wait()\n    Waiting --&gt; Relock: notify() / notifyAll()\n    Relock --&gt; Running: ロックを取得したら、&lt;br/&gt;wait() の次の行から再開\n\n    classDef running fill:#DCFCE7,stroke:#15803D,stroke-width:3px,color:#14532D,font-size:17px\n    classDef waiting fill:#FEF3C7,stroke:#B45309,stroke-width:3px,color:#78350F,font-size:17px\n    classDef relock  fill:#DBEAFE,stroke:#1D4ED8,stroke-width:3px,color:#1E3A8A,font-size:17px\n    class Running running\n    class Waiting waiting\n    class Relock relock\n\n\n wait / notify によるスレッドの状態の移り変わり",
+    "title": "6  スレッドの同期",
+    "section": "6.3 wait と notify / notifyAll ：条件が整うまで待つ",
+    "text": "6.3 wait と notify / notifyAll ：条件が整うまで待つ\nwait() は、他のスレッドから通知が来るまで待つメソッドです。\n「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。\n\n\n\n\n\n\n\nメソッド\n働き\n\n\n\n\nwait()\n持っているロックを解放してから待機状態に入る。引数でミリ秒を指定すると、その時間が過ぎたときにも待機を終える\n\n\nnotify()\n同じオブジェクトで wait() しているスレッドのうち、1つだけを起こす（どれを起こすかはシステムが決める）\n\n\nnotifyAll()\n同じオブジェクトで wait() しているスレッドをすべて起こす\n\n\n\n\n\n\n\n\n\n重要重要な規則\n\n\n\n\nwait(), notify(), notifyAll() は、そのオブジェクトのロックを持っている状態、つまり synchronized ブロック（またはメソッド）の中でしか呼べません。外で呼ぶと IllegalMonitorStateException が発生します。\nwait() を呼んだスレッドはロックを手放すため、その間に他のスレッドが synchronized の中に入れます。\nnotify() で起こされたスレッドは、すぐには再開しません。ロックをもう一度取得できてから、wait() の次の行から再開します。\n\n\n\n3つのスレッドが同じオブジェクト obj を使って wait()・notify() を呼ぶ場合の流れを、図 6.2 に示します。\n\n\n\n\n\n\nsequenceDiagram\n    autonumber\n    participant T1 as スレッド1\n    participant O as 共有オブジェクト obj\n    participant T2 as スレッド2\n    participant T3 as スレッド3\n\n    rect rgba(37, 99, 235, 0.15)\n    T1-&gt;&gt;O: wait()\n    end\n    Note over T1: 待機中\n\n    rect rgba(22, 163, 74, 0.15)\n    T3-&gt;&gt;O: wait()\n    end\n    Note over T3: 待機中\n\n    rect rgba(234, 88, 12, 0.15)\n    T2-&gt;&gt;O: notify()\n    O--&gt;&gt;T1: 起こす\n    end\n    Note over T1: ロックを取得 & 再開\n    Note over T3: 待機中\n\n\n\n\n図 6.2: notify() の図解\n\n\n\n\n\n手順3の notify() では、待機中の2つのスレッドのうち1つだけ（この図ではスレッド1）が起こされます。どちらが起こされるかはシステムが決めるため、スレッド3が起こされる場合もあります。\n続いて、notifyAll() について、同様の流れを 図 6.3 に示します。\n\n\n\n\n\n\nsequenceDiagram\n    autonumber\n    participant T1 as スレッド1\n    participant O as 共有オブジェクト obj\n    participant T2 as スレッド2\n    participant T3 as スレッド3\n\n    rect rgba(37, 99, 235, 0.15)\n    T1-&gt;&gt;O: wait()\n    end\n    Note over T1: 待機中\n\n    rect rgba(234, 88, 12, 0.15)\n    T2-&gt;&gt;O: notifyAll()\n    O--&gt;&gt;T1: 起こす\n    O--&gt;&gt;T3: 起こす\n    end\n    Note over T1: ロックを取得 & 再開\n    Note over T3: ロックを取得 & 再開\n\n\n\n\n図 6.3: notifyAll() の図解\n\n\n\n\n\n手順3の notifyAll() では、待機中のスレッドがすべて起こされます。ただし、ロックを持てるのは一度に1つだけなので、実際に再開するのは1つずつです。",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期（join, wait, notify）</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期</span>"
     ]
   },
   {
     "objectID": "chapters/06-synchronization.html#sec-wait-notify-sample",
     "href": "chapters/06-synchronization.html#sec-wait-notify-sample",
-    "title": "6  スレッドの同期（join, wait, notify）",
+    "title": "6  スレッドの同期",
     "section": "6.4 サンプル：上限と下限のあるカウンタ",
     "text": "6.4 サンプル：上限と下限のあるカウンタ\n2つのスレッドが、変数 n をそれぞれ1000回ずつインクリメント（n++）／デクリメント（n--）するプログラムです。ただし、n が取りうる値は [0, 10] の範囲に保たれます。\n\nn が10のときに増やそうとしたら、wait() で待つ。\nn が0のときに減らそうとしたら、wait() で待つ。\n増減に成功したら notify() を呼び、待っている相手のスレッドを起こす。\n\n\n\nWaitNotifyTest.java\n\npublic class WaitNotifyTest {\n    int n = 0;\n\n    synchronized void inc() {\n        while (n == 10) {  // 上限に達している間は待つ（if ではなく while）\n            System.out.println(\"nが10なので、加算を待機\");\n            try {\n                wait();    // ロックを解放して待機\n            } catch (InterruptedException e) {\n                return;\n            }\n        }\n        n++;\n        System.out.println(\"Inc:\" + n);\n        notify();          // 減算を待っているスレッドを起こす\n    }\n\n    synchronized void dec() {\n        while (n == 0) {   // 下限に達している間は待つ\n            System.out.println(\"nが0なので、減算を待機\");\n            try {\n                wait();\n            } catch (InterruptedException e) {\n                return;\n            }\n        }\n        n--;\n        System.out.println(\"Dec:\" + n);\n        notify();          // 加算を待っているスレッドを起こす\n    }\n\n    public static void main(String[] args) {\n        WaitNotifyTest wt = new WaitNotifyTest();\n        new IncThread(wt).start();\n        new DecThread(wt).start();\n    }\n}\n\nclass IncThread extends Thread {\n    WaitNotifyTest wt;\n\n    public IncThread(WaitNotifyTest wt) {\n        this.wt = wt;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 1000; i++) {\n            wt.inc();\n        }\n    }\n}\n\nclass DecThread extends Thread {\n    WaitNotifyTest wt;\n\n    public DecThread(WaitNotifyTest wt) {\n        this.wt = wt;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 1000; i++) {\n            wt.dec();\n        }\n    }\n}\n\n\nなぜ if ではなく while で条件を確かめるのか\nwait() から戻ったときに、待っていた条件が満たされているとは限りません。理由は2つあります。\n\n起こされてからロックを再取得するまでの間に、別のスレッドが先に値を変えている可能性がある（増やす側・減らす側のスレッドが複数ある場合に起こりやすい）。\nJavaの仕様上、通知がなくても wait() から戻ることがある（見せかけの起床、spurious wakeup）。\n\n\n\n\n\n\n\n重要wait() は必ず while ループの中で呼ぶ\n\n\n\nwhile で囲んでおけば、戻った後にもう一度条件を確かめ、満たされていなければ再び待ちます。\n\n\n\n\nnotify() と notifyAll() の使い分け\nこのサンプルのように、待つ可能性のあるスレッドが1種類ずつなら notify() で足ります。待つ理由が異なるスレッドが混在する場合は、notify() では目的と違うスレッドだけが起こされて、全員が待ち続けることがあります。その場合は notifyAll() を使うのが安全です。",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期（join, wait, notify）</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期</span>"
     ]
   },
   {
     "objectID": "chapters/06-synchronization.html#sec-ex3",
     "href": "chapters/06-synchronization.html#sec-ex3",
-    "title": "6  スレッドの同期（join, wait, notify）",
+    "title": "6  スレッドの同期",
     "section": "練習問題3：条件が整うまで待つキュー",
     "text": "練習問題3：条件が整うまで待つキュー\n練習問題1の IntQueue を、次のように変更してください。\n\nキューが空のときに dequeue() が呼ばれたら、要素が追加されるまで wait() で待つ。\nキューが満杯のときに enqueue() が呼ばれたら、要素が取り出されるまで wait() で待つ。\nその結果、各スレッドが必ず100回ずつ enqueue() または dequeue() を成功させるようにする。\n\n実行結果の例\n$ java IntQueue\n（中略）\ndequeue :42 tail:3\ndequeue :49 tail:2\ndequeue :22 tail:1\ndequeue :80 tail:0\ndequeue :47 tail:-1\ndequeue :Queue Empty.. wait enqueue()\nenqueue :98 tail:0\n（中略）\nenqueue :76 tail:6\nenqueue :19 tail:7\nenqueue :100 tail:8\nenqueue :58 tail:9\nenqueue :Queue Full.. wait dequeue()\ndequeue :33 tail:8\ndequeue :53 tail:7\n\n\n\n\n\n\nヒントヒント（クリックで表示）\n\n\n\n\n\n\n6.3節のサンプルと同じく、待つ条件は while で確かめてください。\nこの問題では、追加側と取り出し側のスレッドが2つずつあります。notify() だと、同じ側のスレッド（例：取り出し側のスレッドが、別の取り出し側のスレッド）を起こしてしまい、全員が待ち続ける可能性があります。notifyAll() を使うのが安全です。\nすべてのスレッドが終了し、プログラムが正常に終わることも確認してください。",
     "crumbs": [
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期（join, wait, notify）</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>スレッドの同期</span>"
     ]
   },
   {
@@ -434,7 +434,7 @@
     "href": "chapters/07-deadlock.html",
     "title": "7  デッドロック",
     "section": "",
-    "text": "7.1 デッドロックが起こる4つの条件\nデッドロックとは、2つ以上のスレッド（またはプロセス）が互いに相手の持つ資源の解放を待ち合い、どれも先に進めなくなる状態です。並行プログラミングで最も代表的な落とし穴です。\n身近な例は、4方向から同時に車が進入した交差点です。どの車も「右側の車が先に行くのを待つ」と、全員が待ち続けて誰も動けなくなります。\n次の4つの条件がすべてそろったときに、デッドロックが起こりえます。逆に、どれか1つでも崩せばデッドロックは起こりません。",
+    "text": "7.1 デッドロックが起こる4つの条件\nデッドロックとは、2つ以上のスレッド（またはプロセス）が互いに相手の持つ資源の解放を待ち合い、どれも先に進めなくなる状態です。並行プログラミングで最も代表的な落とし穴です。\n身近な例は、4方向から同時に車が進入した交差点です。どの車も「右側の車が先に行くのを待つ」と、全員が待ち続けて誰も動けなくなります（図 7.1）。\n図の矢印をたどると、最後の車から最初の車に戻り、待ちの関係が輪になっています。この「輪」が、次の節で説明する循環待ちです。\n次の4つの条件がすべてそろったときに、デッドロックが起こりえます。逆に、どれか1つでも崩せばデッドロックは起こりません。",
     "crumbs": [
       "<span class='chapter-number'>7</span>  <span class='chapter-title'>デッドロック</span>"
     ]

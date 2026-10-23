@@ -114,6 +114,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "サーチ"
   }
 }</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -358,7 +361,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join, wait, notify）</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -430,7 +433,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p><strong>デッドロック</strong>とは、2つ以上のスレッド（またはプロセス）が互いに相手の持つ資源の解放を待ち合い、どれも先に進めなくなる状態です。並行プログラミングで最も代表的な落とし穴です。</p>
-<p>身近な例は、4方向から同時に車が進入した交差点です。どの車も「右側の車が先に行くのを待つ」と、全員が待ち続けて誰も動けなくなります。</p>
+<p>身近な例は、4方向から同時に車が進入した交差点です。どの車も「右側の車が先に行くのを待つ」と、全員が待ち続けて誰も動けなくなります（<a href="#fig-deadlock-intersection" class="quarto-xref">図&nbsp;<span>7.1</span></a>）。</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-deadlock-intersection" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-deadlock-intersection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-deadlock-intersection">flowchart LR
+    S["南から進入した車&lt;br&gt;（北へ進む）"]
+    E["東から進入した車&lt;br&gt;（西へ進む）"]
+    N["北から進入した車&lt;br&gt;（南へ進む）"]
+    W["西から進入した車&lt;br&gt;（東へ進む）"]
+
+    S --&gt;|待つ| E
+    E --&gt;|待つ| N
+    N --&gt;|待つ| W
+    W --&gt;|待つ| S
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-deadlock-intersection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;7.1: 交差点のデッドロック。矢印 A → B は「AはBが先に行くのを待つ」ことを表す。待ちの関係が輪になっているため、どの車も動けない
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>図の矢印をたどると、最後の車から最初の車に戻り、待ちの関係が輪になっています。この「輪」が、次の節で説明する<strong>循環待ち</strong>です。</p>
 <section id="sec-deadlock-conditions" class="level2" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="sec-deadlock-conditions"><span class="header-section-number">7.1</span> デッドロックが起こる4つの条件</h2>
 <p>次の4つの条件が<strong>すべて</strong>そろったときに、デッドロックが起こりえます。逆に、どれか1つでも崩せばデッドロックは起こりません。</p>
@@ -998,8 +1028,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapters/06-synchronization.html" class="pagination-link" aria-label="スレッドの同期（join, wait, notify）">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join, wait, notify）</span></span>
+      <a href="../chapters/06-synchronization.html" class="pagination-link" aria-label="スレッドの同期">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
