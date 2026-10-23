@@ -406,13 +406,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#sec-sync-abstract" id="toc-sec-sync-abstract" class="nav-link active" data-scroll-target="#sec-sync-abstract"><span class="header-section-number">6.1</span> 概要</a></li>
   <li><a href="#sec-join" id="toc-sec-join" class="nav-link" data-scroll-target="#sec-join"><span class="header-section-number">6.2</span> join：スレッドの終了を待つ</a>
   <ul class="collapse">
-  <li><a href="#具体例" id="toc-具体例" class="nav-link" data-scroll-target="#具体例">具体例</a></li>
+  <li><a href="#サンプルカウントと終了表示" id="toc-サンプルカウントと終了表示" class="nav-link" data-scroll-target="#サンプルカウントと終了表示">サンプル：カウントと終了表示</a></li>
   </ul></li>
-  <li><a href="#sec-wait-notify" id="toc-sec-wait-notify" class="nav-link" data-scroll-target="#sec-wait-notify"><span class="header-section-number">6.3</span> wait と notify / notifyAll ：条件が整うまで待つ</a></li>
-  <li><a href="#sec-wait-notify-sample" id="toc-sec-wait-notify-sample" class="nav-link" data-scroll-target="#sec-wait-notify-sample"><span class="header-section-number">6.4</span> サンプル：上限と下限のあるカウンタ</a>
+  <li><a href="#sec-wait-notify" id="toc-sec-wait-notify" class="nav-link" data-scroll-target="#sec-wait-notify"><span class="header-section-number">6.3</span> wait：条件が整うまで待つ</a>
   <ul class="collapse">
-  <li><a href="#なぜ-if-ではなく-while-で条件を確かめるのか" id="toc-なぜ-if-ではなく-while-で条件を確かめるのか" class="nav-link" data-scroll-target="#なぜ-if-ではなく-while-で条件を確かめるのか">なぜ if ではなく while で条件を確かめるのか</a></li>
-  <li><a href="#notify-と-notifyall-の使い分け" id="toc-notify-と-notifyall-の使い分け" class="nav-link" data-scroll-target="#notify-と-notifyall-の使い分け">notify() と notifyAll() の使い分け</a></li>
+  <li><a href="#a-notify-による通知" id="toc-a-notify-による通知" class="nav-link" data-scroll-target="#a-notify-による通知">(a) notify による通知</a></li>
+  <li><a href="#b-notifyall-による通知" id="toc-b-notifyall-による通知" class="nav-link" data-scroll-target="#b-notifyall-による通知">(b) notifyAll による通知</a></li>
+  <li><a href="#sec-wait-notify-sample" id="toc-sec-wait-notify-sample" class="nav-link" data-scroll-target="#sec-wait-notify-sample">サンプル：上限と下限のあるカウンタ</a></li>
   </ul></li>
   <li><a href="#sec-ex3" id="toc-sec-ex3" class="nav-link" data-scroll-target="#sec-ex3">練習問題3：条件が整うまで待つキュー</a></li>
   </ul>
@@ -443,11 +443,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="sec-sync-abstract" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="sec-sync-abstract"><span class="header-section-number">6.1</span> 概要</h2>
-<p><strong>同期</strong>とは、2つ以上の処理のタイミングを合わせることです。</p>
+<p><strong>同期</strong>とは、複数のスレッドの間で、処理のタイミングを合わせることです。</p>
 <ul>
-<li>Javaでは、どのスレッドをどの順番で実行するかは基本的にシステムが自動で決めます。</li>
-<li>しかし、<code>join()</code>, <code>wait()</code>, <code>notify()</code> を使うと、プログラムの側で実行の順番を制御できます。</li>
+<li>どのスレッドをいつ実行するかは、基本的に<strong>OSなどのシステムが決めます</strong>。</li>
+<li>しかし、<code>join()</code>, <code>wait()</code>, <code>notify()</code> を使うと、「ある出来事が起こってから、この処理を行う」というような<strong>処理の前後関係を、プログラムの側で指定</strong>できます。</li>
 </ul>
+<div id="tbl-sync-methods" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sync-methods-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;6.1: スレッドの同期に使うメソッド
+</figcaption>
+<div aria-describedby="tbl-sync-methods-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -456,20 +462,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <thead>
 <tr class="header">
 <th>メソッド</th>
-<th>待機の解除</th>
+<th>働き</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><code>join()</code></td>
-<td>指定したスレッドが終了したとき</td>
+<td>指定した<strong>スレッドが終了する</strong>まで待機</td>
 </tr>
 <tr class="even">
 <td><code>wait()</code></td>
-<td>他のスレッドから通知されたとき（<code>notify()</code> または <code>notifyAll()</code> が呼ばれたとき）</td>
+<td>他の<strong>スレッドから通知される</strong>まで待機</td>
+</tr>
+<tr class="odd">
+<td><code>notify()</code></td>
+<td>同じオブジェクトで <code>wait()</code> しているスレッドのうち、<strong>1つだけ</strong>に通知（どれに通知するかはシステムが決める）</td>
+</tr>
+<tr class="even">
+<td><code>notifyAll()</code></td>
+<td>同じオブジェクトで <code>wait()</code> している<strong>すべて</strong>のスレッドに通知</td>
 </tr>
 </tbody>
 </table>
+</div>
+</figure>
+</div>
 </section>
 <section id="sec-join" class="level2" data-number="6.2">
 <h2 data-number="6.2" class="anchored" data-anchor-id="sec-join"><span class="header-section-number">6.2</span> join：スレッドの終了を待つ</h2>
@@ -507,12 +524,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<section id="具体例" class="level3">
-<h3 class="anchored" data-anchor-id="具体例">具体例</h3>
+<section id="サンプルカウントと終了表示" class="level3">
+<h3 class="anchored" data-anchor-id="サンプルカウントと終了表示">サンプル：カウントと終了表示</h3>
 <p>以下の手順にしたがって、次のコードを実行してください。</p>
 <ol type="1">
-<li>何度か実行して、カウントが終わる前にENDが表示されることを確認する。</li>
-<li>コメントを外して再度実行し、ENDが必ず最後に表示されることを確認する。</li>
+<li>何度か実行して、<strong>カウントが終わる前にENDが表示される</strong>ことを確認する。</li>
+<li>コメントを外して再度実行し、<strong>ENDが必ず最後に表示される</strong>ことを確認する。</li>
 </ol>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -541,82 +558,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-ノート
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>join(long ミリ秒)</code> のように引数を指定すると、対象のスレッドが終わらなくても、指定時間が過ぎれば待機をやめて処理を再開します。</p>
-</div>
-</div>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">警告</span>スレッドを stop() で止めてはいけない
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>Thread</code> クラスには <code>stop()</code> メソッドがありますが、使ってはいけません。<code>stop()</code> はスレッドを処理の途中で強制終了するため、共有変数を書き換えの途中のまま残すおそれがあります。現在のJavaでは非推奨であり、新しいバージョンでは呼び出すと例外が発生します。</p>
-<p>スレッドは <code>run()</code> メソッドの最後まで実行すると自動的に終了します。<strong><code>run()</code> が自然に終わるように設計する</strong>のが原則です（<a href="05-volatile.html#sec-visibility">5.3節</a>の <code>running</code> フラグの例を参照）。</p>
-</div>
-</div>
 </section>
 </section>
 <section id="sec-wait-notify" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="sec-wait-notify"><span class="header-section-number">6.3</span> wait と notify / notifyAll ：条件が整うまで待つ</h2>
+<h2 data-number="6.3" class="anchored" data-anchor-id="sec-wait-notify"><span class="header-section-number">6.3</span> wait：条件が整うまで待つ</h2>
 <p><code>wait()</code> は、<strong>他のスレッドから通知が来るまで</strong>待つメソッドです。</p>
-<p>「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>メソッド</th>
-<th>働き</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>wait()</code></td>
-<td>持っているロックを<strong>解放してから</strong>待機状態に入る。引数でミリ秒を指定すると、その時間が過ぎたときにも待機を終える</td>
-</tr>
-<tr class="even">
-<td><code>notify()</code></td>
-<td>同じオブジェクトで <code>wait()</code> しているスレッドのうち、<strong>1つだけ</strong>を起こす（どれを起こすかはシステムが決める）</td>
-</tr>
-<tr class="odd">
-<td><code>notifyAll()</code></td>
-<td>同じオブジェクトで <code>wait()</code> しているスレッドを<strong>すべて</strong>起こす</td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">重要</span>重要な規則
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul>
-<li><code>wait()</code>, <code>notify()</code>, <code>notifyAll()</code> は、そのオブジェクトのロックを持っている状態、つまり <strong><code>synchronized</code> ブロック（またはメソッド）の中でしか</strong>呼べません。外で呼ぶと <code>IllegalMonitorStateException</code> が発生します。</li>
-<li><code>wait()</code> を呼んだスレッドはロックを手放すため、その間に他のスレッドが <code>synchronized</code> の中に入れます。</li>
-<li><code>notify()</code> で起こされたスレッドは、すぐには再開しません。<strong>ロックをもう一度取得できてから</strong>、<code>wait()</code> の次の行から再開します。</li>
-</ul>
-</div>
-</div>
+<p>他のスレッドから通知を送るには <code>notify()</code>, <code>notifyAll()</code> を使います。</p>
+<section id="a-notify-による通知" class="level3">
+<h3 class="anchored" data-anchor-id="a-notify-による通知">(a) notify による通知</h3>
 <p>3つのスレッドが同じオブジェクト <code>obj</code> を使って <code>wait()</code>・<code>notify()</code> を呼ぶ場合の流れを、<a href="#fig-notify" class="quarto-xref">図&nbsp;<span>6.2</span></a> に示します。</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
@@ -658,6 +607,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>手順3の <code>notify()</code> では、待機中の2つのスレッドのうち<strong>1つだけ</strong>（この図ではスレッド1）が起こされます。どちらが起こされるかはシステムが決めるため、スレッド3が起こされる場合もあります。</p>
+</section>
+<section id="b-notifyall-による通知" class="level3">
+<h3 class="anchored" data-anchor-id="b-notifyall-による通知">(b) notifyAll による通知</h3>
 <p>続いて、<code>notifyAll()</code> について、同様の流れを <a href="#fig-notifyAll" class="quarto-xref">図&nbsp;<span>6.3</span></a> に示します。</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
@@ -695,10 +647,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>手順3の <code>notifyAll()</code> では、待機中のスレッドが<strong>すべて</strong>起こされます。ただし、ロックを持てるのは一度に1つだけなので、実際に再開するのは1つずつです。</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">重要</span>重要な規則
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><code>wait()</code>, <code>notify()</code>, <code>notifyAll()</code> は、そのオブジェクトのロックを持っている状態、つまり <strong><code>synchronized</code> ブロック（またはメソッド）の中でしか</strong>呼べません。</li>
+<li><code>wait()</code> を呼んだスレッドがロックを手放すことによって、その間に他のスレッドが <code>synchronized</code> の中に入れます。</li>
+<li>また、<code>notify()</code> で起こされたスレッドは、<strong>ロックをもう一度取得できてから</strong>、<code>wait()</code> の次の行から処理を再開します。</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">ノート</span>待つ時間に上限を設ける
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>join()</code> と <code>wait()</code> は、<code>join(1000)</code> や <code>wait(1000)</code> のように引数でミリ秒を指定できます。指定すると、待っている出来事（スレッドの終了や通知）が起こらなくても、指定時間が過ぎれば待機をやめます。</p>
+<p>ただし <code>wait()</code> の場合は、指定時間が過ぎた後も、<strong>ロックをもう一度取得できてから</strong>、<code>wait()</code> の次の行から再開します。</p>
+</div>
+</div>
 </section>
-<section id="sec-wait-notify-sample" class="level2" data-number="6.4">
-<h2 data-number="6.4" class="anchored" data-anchor-id="sec-wait-notify-sample"><span class="header-section-number">6.4</span> サンプル：上限と下限のあるカウンタ</h2>
-<p>2つのスレッドが、変数 <code>n</code> をそれぞれ1000回ずつインクリメント（<code>n++</code>）／デクリメント（<code>n--</code>）するプログラムです。ただし、<code>n</code> が取りうる値は [0, 10] の範囲に保たれます。</p>
+<section id="sec-wait-notify-sample" class="level3">
+<h3 class="anchored" data-anchor-id="sec-wait-notify-sample">サンプル：上限と下限のあるカウンタ</h3>
+<p>2つのスレッドが、変数 <code>n</code> をそれぞれ1000回ずつインクリメント（<code>n++</code>）またはデクリメント（<code>n--</code>）するプログラムを考えます。</p>
+<p>ただし、次のようにして、<code>n</code> が取りうる値が常に [0, 10] の範囲に保たれるようにします。</p>
 <ul>
 <li><code>n</code> が10のときに増やそうとしたら、<code>wait()</code> で待つ。</li>
 <li><code>n</code> が0のときに減らそうとしたら、<code>wait()</code> で待つ。</li>
@@ -774,35 +758,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<section id="なぜ-if-ではなく-while-で条件を確かめるのか" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="なぜ-if-ではなく-while-で条件を確かめるのか">なぜ if ではなく while で条件を確かめるのか</h3>
-<p><code>wait()</code> から戻ったときに、待っていた条件が満たされているとは限りません。理由は2つあります。</p>
-<ol type="1">
-<li>起こされてからロックを再取得するまでの間に、別のスレッドが先に値を変えている可能性がある（増やす側・減らす側のスレッドが複数ある場合に起こりやすい）。</li>
-<li>Javaの仕様上、通知がなくても <code>wait()</code> から戻ることがある（<strong>見せかけの起床</strong>、spurious wakeup）。</li>
-</ol>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">重要</span>wait() は必ず while ループの中で呼ぶ
+<span class="screen-reader-only">重要</span>wait() は必ず if ではなく while ループの中で呼ぶ
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>while</code> で囲んでおけば、戻った後にもう一度条件を確かめ、満たされていなければ再び待ちます。</p>
+<p><code>wait()</code> から戻ったときに、待っていた条件が満たされているとは限りません。理由は2つあります。</p>
+<ol type="1">
+<li>起こされてからロックを再取得するまでの間に、別のスレッドが先に値を変えている可能性がある。</li>
+<li>Javaの仕様上、通知がなくても <code>wait()</code> から戻ることがある（<strong>見せかけの起床</strong>, spurious wakeup）。</li>
+</ol>
+<p><code>while</code> で囲んでおけば、戻った後にもう一度条件を確かめ、満たされていなければ再び待機させることができます。</p>
 </div>
 </div>
-</section>
-<section id="notify-と-notifyall-の使い分け" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="notify-と-notifyall-の使い分け">notify() と notifyAll() の使い分け</h3>
-<p>このサンプルのように、待つ可能性のあるスレッドが1種類ずつなら <code>notify()</code> で足ります。待つ理由が異なるスレッドが混在する場合は、<code>notify()</code> では目的と違うスレッドだけが起こされて、全員が待ち続けることがあります。その場合は <code>notifyAll()</code> を使うのが安全です。</p>
 </section>
 </section>
 <section id="sec-ex3" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="sec-ex3">練習問題3：条件が整うまで待つキュー</h2>
-<p><a href="05-race-condition.qmd#sec-ex1">練習問題1</a>の <code>IntQueue</code> を、次のように変更してください。</p>
+<p><a href="../chapters/04-race-condition.html#sec-ex1">練習問題1</a>の <code>IntQueue</code> を、次のように変更してください。</p>
 <ul>
 <li>キューが<strong>空</strong>のときに <code>dequeue()</code> が呼ばれたら、要素が追加されるまで <code>wait()</code> で待つ。</li>
 <li>キューが<strong>満杯</strong>のときに <code>enqueue()</code> が呼ばれたら、要素が取り出されるまで <code>wait()</code> で待つ。</li>
@@ -827,7 +805,7 @@ enqueue :Queue Full.. wait dequeue()
 dequeue :33 tail:8
 dequeue :53 tail:7</code></pre>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -836,7 +814,7 @@ dequeue :53 tail:7</code></pre>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="#sec-wait-notify-sample">6.3節</a>のサンプルと同じく、待つ条件は <code>while</code> で確かめてください。</li>

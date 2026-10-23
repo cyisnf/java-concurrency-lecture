@@ -114,9 +114,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "サーチ"
   }
 }</script>
-<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
-<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
-<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -403,8 +400,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-deadlock-conditions" id="toc-sec-deadlock-conditions" class="nav-link active" data-scroll-target="#sec-deadlock-conditions"><span class="header-section-number">7.1</span> デッドロックが起こる4つの条件</a></li>
+  <li><a href="#概要" id="toc-概要" class="nav-link active" data-scroll-target="#概要"><span class="header-section-number">7.1</span> 概要</a></li>
   <li><a href="#sec-deadlock-sample" id="toc-sec-deadlock-sample" class="nav-link" data-scroll-target="#sec-deadlock-sample"><span class="header-section-number">7.2</span> サンプル：ナイフとフォークで食事する人々</a></li>
+  <li><a href="#sec-deadlock-conditions" id="toc-sec-deadlock-conditions" class="nav-link" data-scroll-target="#sec-deadlock-conditions"><span class="header-section-number">7.3</span> デッドロックが起こる4つの条件</a></li>
   <li><a href="#sec-ex4" id="toc-sec-ex4" class="nav-link" data-scroll-target="#sec-ex4">練習問題4：デッドロックしない設計</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/07-deadlock.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
@@ -432,144 +430,92 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><strong>デッドロック</strong>とは、2つ以上のスレッド（またはプロセス）が互いに相手の持つ資源の解放を待ち合い、どれも先に進めなくなる状態です。並行プログラミングで最も代表的な落とし穴です。</p>
-<p>身近な例は、4方向から同時に車が進入した交差点です。どの車も「右側の車が先に行くのを待つ」と、全員が待ち続けて誰も動けなくなります（<a href="#fig-deadlock-intersection" class="quarto-xref">図&nbsp;<span>7.1</span></a>）。</p>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div id="fig-deadlock-intersection" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-deadlock-intersection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div>
-<pre class="mermaid mermaid-js" data-label="fig-deadlock-intersection">flowchart LR
-    S["南から進入した車&lt;br&gt;（北へ進む）"]
-    E["東から進入した車&lt;br&gt;（西へ進む）"]
-    N["北から進入した車&lt;br&gt;（南へ進む）"]
-    W["西から進入した車&lt;br&gt;（東へ進む）"]
-
-    S --&gt;|待つ| E
-    E --&gt;|待つ| N
-    N --&gt;|待つ| W
-    W --&gt;|待つ| S
-</pre>
-</div>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-deadlock-intersection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-図&nbsp;7.1: 交差点のデッドロック。矢印 A → B は「AはBが先に行くのを待つ」ことを表す。待ちの関係が輪になっているため、どの車も動けない
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<p>図の矢印をたどると、最後の車から最初の車に戻り、待ちの関係が輪になっています。この「輪」が、次の節で説明する<strong>循環待ち</strong>です。</p>
-<section id="sec-deadlock-conditions" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="sec-deadlock-conditions"><span class="header-section-number">7.1</span> デッドロックが起こる4つの条件</h2>
-<p>次の4つの条件が<strong>すべて</strong>そろったときに、デッドロックが起こりえます。逆に、どれか1つでも崩せばデッドロックは起こりません。</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>条件</th>
-<th>意味</th>
-<th>食事の例（<a href="#sec-deadlock-sample">7.2節</a>）</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>相互排除</td>
-<td>資源を同時に使えるのは1人だけ</td>
-<td>ナイフもフォークも1本しかない</td>
-</tr>
-<tr class="even">
-<td>保持と待機</td>
-<td>資源を持ったまま、別の資源を待つ</td>
-<td>フォークを持ったまま、ナイフを待つ</td>
-</tr>
-<tr class="odd">
-<td>横取り不可</td>
-<td>他人が持つ資源を奪えない</td>
-<td>他人のナイフを取り上げられない</td>
-</tr>
-<tr class="even">
-<td>循環待ち</td>
-<td>待ちの関係が輪になる</td>
-<td>AはBのナイフを、BはAのフォークを待つ</td>
-</tr>
-</tbody>
-</table>
+<section id="概要" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="概要"><span class="header-section-number">7.1</span> 概要</h2>
+<p><strong>デッドロック</strong>とは、2つ以上のスレッド（またはプロセス）が<strong>互いに相手の持つ資源の解放を待ち合い</strong>、どれも先に進めなくなる状態です。並行プログラミングで最も代表的な落とし穴です。</p>
 </section>
 <section id="sec-deadlock-sample" class="level2" data-number="7.2">
 <h2 data-number="7.2" class="anchored" data-anchor-id="sec-deadlock-sample"><span class="header-section-number">7.2</span> サンプル：ナイフとフォークで食事する人々</h2>
-<p>次のプログラムは、デッドロックを起こす<strong>可能性がある</strong>プログラムです。</p>
+<p>デッドロックという現象を理解するために、次のような状況を考えてください。</p>
 <ul>
-<li>8人の人（スレッド）がいて、ナイフとフォークは1本ずつしかない。</li>
+<li>8人（Aさん, Bさん, …）がいるが、ナイフとフォークは<strong>1本ずつ</strong>しかない。</li>
 <li>食事をするには、ナイフとフォークの<strong>両方</strong>を持っている必要がある。</li>
-<li><code>fork</code> と <code>knife</code> には、それを持っている人のID番号が入る。0は「誰も持っていない」ことを表す。</li>
-<li>食事が終わったら、ナイフとフォークを返す（0に戻す）。各人は10回食事をする。</li>
+<li>食事が終わったら、ナイフとフォークを返す。</li>
+<li>8人は、それぞれ10回ずつ食事をしなければならない。</li>
 </ul>
+<p>何が起こるか：</p>
+<ul>
+<li>Aさんがフォークを、Bさんがナイフを取ったとします。</li>
+<li>Aさんはナイフを、Bさんはフォークが利用可能になるのを待ち続けます。</li>
+<li>どちらも自分の道具を手放しません。</li>
+<li>誰も食事ができなくなり、プログラムは終わらなくなります。</li>
+</ul>
+<p>上記の例をプログラムとして表現すると、以下のようになります。これはデッドロックを起こす<strong>可能性がある</strong>プログラムです。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>DeadLockTest.java</strong></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-filename="DeadLockTest.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> DeadLockTest <span class="op">{</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> fork <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>   <span class="co">// フォークを持っている人のID（0なら誰も持っていない）</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> knife <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>  <span class="co">// ナイフを持っている人のID</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">void</span> <span class="fu">getFork</span><span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>fork <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span><span class="op">;</span>  <span class="co">// 誰かが持っているので取れない</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        fork <span class="op">=</span> n<span class="op">;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>n <span class="op">+</span> <span class="st">" get Fork"</span><span class="op">);</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">void</span> <span class="fu">getKnife</span><span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>knife <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span><span class="op">;</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        knife <span class="op">=</span> n<span class="op">;</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>n <span class="op">+</span> <span class="st">" get Knife"</span><span class="op">);</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">void</span> <span class="fu">reset</span><span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span>  <span class="co">// 自分が持っている道具を返す</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>fork <span class="op">==</span> n<span class="op">)</span> fork <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>knife <span class="op">==</span> n<span class="op">)</span> knife <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">boolean</span> <span class="fu">canEat</span><span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span>  <span class="co">// 両方持っていれば食事できる</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">(</span>fork <span class="op">==</span> n<span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">(</span>knife <span class="op">==</span> n<span class="op">);</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        DeadLockTest dlt <span class="op">=</span> <span class="kw">new</span> <span class="fu">DeadLockTest</span><span class="op">();</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">9</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>            <span class="kw">new</span> <span class="fu">HumanThread</span><span class="op">(</span>dlt<span class="op">,</span> i<span class="op">).</span><span class="fu">start</span><span class="op">();</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> HumanThread <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    DeadLockTest dlt<span class="op">;</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> id<span class="op">;</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">HumanThread</span><span class="op">(</span>DeadLockTest dlt<span class="op">,</span> <span class="dt">int</span> id<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">dlt</span> <span class="op">=</span> dlt<span class="op">;</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">id</span> <span class="op">=</span> id<span class="op">;</span></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">10</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>            <span class="cf">while</span> <span class="op">(!</span>dlt<span class="op">.</span><span class="fu">canEat</span><span class="op">(</span>id<span class="op">))</span> <span class="op">{</span>  <span class="co">// 両方そろうまで取りに行き続ける</span></span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>                dlt<span class="op">.</span><span class="fu">getFork</span><span class="op">(</span>id<span class="op">);</span></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>                dlt<span class="op">.</span><span class="fu">getKnife</span><span class="op">(</span>id<span class="op">);</span></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>id <span class="op">+</span> <span class="st">" ate a meal."</span><span class="op">);</span></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>            dlt<span class="op">.</span><span class="fu">reset</span><span class="op">(</span>id<span class="op">);</span></span>
-<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// fork と knife には、それを持っている人のID番号が入る</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// ただし、誰もそれを持っていなければ 0 が入る</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> fork <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>   <span class="co">// フォークを持っている人のID</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> knife <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>  <span class="co">// ナイフを持っている人のID</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">void</span> <span class="fu">getFork</span><span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>fork <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span><span class="op">;</span>  <span class="co">// 誰かが持っているので取れない</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        fork <span class="op">=</span> n<span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>n <span class="op">+</span> <span class="st">" get Fork"</span><span class="op">);</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">void</span> <span class="fu">getKnife</span><span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>knife <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        knife <span class="op">=</span> n<span class="op">;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>n <span class="op">+</span> <span class="st">" get Knife"</span><span class="op">);</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">void</span> <span class="fu">reset</span><span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span>  <span class="co">// 自分が持っている道具を返す</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>fork <span class="op">==</span> n<span class="op">)</span> fork <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>knife <span class="op">==</span> n<span class="op">)</span> knife <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">synchronized</span> <span class="dt">boolean</span> <span class="fu">canEat</span><span class="op">(</span><span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span>  <span class="co">// 両方持っていれば食事できる</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">(</span>fork <span class="op">==</span> n<span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">(</span>knife <span class="op">==</span> n<span class="op">);</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        DeadLockTest dlt <span class="op">=</span> <span class="kw">new</span> <span class="fu">DeadLockTest</span><span class="op">();</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">9</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>            <span class="kw">new</span> <span class="fu">HumanThread</span><span class="op">(</span>dlt<span class="op">,</span> i<span class="op">).</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> HumanThread <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    DeadLockTest dlt<span class="op">;</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> id<span class="op">;</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">HumanThread</span><span class="op">(</span>DeadLockTest dlt<span class="op">,</span> <span class="dt">int</span> id<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">dlt</span> <span class="op">=</span> dlt<span class="op">;</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">id</span> <span class="op">=</span> id<span class="op">;</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">10</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>            <span class="cf">while</span> <span class="op">(!</span>dlt<span class="op">.</span><span class="fu">canEat</span><span class="op">(</span>id<span class="op">))</span> <span class="op">{</span>  <span class="co">// 両方そろうまで取りに行き続ける</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>                dlt<span class="op">.</span><span class="fu">getFork</span><span class="op">(</span>id<span class="op">);</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>                dlt<span class="op">.</span><span class="fu">getKnife</span><span class="op">(</span>id<span class="op">);</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>            <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>id <span class="op">+</span> <span class="st">" ate a meal."</span><span class="op">);</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>            dlt<span class="op">.</span><span class="fu">reset</span><span class="op">(</span>id<span class="op">);</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><strong>何が起こるか</strong>：たとえば、人1がフォークを、人2がナイフを取ったとします。人1はナイフを、人2はフォークを待ち続けますが、どちらも自分の道具を手放しません。<a href="#sec-deadlock-conditions">7.1節</a>の4条件がすべてそろうため、誰も食事ができなくなり、プログラムは終わらなくなります。</p>
-<p>各メソッドは <code>synchronized</code> なので、<a href="05-race-condition.qmd">第5章</a>の競合状態は起こりません。それでもデッドロックは起こります。つまり、<strong>排他制御が正しくても、資源の取り方（アルゴリズム）に問題があればデッドロックは起こる</strong>のです。</p>
-<p>※ このサンプルでは、スレッドは <code>wait()</code> で止まるのではなく、ループを回り続けながら待ちます。そのため、止まっているように見えてもCPUは使われ続けます。</p>
+<p>各メソッドは <code>synchronized</code> なので、<a href="../chapters/04-race-condition.html">第5章</a>の競合状態は起こりません。それでもデッドロックは起こります。つまり、<strong>排他制御が正しくても、資源の取り方（アルゴリズム）に問題があればデッドロックは起こる</strong>のです。</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -583,6 +529,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>実行のタイミングによっては、問題なく最後まで動くこともあります。そのため、テストで見つからずに残りやすく、<strong>原因の特定が難しい不具合</strong>になります。プログラムを設計する段階で、デッドロックが起こりえないかを確かめることが重要です。</p>
 </div>
 </div>
+</section>
+<section id="sec-deadlock-conditions" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="sec-deadlock-conditions"><span class="header-section-number">7.3</span> デッドロックが起こる4つの条件</h2>
+<p>次の4つの条件が<strong>すべて</strong>そろったときに、デッドロックが起こりえます。逆に、どれか1つでも崩せばデッドロックは起こりません。</p>
+<table class="table-striped caption-top table">
+<caption>デッドロックが起こる4つの条件（コフマン条件）</caption>
+<thead>
+<tr class="header">
+<th>条件</th>
+<th>意味</th>
+<th><a href="#sec-deadlock-sample">7.2節</a>のサンプルでは</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>相互排他<br>（mutual exclusion）</td>
+<td>1つの資源は、同時に1つのスレッドしか使えない</td>
+<td>フォークもナイフも1本ずつしかない</td>
+</tr>
+<tr class="even">
+<td>保持と待機<br>（hold and wait）</td>
+<td>ある資源を持ったまま、別の資源の解放を待つことがある</td>
+<td>フォークを持ったまま、ナイフが空くのを待つことがある</td>
+</tr>
+<tr class="odd">
+<td>横取り不可<br>（no preemption）</td>
+<td>資源は、持っているスレッドが自分から手放すまで解放されない</td>
+<td>ナイフとフォークは、食事が終わるまで解放されない</td>
+</tr>
+<tr class="even">
+<td>循環待ち<br>（circular wait）</td>
+<td>「誰が誰を待っているか」をたどると輪になる</td>
+<td>AさんはBさんが持つナイフを待ち、BさんはAさんが持つフォークを待つ</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="sec-ex4" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="sec-ex4">練習問題4：デッドロックしない設計</h2>

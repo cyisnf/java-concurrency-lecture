@@ -400,10 +400,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-cpu-count" id="toc-sec-cpu-count" class="nav-link active" data-scroll-target="#sec-cpu-count"><span class="header-section-number">8.1</span> CPU（コア）数の確認</a></li>
-  <li><a href="#sec-para-sample" id="toc-sec-para-sample" class="nav-link" data-scroll-target="#sec-para-sample"><span class="header-section-number">8.2</span> サンプル：配列の要素を分担して増やす</a></li>
-  <li><a href="#sec-measure" id="toc-sec-measure" class="nav-link" data-scroll-target="#sec-measure"><span class="header-section-number">8.3</span> 実行時間の測り方</a></li>
-  <li><a href="#sec-suitability" id="toc-sec-suitability" class="nav-link" data-scroll-target="#sec-suitability"><span class="header-section-number">8.4</span> 並列処理に向くプログラム、向かないプログラム</a></li>
+  <li><a href="#概要" id="toc-概要" class="nav-link active" data-scroll-target="#概要"><span class="header-section-number">8.1</span> 概要</a></li>
+  <li><a href="#sec-cpu-count" id="toc-sec-cpu-count" class="nav-link" data-scroll-target="#sec-cpu-count"><span class="header-section-number">8.2</span> CPU（コア）数の確認</a></li>
+  <li><a href="#sec-para-sample" id="toc-sec-para-sample" class="nav-link" data-scroll-target="#sec-para-sample"><span class="header-section-number">8.3</span> サンプル：配列の要素を分担して増やす</a></li>
+  <li><a href="#sec-measure" id="toc-sec-measure" class="nav-link" data-scroll-target="#sec-measure"><span class="header-section-number">8.4</span> 実行時間の測り方</a></li>
+  <li><a href="#sec-suitability" id="toc-sec-suitability" class="nav-link" data-scroll-target="#sec-suitability"><span class="header-section-number">8.5</span> 並列処理に向くプログラム、向かないプログラム</a></li>
   <li><a href="#sec-exercise" id="toc-sec-exercise" class="nav-link" data-scroll-target="#sec-exercise">演習：スレッド数と処理時間の関係</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/08-parallel.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
@@ -431,9 +432,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Javaのスレッドは、使えるコアが複数あれば自動的に並列に実行されます。書き方はこれまでの並行プログラミングと同じです。この章では、スレッド数を増やすと実行時間がどれだけ短くなるかを、実際に測って確かめます。</p>
-<section id="sec-cpu-count" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="sec-cpu-count"><span class="header-section-number">8.1</span> CPU（コア）数の確認</h2>
+<section id="概要" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="概要"><span class="header-section-number">8.1</span> 概要</h2>
+<p>この章では、スレッド数を増やすと実行時間がどれだけ短くなるかを、実際に測って確かめます。</p>
+</section>
+<section id="sec-cpu-count" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="sec-cpu-count"><span class="header-section-number">8.2</span> CPU（コア）数の確認</h2>
 <p>まず、使っているコンピュータが同時にいくつの処理を実行できるかを確認します。Linuxでは次のコマンドで確認できます。</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> nproc                              <span class="co"># 同時に実行できる処理の数（論理プロセッサ数）</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">8</span></span>
@@ -443,7 +447,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">（中略）</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">processor</span>       : 7</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Javaのプログラムの中からは、<code>Runtime.getRuntime().availableProcessors()</code> で同じ値を取得できます。</p>
-<p>上の例の計算機では、OSから<strong>8個の論理プロセッサ</strong>が見えています。したがって、8スレッドまでは同時に実行できます。</p>
+<p>上の例の計算機では、OSから<strong>8個 (0～7) の論理プロセッサ</strong>が見えています。したがって、8スレッドまでは同時に実行できます。</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -459,8 +463,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="sec-para-sample" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="sec-para-sample"><span class="header-section-number">8.2</span> サンプル：配列の要素を分担して増やす</h2>
+<section id="sec-para-sample" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="sec-para-sample"><span class="header-section-number">8.3</span> サンプル：配列の要素を分担して増やす</h2>
 <p>100万個の要素をもつ配列の各要素を、10000回ずつ1増やすプログラムです。コマンドライン引数でスレッド数を指定し、配列を<strong>スレッド数で等分して</strong>、各スレッドに担当させます。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -515,11 +519,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>各スレッドは配列の<strong>別々の範囲</strong>だけを書き換えるため、同じ要素を複数のスレッドが触ることはありません。そのため、<a href="05-race-condition.qmd">第5章</a>の排他制御は不要です。</p>
+<p>各スレッドは配列の<strong>別々の範囲</strong>だけを書き換えるため、同じ要素を複数のスレッドが触ることはありません。そのため、<a href="../chapters/04-race-condition.html">第5章</a>の排他制御は不要です。</p>
 <p>※ 担当範囲の終わりは、最後のスレッドだけ <code>SIZE</code> にしています。たとえば3スレッドの場合、1000000 ÷ 3 の余り（1要素）が、どのスレッドにも割り当てられずに残るのを防ぐためです。</p>
 </section>
-<section id="sec-measure" class="level2" data-number="8.3">
-<h2 data-number="8.3" class="anchored" data-anchor-id="sec-measure"><span class="header-section-number">8.3</span> 実行時間の測り方</h2>
+<section id="sec-measure" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="sec-measure"><span class="header-section-number">8.4</span> 実行時間の測り方</h2>
 <p><strong>方法1：プログラムの中で測る</strong>（<a href="#sec-para-sample">8.2節</a>のサンプルで使っている方法）</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">long</span> startTime <span class="op">=</span> <span class="bu">System</span><span class="op">.</span><span class="fu">currentTimeMillis</span><span class="op">();</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">// 計測したい処理</span></span>
@@ -574,8 +578,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><code>user</code> がほとんど変わらないのは、仕事の総量が変わらないからです。半分ずつの仕事を2人で分担しても、1人で全部やっても、仕事の総量は同じなのと同じ理屈です。</p>
 <p><code>&gt; /dev/null</code> は、プログラムの出力を画面に表示せずに捨てる指定です。画面表示（入出力）にかかる時間を除いて、計算の時間を測りたいときに使います。</p>
 </section>
-<section id="sec-suitability" class="level2" data-number="8.4">
-<h2 data-number="8.4" class="anchored" data-anchor-id="sec-suitability"><span class="header-section-number">8.4</span> 並列処理に向くプログラム、向かないプログラム</h2>
+<section id="sec-suitability" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="sec-suitability"><span class="header-section-number">8.5</span> 並列処理に向くプログラム、向かないプログラム</h2>
 <table class="caption-top table">
 <thead>
 <tr class="header">
