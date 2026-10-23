@@ -114,12 +114,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "サーチ"
   }
 }</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-sidebar floating slimcontent quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -358,7 +361,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join, wait, notify）</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -400,24 +403,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-volatile" id="toc-sec-volatile" class="nav-link active" data-scroll-target="#sec-volatile"><span class="header-section-number">5.1</span> volatile変数（発展）</a>
+  <li><a href="#sec-av-abstract" id="toc-sec-av-abstract" class="nav-link active" data-scroll-target="#sec-av-abstract"><span class="header-section-number">5.1</span> 概要</a></li>
+  <li><a href="#sec-problem-goal-means" id="toc-sec-problem-goal-means" class="nav-link" data-scroll-target="#sec-problem-goal-means"><span class="header-section-number">5.2</span> 問題・目的・手段の関係</a>
   <ul class="collapse">
-  <li><a href="#sec-volatile-vs-sync" id="toc-sec-volatile-vs-sync" class="nav-link" data-scroll-target="#sec-volatile-vs-sync">volatile と synchronized の比較</a></li>
-  <li><a href="#sec-volatile-usage" id="toc-sec-volatile-usage" class="nav-link" data-scroll-target="#sec-volatile-usage">volatile の用途</a></li>
+  <li><a href="#sec-atomicity" id="toc-sec-atomicity" class="nav-link" data-scroll-target="#sec-atomicity">原子性とは</a></li>
+  <li><a href="#sec-mutex-for-atomicity" id="toc-sec-mutex-for-atomicity" class="nav-link" data-scroll-target="#sec-mutex-for-atomicity">排他制御は原子性を実現する手段</a></li>
   </ul></li>
-  <li><a href="#sec-thread-id" id="toc-sec-thread-id" class="nav-link" data-scroll-target="#sec-thread-id"><span class="header-section-number">5.2</span> 補足：スレッドの識別番号</a></li>
-  <li><a href="#sec-ex1" id="toc-sec-ex1" class="nav-link" data-scroll-target="#sec-ex1">練習問題1：スレッド安全なキュー</a></li>
-  <li><a href="#sec-ex2" id="toc-sec-ex2" class="nav-link" data-scroll-target="#sec-ex2">練習問題2：ATMによる送金</a></li>
+  <li><a href="#sec-visibility" id="toc-sec-visibility" class="nav-link" data-scroll-target="#sec-visibility"><span class="header-section-number">5.3</span> 可視性</a>
+  <ul class="collapse">
+  <li><a href="#sec-visibility-demo" id="toc-sec-visibility-demo" class="nav-link" data-scroll-target="#sec-visibility-demo">問題の再現</a></li>
+  <li><a href="#sec-visibility-cause" id="toc-sec-visibility-cause" class="nav-link" data-scroll-target="#sec-visibility-cause">なぜ値が見えないのか</a></li>
+  <li><a href="#sec-sync-visibility" id="toc-sec-sync-visibility" class="nav-link" data-scroll-target="#sec-sync-visibility">synchronized は可視性も保証する</a></li>
+  </ul></li>
+  <li><a href="#sec-volatile" id="toc-sec-volatile" class="nav-link" data-scroll-target="#sec-volatile"><span class="header-section-number">5.4</span> volatile変数</a></li>
+  <li><a href="#sec-volatile-not-atomic" id="toc-sec-volatile-not-atomic" class="nav-link" data-scroll-target="#sec-volatile-not-atomic"><span class="header-section-number">5.5</span> volatileでは競合状態を防げない</a></li>
+  <li><a href="#sec-volatile-usage" id="toc-sec-volatile-usage" class="nav-link" data-scroll-target="#sec-volatile-usage"><span class="header-section-number">5.6</span> volatile の用途</a></li>
+  <li><a href="#sec-av-summary" id="toc-sec-av-summary" class="nav-link" data-scroll-target="#sec-av-summary"><span class="header-section-number">5.7</span> この章のまとめ</a></li>
+  <li><a href="#sec-thread-id" id="toc-sec-thread-id" class="nav-link" data-scroll-target="#sec-thread-id"><span class="header-section-number">5.8</span> 補足：スレッドの識別番号</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/05-volatile.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content page-columns page-full" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">原子性と可視性</span></h1>
+<h1 class="title"><span id="sec-atomicity-visibility" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">原子性と可視性</span></span></h1>
 </div>
 
 
@@ -434,23 +446,224 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="sec-volatile" class="level2 page-columns page-full" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="sec-volatile"><span class="header-section-number">5.1</span> volatile変数（発展）</h2>
-<p><code>volatile</code> は、変数の<strong>可視性<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></strong>を保証する修飾子です。</p>
-<div class="no-row-height column-margin column-container"><div id="fn1"><p><sup>1</sup>&nbsp;あるスレッドが書き込んだ値を、他のスレッドから見ることができる性質</p></div></div><ul>
-<li>各スレッドは、処理を速くするために、共有変数の値を<strong>一時的に手元（CPUのレジスタなど）に保持</strong>することがあります。</li>
-<li>また、コンパイラが最適化のために、変数の<strong>読み込みを省略</strong>することもあります。</li>
-<li>そのため、あるスレッドが変数の値を書き換えても、他のスレッドからは古い値しか見えないことがあります。</li>
-<li><code>volatile</code> を付けた変数を読み込むときは、<strong>常に最新の値</strong>が読まれるため、あるスレッドで書き込んだ値は他のスレッドからでも必ず見えるようになります。</li>
+<section id="sec-av-abstract" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="sec-av-abstract"><span class="header-section-number">5.1</span> 概要</h2>
+<p><a href="../chapters/04-race-condition.html">第4章</a>では、<strong>競合状態</strong>という問題を、<code>synchronized</code> による<strong>排他制御</strong>で防ぎました。 この章では、排他制御によって何が保証されていたのかを、<strong>原子性</strong>と<strong>可視性</strong>という2つの性質に分けて整理します。</p>
+<p>そのうえで、可視性だけを保証する <code>volatile</code> 修飾子を学び、<strong><code>volatile</code> では競合状態を防げない</strong>理由を説明します。</p>
+</section>
+<section id="sec-problem-goal-means" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="sec-problem-goal-means"><span class="header-section-number">5.2</span> 問題・目的・手段の関係</h2>
+<p>第4章の内容は、「問題」「目的」「手段」の3つの関係として整理できます。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>区分</th>
+<th>名前</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>問題</td>
+<td>競合状態</td>
+<td>複数のスレッドが共有変数を同時に更新し、更新の一部が失われる</td>
+</tr>
+<tr class="even">
+<td>目的</td>
+<td>原子性</td>
+<td>一連の操作を、途中で他のスレッドに割り込まれずに行う</td>
+</tr>
+<tr class="odd">
+<td>手段</td>
+<td>排他制御</td>
+<td><code>synchronized</code> を使い、その処理を同時に1つのスレッドだけに実行させる</td>
+</tr>
+</tbody>
+</table>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-problem-goal-means" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-problem-goal-means-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-problem-goal-means">flowchart LR
+    P["問題&lt;br/&gt;（競合状態）"] --&gt;|防ぐために必要な性質| G["目的&lt;br/&gt;（原子性）"]
+    G --&gt;|実現する手段| M["手段&lt;br/&gt;（排他制御 / synchronized）"]
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-problem-goal-means-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;5.1: 競合状態・原子性・排他制御の関係
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="sec-atomicity" class="level3">
+<h3 class="anchored" data-anchor-id="sec-atomicity">原子性とは</h3>
+<p><strong>原子性</strong>とは、<strong>操作の途中に他のスレッドが割り込めない</strong>性質です。 「原子」という言葉は、「それ以上分けられないもの」という意味で使われています。</p>
+<p><a href="../chapters/04-race-condition.html#sec-race-cause">4.3節</a>で見たとおり、<code>c++</code> は「読み込み・計算・書き込み」の3つの操作に分かれるため、原子性がありません。 そのため <a href="04-race-condition.html#fig-race" class="quarto-xref">図&nbsp;<span>4.1</span></a> のように、スレッド1の読み込みと書き込みの間にスレッド2が割り込み、更新が失われました。</p>
+<p>つまり、<strong>競合状態は、原子性のない操作を、複数のスレッドが同時に行うことで起こる問題</strong>です。 逆に、<code>c++</code> の3つの操作を原子的に（途中で割り込まれずに）行うことができれば、競合状態は起こりません。 したがって、原子性は、競合状態を防ぐために達成すべき<strong>目的</strong>です。</p>
+</section>
+<section id="sec-mutex-for-atomicity" class="level3">
+<h3 class="anchored" data-anchor-id="sec-mutex-for-atomicity">排他制御は原子性を実現する手段</h3>
+<p>Javaでは、<code>c++</code> と書いただけでは原子性は得られません。そこで<a href="../chapters/04-race-condition.html#sec-sync-block">第4章</a>では、<code>c++</code> を <code>synchronized</code> で囲みました。</p>
+<ul>
+<li>ロックを持つスレッドが3つの操作をすべて終えるまで、他のスレッドは同じロックを使う処理に入れません。</li>
+<li>その結果、他のスレッドから見ると、3つの操作がまとめて一度に行われたように見えます。</li>
 </ul>
-<section id="sec-volatile-vs-sync" class="level3 page-columns page-full">
-<h3 class="anchored" data-anchor-id="sec-volatile-vs-sync">volatile と synchronized の比較</h3>
+<p>このように、<strong>排他制御は、原子性を実現するための手段</strong>です。</p>
+</section>
+</section>
+<section id="sec-visibility" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="sec-visibility"><span class="header-section-number">5.3</span> 可視性</h2>
+<p>共有変数を複数のスレッドで扱うときには、<strong>競合状態とは別の問題</strong>もあります。 それは、あるスレッドが書き込んだ値が、他のスレッドから<strong>いつまでも見えない</strong>ことがある、という問題です。</p>
+<p><strong>可視性</strong>とは、あるスレッドが書き込んだ値を、他のスレッドが読めることが保証される性質です。</p>
+<section id="sec-visibility-demo" class="level3">
+<h3 class="anchored" data-anchor-id="sec-visibility-demo">問題の再現</h3>
+<p>次のプログラムでは、メインスレッドが1秒後に <code>running</code> を <code>false</code> にして、スレッド <code>t</code> に停止を指示します。 スレッド <code>t</code> は <code>running</code> が <code>true</code> の間だけループを続けるので、本来は1秒後に終了するはずです。</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>StopTest.java（volatileなし）</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-filename="StopTest.java（volatileなし）"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> StopTest <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="kw">throws</span> <span class="bu">InterruptedException</span> <span class="op">{</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        LoopThread t <span class="op">=</span> <span class="kw">new</span> <span class="fu">LoopThread</span><span class="op">();</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        t<span class="op">.</span><span class="fu">start</span><span class="op">();</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">Thread</span><span class="op">.</span><span class="fu">sleep</span><span class="op">(</span><span class="dv">1000</span><span class="op">);</span>   <span class="co">// 1秒待つ</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        t<span class="op">.</span><span class="fu">running</span> <span class="op">=</span> <span class="kw">false</span><span class="op">;</span>    <span class="co">// スレッド t に停止を指示する</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"メイン：停止を指示しました"</span><span class="op">);</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        t<span class="op">.</span><span class="fu">join</span><span class="op">();</span>             <span class="co">// スレッド t の終了を待つ</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"メイン：スレッド t が終了しました"</span><span class="op">);</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LoopThread <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">boolean</span> running <span class="op">=</span> <span class="kw">true</span><span class="op">;</span>  <span class="co">// メインスレッドから false にされる（volatile を付けていない）</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="dt">long</span> n <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> <span class="op">(</span>running<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>            n<span class="op">++;</span>  <span class="co">// 何らかの処理</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="co">// running が false になれば、ループを抜けてスレッドが終了する</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>実行すると、「メイン：停止を指示しました」と表示された後、<strong>プログラムが終わらない</strong>ことがあります（Ctrl + C で停止してください）。 メインスレッドは確かに <code>running</code> を <code>false</code> にしたのに、スレッド <code>t</code> にはその書き込みが見えていないのです。</p>
+</section>
+<section id="sec-visibility-cause" class="level3">
+<h3 class="anchored" data-anchor-id="sec-visibility-cause">なぜ値が見えないのか</h3>
+<ul>
+<li>各スレッドは、処理を速くするために、共有変数の値を<strong>一時的に手元（CPUのレジスタなど）に保持</strong>することがあります。</li>
+<li>また、Javaの実行環境（JITコンパイラ）は、最適化のために、ループの中で変数を毎回読み込むのを省略し、<strong>最初に1回だけ読み込む</strong>ように書き換えることがあります。</li>
+<li>その結果、スレッド <code>t</code> は最初に読んだ <code>true</code> を使い続け、他のスレッドによる書き換えに気づきません。</li>
+</ul>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-visibility" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-visibility-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-visibility">sequenceDiagram
+    autonumber
+    participant W as スレッド t
+    participant R as 共有変数 running（ヒープ）
+    participant M as メインスレッド
+
+    Note over R: running = true
+
+    rect rgba(37, 99, 235, 0.15)
+    W-&gt;&gt;R: running を読む
+    R--&gt;&gt;W: true
+    end
+    Note over W: 以後、手元の true を使い続ける
+
+    rect rgba(234, 88, 12, 0.15)
+    M-&gt;&gt;R: false を書く
+    end
+    Note over R: running = false
+
+    Note over W: while (true) を繰り返す&lt;br/&gt;書き換えが見えず、終了しない
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-visibility-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+図&nbsp;5.2: 可視性の問題（メインスレッドの書き込みが スレッド t に見えない）
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="04-race-condition.html#fig-race" class="quarto-xref">図&nbsp;<span>4.1</span></a> と比べてください。<a href="04-race-condition.html#fig-race" class="quarto-xref">図&nbsp;<span>4.1</span></a> では、2つのスレッドが<strong>最新の値を正しく読んだうえで</strong>、互いの操作の間に割り込んだことが問題でした。 一方、<a href="#fig-visibility" class="quarto-xref">図&nbsp;<span>5.2</span></a> では割り込みは起きておらず、<strong>書き込まれた値が見えない</strong>ことが問題です。 この2つは、原因の異なる別々の問題です。</p>
+</section>
+<section id="sec-sync-visibility" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sync-visibility">synchronized は可視性も保証する</h3>
+<p><code>synchronized</code> は、原子性だけでなく、可視性も保証します。 あるスレッドがロックを解放する前に書き込んだ値は、その後で同じロックを取得したスレッドから必ず見えます。</p>
+<p><a href="../chapters/04-race-condition.html#sec-sync-block">第4章</a>の <code>Count</code> が <code>synchronized</code> によって正しく30000になったのは、次の2つがどちらも保証されていたためです。</p>
+<ul>
+<li><strong>原子性</strong>：「読み込み・計算・書き込み」の途中に、他のスレッドが割り込まない。</li>
+<li><strong>可視性</strong>：ロックを取得したスレッドは、前にロックを持っていたスレッドが書き込んだ最新の値を読める。</li>
+</ul>
+</section>
+</section>
+<section id="sec-volatile" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="sec-volatile"><span class="header-section-number">5.4</span> volatile変数</h2>
+<p><code>volatile</code> は、変数の<strong>可視性を保証する</strong>修飾子です。</p>
+<ul>
+<li><code>volatile</code> を付けた変数への書き込みは、すぐに他のスレッドから見えるようになります。</li>
+<li><code>volatile</code> を付けた変数を読み込むときは、<strong>常に最新の値</strong>が読まれます。手元に保持した古い値が使われたり、読み込みが省略されたりすることはありません。</li>
+</ul>
+<p><a href="#sec-visibility-demo">前節</a>の <code>StopTest</code> は、<code>running</code> に <code>volatile</code> を付けるだけで正しく終了するようになります。</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>StopTest.java（volatile版）の変更箇所</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-filename="StopTest.java（volatile版）の変更箇所"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LoopThread <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">volatile</span> <span class="dt">boolean</span> running <span class="op">=</span> <span class="kw">true</span><span class="op">;</span>  <span class="co">// volatile を付ける</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// …（run メソッドは変更なし）</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>スレッド <code>t</code> は、ループのたびに <code>running</code> の最新の値を読むため、メインスレッドが <code>false</code> を書き込んだ後にループを抜けて終了します。</p>
+</section>
+<section id="sec-volatile-not-atomic" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="sec-volatile-not-atomic"><span class="header-section-number">5.5</span> volatileでは競合状態を防げない</h2>
+<p>では、<a href="../chapters/04-race-condition.html#sec-race-demo">第4章</a>の <code>Count</code> の変数 <code>c</code> に <code>volatile</code> を付ければ、競合状態は防げるでしょうか。</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Count.java（volatile版）の変更箇所</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-filename="Count.java（volatile版）の変更箇所"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> Count <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">volatile</span> <span class="dt">int</span> c <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>  <span class="co">// volatile を付ける（synchronized は使わない）</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// …（main メソッドと CounterThread クラスは4.2節と同じ）</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>実行すると、<code>volatile</code> を付けない場合と同じく、最終結果が<strong>30000未満</strong>になることがあります。</p>
+<p>その理由は、<a href="04-race-condition.html#fig-race" class="quarto-xref">図&nbsp;<span>4.1</span></a> をもう一度見るとわかります。</p>
+<ul>
+<li>手順2でスレッド2が読んだ10は、その時点での<strong>最新の値</strong>です。つまり、この図では可視性の問題は起きていません。</li>
+<li>問題は、スレッド1の「読み込み」と「書き込み」の間に、スレッド2が割り込んだことです。つまり、<strong>原子性がない</strong>ことが原因です。</li>
+<li><code>volatile</code> は、1回1回の読み込み・書き込みで最新の値を使うようにするだけです。「読み込み・計算・書き込み」の3つの操作を、ひとまとまりにする働きはありません。</li>
+</ul>
+<p>したがって、<code>volatile</code> を付けても、<a href="04-race-condition.html#fig-race" class="quarto-xref">図&nbsp;<span>4.1</span></a> と同じ実行順は起こりえます。</p>
+<div id="tbl-sync-vs-volatile" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sync-vs-volatile-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;5.1: synchronized と volatile の比較
+</figcaption>
+<div aria-describedby="tbl-sync-vs-volatile-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <thead>
 <tr class="header">
 <th></th>
-<th>可視性<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></th>
-<th>原子性<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></th>
+<th>可視性</th>
+<th>原子性</th>
+<th>競合状態を防げるか</th>
 </tr>
 </thead>
 <tbody>
@@ -458,46 +671,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><code>synchronized</code></td>
 <td>○ 保証される</td>
 <td>○ 保証される</td>
+<td>○ 防げる</td>
 </tr>
 <tr class="even">
 <td><code>volatile</code></td>
 <td>○ 保証される</td>
 <td><strong>✕ 保証されない</strong></td>
+<td><strong>✕ 防げない</strong></td>
 </tr>
 </tbody>
 </table>
-<div class="no-row-height column-margin column-container"><div id="fn2"><p><sup>2</sup>&nbsp;あるスレッドが書き込んだ値を、他のスレッドから見ることができる性質</p></div><div id="fn3"><p><sup>3</sup>&nbsp;一連の操作の途中で割り込まれないこと</p></div></div><div class="callout callout-style-default callout-warning callout-titled">
+</div>
+</figure>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">警告</span>volatile では競合状態を防げない
+<span class="screen-reader-only">重要</span>volatile で競合状態を防げない理由
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><code>volatile int c</code> としても、<code>c++</code> の「読み込み・計算・書き込み」の間に他のスレッドが割り込むことは防げません。そのため、最終結果は30000にならないことがあります。</p>
+<ol type="1">
+<li>競合状態を防ぐには、<strong>原子性</strong>が必要である。</li>
+<li><code>volatile</code> は<strong>可視性</strong>を保証するが、<strong>原子性</strong>は保証しない。</li>
+<li>したがって、<code>volatile</code> では競合状態を防げない。競合状態を防ぐには、<code>synchronized</code> による排他制御を使う。</li>
+</ol>
 </div>
 </div>
 </section>
-<section id="sec-volatile-usage" class="level3">
-<h3 class="anchored" data-anchor-id="sec-volatile-usage">volatile の用途</h3>
-<p><code>volatile</code> が適しているのは、「<strong>1つのスレッドが書き、他のスレッドは読むだけ</strong>」の変数です。代表例は、スレッドを止めるためのフラグです。</p>
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>Worker.java</strong></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-filename="Worker.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Worker <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">volatile</span> <span class="dt">boolean</span> running <span class="op">=</span> <span class="kw">true</span><span class="op">;</span>  <span class="co">// 他のスレッドから false にされる</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> <span class="op">(</span>running<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>            <span class="co">// 処理</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="co">// running が false になると、ループを抜けてスレッドが終了する</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
+<section id="sec-volatile-usage" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="sec-volatile-usage"><span class="header-section-number">5.6</span> volatile の用途</h2>
+<p><code>volatile</code> だけで正しく扱えるのは、次の2つの条件を満たす変数です。</p>
+<ul>
+<li><strong>1つのスレッドだけが書き込み</strong>、他のスレッドは読むだけである。</li>
+<li>書き込む値が、<strong>変数の現在の値に依存しない</strong>（<code>running = false</code> のような単純な代入であり、<code>c = c + 1</code> のように「読んでから書く」操作ではない）。</li>
+</ul>
+<p>代表例は、<a href="#sec-visibility-demo">5.3節</a>の <code>running</code> のような、スレッドを止めるためのフラグです。</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -508,213 +720,65 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>カウンタのように「読んで、変えて、書く」変数を安全に扱うには、<code>synchronized</code> のほか、<code>java.util.concurrent.atomic.AtomicInteger</code> の <code>incrementAndGet()</code> を使う方法もあります。</p>
+<p>カウンタのように「読んで、変えて、書く」変数を安全に扱うには、<code>synchronized</code> のほか、<code>java.util.concurrent.atomic.AtomicInteger</code> の <code>incrementAndGet()</code> を使う方法もあります。 <code>incrementAndGet()</code> は、1増やす操作を原子的に行うメソッドです。ロックを使わずに原子性と可視性を実現する仕組みになっています。</p>
 </div>
 </div>
-<p>初めのうちは、<strong>共有変数を書き換える処理は <code>synchronized</code> で守る</strong>と覚えておけば十分です。</p>
+<p>初めのうちは、次のように覚えておけば十分です。</p>
+<ul>
+<li><strong>複数のスレッドから共有変数を書き換える処理には<code>synchronized</code> を使う。</strong></li>
+<li><code>volatile</code> は、停止フラグのように「1つのスレッドが書き、他のスレッドは読むだけ」の場合にのみ使う。</li>
+</ul>
 </section>
+<section id="sec-av-summary" class="level2" data-number="5.7">
+<h2 data-number="5.7" class="anchored" data-anchor-id="sec-av-summary"><span class="header-section-number">5.7</span> この章のまとめ</h2>
+<div id="tbl-av-summary" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-av-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;5.2: 原子性と可視性のまとめ
+</figcaption>
+<div aria-describedby="tbl-av-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>性質</th>
+<th>意味</th>
+<th>欠けていると起こる問題</th>
+<th>保証する仕組み</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>原子性</td>
+<td>一連の操作が、途中で他のスレッドに割り込まれない</td>
+<td>競合状態（更新が失われる）</td>
+<td><code>synchronized</code></td>
+</tr>
+<tr class="even">
+<td>可視性</td>
+<td>あるスレッドが書き込んだ値を、他のスレッドが読める</td>
+<td>書き込んだ値が見えない（スレッドが止まらないなど）</td>
+<td><code>synchronized</code>, <code>volatile</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
 </section>
-<section id="sec-thread-id" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="sec-thread-id"><span class="header-section-number">5.2</span> 補足：スレッドの識別番号</h2>
+<section id="sec-thread-id" class="level2" data-number="5.8">
+<h2 data-number="5.8" class="anchored" data-anchor-id="sec-thread-id"><span class="header-section-number">5.8</span> 補足：スレッドの識別番号</h2>
 <p>各スレッドには一意の識別番号（スレッドID）があり、<code>getId()</code> で取得できます。スレッドIDは正の <code>long</code> 型の値で、そのスレッドが存在する間は変わりません。スレッドの終了後は、同じ値が再利用されることがあります。どのスレッドが出力したかを確かめたいときは、次のように表示するとよいでしょう。</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="fu">getId</span><span class="op">()</span> <span class="op">+</span> <span class="st">":"</span> <span class="op">+</span> count<span class="op">.</span><span class="fu">c</span><span class="op">);</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="fu">getId</span><span class="op">()</span> <span class="op">+</span> <span class="st">":"</span> <span class="op">+</span> count<span class="op">.</span><span class="fu">c</span><span class="op">);</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p>※ Java 19以降では、<code>getId()</code> の代わりに <code>threadId()</code> を使うことが推奨されています。</p>
-</section>
-<section id="sec-ex1" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="sec-ex1">練習問題1：スレッド安全なキュー</h2>
-<p>次のキュー（<code>IntQueue</code>）を、複数のスレッドから同時に操作しても正しく動くように変更してください。</p>
-<p><strong>仕様</strong></p>
-<ul>
-<li>キューには正の整数だけを入れられる。</li>
-<li><code>tail</code> は現在の末尾の位置を表す。キューが空のときは <code>tail = -1</code> とする。</li>
-<li><code>enqueue</code>（追加）用のスレッドを2つ、<code>dequeue</code>（取り出し）用のスレッドを2つ、並行に動かす。</li>
-</ul>
-<p><strong>課題</strong></p>
-<ol type="1">
-<li>変更前のプログラムを実行し、表示結果を記録する。</li>
-<li>適切な排他制御を加えて実行し、1の結果と比べる。</li>
-<li>メソッド全体を <code>synchronized</code> にするのが最も手軽ですが、<strong><code>synchronized</code> ブロックで囲むならどの範囲を囲むべきか</strong>を考察する。</li>
-</ol>
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>IntQueue.java</strong></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-filename="IntQueue.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> IntQueue <span class="op">{</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">final</span> <span class="dt">int</span> SIZE <span class="op">=</span> <span class="dv">10</span><span class="op">;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">int</span><span class="op">[]</span> values <span class="op">=</span> <span class="kw">new</span> <span class="dt">int</span><span class="op">[</span>SIZE<span class="op">];</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">int</span> tail <span class="op">=</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span>  <span class="co">// 末尾の位置（空のときは -1）</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">boolean</span> <span class="fu">enqueue</span><span class="op">(</span><span class="dt">int</span> data<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>data <span class="op">&lt;</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span>           <span class="co">// 負の値は受け付けない</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>tail <span class="op">==</span> SIZE <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span>           <span class="co">// 満杯</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        tail<span class="op">++;</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        values<span class="op">[</span>tail<span class="op">]</span> <span class="op">=</span> data<span class="op">;</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"enqueue :"</span> <span class="op">+</span> data <span class="op">+</span> <span class="st">" tail:"</span> <span class="op">+</span> tail<span class="op">);</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="fu">dequeue</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span><span class="fu">isEmpty</span><span class="op">())</span> <span class="op">{</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="op">-</span><span class="dv">1</span><span class="op">;</span>              <span class="co">// 空</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> data <span class="op">=</span> values<span class="op">[</span><span class="dv">0</span><span class="op">];</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> SIZE <span class="op">-</span> <span class="dv">1</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>            values<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> values<span class="op">[</span>i <span class="op">+</span> <span class="dv">1</span><span class="op">];</span>  <span class="co">// 要素を1つずつ前に詰める</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        tail<span class="op">--;</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        <span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span><span class="st">"dequeue :"</span> <span class="op">+</span> data <span class="op">+</span> <span class="st">" tail:"</span> <span class="op">+</span> tail<span class="op">);</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> data<span class="op">;</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    <span class="dt">boolean</span> <span class="fu">isEmpty</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">(</span>tail <span class="op">==</span> <span class="op">-</span><span class="dv">1</span><span class="op">);</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>        IntQueue q <span class="op">=</span> <span class="kw">new</span> <span class="fu">IntQueue</span><span class="op">();</span></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>        <span class="kw">new</span> <span class="fu">EnQueueThread</span><span class="op">(</span>q<span class="op">).</span><span class="fu">start</span><span class="op">();</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>        <span class="kw">new</span> <span class="fu">EnQueueThread</span><span class="op">(</span>q<span class="op">).</span><span class="fu">start</span><span class="op">();</span></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>        <span class="kw">new</span> <span class="fu">DeQueueThread</span><span class="op">(</span>q<span class="op">).</span><span class="fu">start</span><span class="op">();</span></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>        <span class="kw">new</span> <span class="fu">DeQueueThread</span><span class="op">(</span>q<span class="op">).</span><span class="fu">start</span><span class="op">();</span></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> EnQueueThread <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    IntQueue q<span class="op">;</span></span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">EnQueueThread</span><span class="op">(</span>IntQueue q<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">q</span> <span class="op">=</span> q<span class="op">;</span></span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">100</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>            <span class="dt">int</span> data <span class="op">=</span> <span class="op">(</span><span class="dt">int</span><span class="op">)</span> <span class="op">(</span><span class="bu">Math</span><span class="op">.</span><span class="fu">random</span><span class="op">()</span> <span class="op">*</span> <span class="dv">100</span> <span class="op">+</span> <span class="dv">1</span><span class="op">);</span>  <span class="co">// 1〜100の乱数</span></span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>            q<span class="op">.</span><span class="fu">enqueue</span><span class="op">(</span>data<span class="op">);</span></span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> DeQueueThread <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>    IntQueue q<span class="op">;</span></span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">DeQueueThread</span><span class="op">(</span>IntQueue q<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">q</span> <span class="op">=</span> q<span class="op">;</span></span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">100</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>            q<span class="op">.</span><span class="fu">dequeue</span><span class="op">();</span></span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ヒント</span>ヒント（クリックで表示）
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>「<code>tail</code> を確認する処理」と「<code>tail</code> を書き換える処理」の間に、別のスレッドが割り込むと何が起こるかを考えてください。たとえば、満杯の確認の直後に別のスレッドが追加すると、配列の範囲外に書き込む可能性があります。</p>
-</div>
-</div>
-</div>
-</section>
-<section id="sec-ex2" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="sec-ex2">練習問題2：ATMによる送金</h2>
-<p><code>ATM</code> と <code>Customer</code> の2つのクラスを使い、口座間でお金を移動するプログラムを完成させてください。</p>
-<p><strong>仕様</strong></p>
-<ul>
-<li>口座は100個あり、各口座の初期残高は10万円とする。</li>
-<li>顧客30人（<code>Customer</code> スレッド30個）が同時にATMを操作する。</li>
-<li>各顧客は、0〜9ミリ秒に1回、ランダムに選んだ口座からランダムに選んだ口座へ、ランダムな金額（0〜9999円）を移動する。これを1人1000回行う。</li>
-<li>全員の操作が終わった後、全口座の残高と総額を <code>printMoney()</code> で表示し、<strong>総額が 10万円 × 100口座 = 1000万円のまま</strong>であることを確認する。</li>
-</ul>
-<p><strong>課題</strong>：<code>printMoney()</code> と <code>move()</code> の中身を書き、排他制御なしの場合と、ありの場合で総額を比べてください。</p>
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>ATM.java</strong></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-filename="ATM.java"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> ATM <span class="op">{</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">static</span> <span class="dt">int</span> SIZE <span class="op">=</span> <span class="dv">100</span><span class="op">;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span><span class="op">[]</span> account<span class="op">;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">ATM</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        account <span class="op">=</span> <span class="kw">new</span> <span class="dt">int</span><span class="op">[</span>SIZE<span class="op">];</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> SIZE<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            account<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> <span class="dv">100000</span><span class="op">;</span>  <span class="co">// 初期残高10万円</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> <span class="fu">printMoney</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        <span class="co">// ここを記述：各口座の残高と総額を表示する</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">void</span> <span class="fu">move</span><span class="op">(</span><span class="dt">int</span> from<span class="op">,</span> <span class="dt">int</span> to<span class="op">,</span> <span class="dt">int</span> money<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        <span class="co">// ここを記述：口座 from から口座 to へ money 円を移動する</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">void</span> <span class="fu">main</span><span class="op">(</span><span class="bu">String</span><span class="op">[]</span> args<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        ATM atm <span class="op">=</span> <span class="kw">new</span> <span class="fu">ATM</span><span class="op">();</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">30</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>            <span class="kw">new</span> <span class="fu">Customer</span><span class="op">(</span>atm<span class="op">).</span><span class="fu">start</span><span class="op">();</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Customer <span class="kw">extends</span> <span class="bu">Thread</span> <span class="op">{</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    ATM atm<span class="op">;</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="fu">Customer</span><span class="op">(</span>ATM atm<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>        <span class="kw">this</span><span class="op">.</span><span class="fu">atm</span> <span class="op">=</span> atm<span class="op">;</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">run</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">1000</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>            <span class="dt">int</span> from <span class="op">=</span> <span class="op">(</span><span class="dt">int</span><span class="op">)</span> <span class="op">(</span><span class="bu">Math</span><span class="op">.</span><span class="fu">random</span><span class="op">()</span> <span class="op">*</span> ATM<span class="op">.</span><span class="fu">SIZE</span><span class="op">);</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>            <span class="dt">int</span> to <span class="op">=</span> <span class="op">(</span><span class="dt">int</span><span class="op">)</span> <span class="op">(</span><span class="bu">Math</span><span class="op">.</span><span class="fu">random</span><span class="op">()</span> <span class="op">*</span> ATM<span class="op">.</span><span class="fu">SIZE</span><span class="op">);</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>            <span class="dt">int</span> money <span class="op">=</span> <span class="op">(</span><span class="dt">int</span><span class="op">)</span> <span class="op">(</span><span class="bu">Math</span><span class="op">.</span><span class="fu">random</span><span class="op">()</span> <span class="op">*</span> <span class="dv">10000</span><span class="op">);</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>            atm<span class="op">.</span><span class="fu">move</span><span class="op">(</span>from<span class="op">,</span> to<span class="op">,</span> money<span class="op">);</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span> <span class="op">{</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>                <span class="fu">sleep</span><span class="op">((</span><span class="dt">int</span><span class="op">)</span> <span class="op">(</span><span class="bu">Math</span><span class="op">.</span><span class="fu">random</span><span class="op">()</span> <span class="op">*</span> <span class="dv">10</span><span class="op">));</span>  <span class="co">// 0〜9ミリ秒休止</span></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">catch</span> <span class="op">(</span><span class="bu">InterruptedException</span> e<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>                <span class="bu">System</span><span class="op">.</span><span class="fu">err</span><span class="op">.</span><span class="fu">println</span><span class="op">(</span>e<span class="op">);</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>        atm<span class="op">.</span><span class="fu">printMoney</span><span class="op">();</span>  <span class="co">// 各顧客が操作を終えるたびに表示（最後の表示が最終結果）</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ヒント</span>ヒント（クリックで表示）
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p><code>printMoney()</code> は顧客が操作を終えるたびに呼ばれるため、全部で30回表示されます。最後に表示される総額が最終結果です。全員の終了を待ってから1回だけ表示したい場合は、<a href="../chapters/06-synchronization.html">第6章</a>の <code>join()</code> を使って <code>main</code> メソッドを書き換えてください。</p>
-</div>
-</div>
-</div>
-<p><strong>発展</strong>：残高が足りない場合は移動しないようにすると、より現実的になります。その場合も、総額が変わらないことを確認してください。</p>
 
 
 </section>
-
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1137,8 +1201,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../chapters/06-synchronization.html" class="pagination-link" aria-label="スレッドの同期（join・wait・notify）">
-        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../chapters/06-synchronization.html" class="pagination-link" aria-label="スレッドの同期（join, wait, notify）">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join, wait, notify）</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

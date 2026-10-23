@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>6&nbsp; スレッドの同期（join・wait・notify） – Javaによる並行プログラミング入門</title>
+<title>6&nbsp; スレッドの同期（join, wait, notify） – Javaによる並行プログラミング入門</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -293,7 +293,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/06-synchronization.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/06-synchronization.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join, wait, notify）</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
@@ -361,7 +361,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/06-synchronization.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join, wait, notify）</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -403,9 +403,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-join" id="toc-sec-join" class="nav-link active" data-scroll-target="#sec-join"><span class="header-section-number">6.1</span> join：スレッドの終了を待つ</a></li>
-  <li><a href="#sec-wait-notify" id="toc-sec-wait-notify" class="nav-link" data-scroll-target="#sec-wait-notify"><span class="header-section-number">6.2</span> wait と notify：条件が整うまで待つ</a></li>
-  <li><a href="#sec-wait-notify-sample" id="toc-sec-wait-notify-sample" class="nav-link" data-scroll-target="#sec-wait-notify-sample"><span class="header-section-number">6.3</span> サンプル：上限と下限のあるカウンタ</a>
+  <li><a href="#sec-sync-abstract" id="toc-sec-sync-abstract" class="nav-link active" data-scroll-target="#sec-sync-abstract"><span class="header-section-number">6.1</span> 概要</a></li>
+  <li><a href="#sec-join" id="toc-sec-join" class="nav-link" data-scroll-target="#sec-join"><span class="header-section-number">6.2</span> join：スレッドの終了を待つ</a></li>
+  <li><a href="#sec-wait-notify" id="toc-sec-wait-notify" class="nav-link" data-scroll-target="#sec-wait-notify"><span class="header-section-number">6.3</span> wait と notify：条件が整うまで待つ</a></li>
+  <li><a href="#sec-wait-notify-sample" id="toc-sec-wait-notify-sample" class="nav-link" data-scroll-target="#sec-wait-notify-sample"><span class="header-section-number">6.4</span> サンプル：上限と下限のあるカウンタ</a>
   <ul class="collapse">
   <li><a href="#なぜ-if-ではなく-while-で条件を確かめるのか" id="toc-なぜ-if-ではなく-while-で条件を確かめるのか" class="nav-link" data-scroll-target="#なぜ-if-ではなく-while-で条件を確かめるのか">なぜ if ではなく while で条件を確かめるのか</a></li>
   <li><a href="#notify-と-notifyall-の使い分け" id="toc-notify-と-notifyall-の使い分け" class="nav-link" data-scroll-target="#notify-と-notifyall-の使い分け">notify() と notifyAll() の使い分け</a></li>
@@ -420,7 +421,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="sec-synchronization" class="quarto-section-identifier"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join・wait・notify）</span></span></h1>
+<h1 class="title"><span id="sec-synchronization" class="quarto-section-identifier"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">スレッドの同期（join, wait, notify）</span></span></h1>
 </div>
 
 
@@ -437,36 +438,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><strong>同期</strong>とは、2つ以上の処理のタイミングを合わせることです。Javaでは、どのスレッドをどの順番で実行するかは基本的に実行時のシステムが決めますが、<code>join()</code>・<code>wait()</code>・<code>notify()</code> を使うと、プログラムの側で実行の順番を制御できます。</p>
+<section id="sec-sync-abstract" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="sec-sync-abstract"><span class="header-section-number">6.1</span> 概要</h2>
+<p><strong>同期</strong>とは、2つ以上の処理のタイミングを合わせることです。</p>
+<ul>
+<li>Javaでは、どのスレッドをどの順番で実行するかは基本的にシステムが自動で決めます。</li>
+<li>しかし、<code>join()</code>, <code>wait()</code>, <code>notify()</code> を使うと、プログラムの側で実行の順番を制御できます。</li>
+</ul>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 50%">
+<col style="width: 50%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>メソッド</th>
-<th>何を待つか</th>
 <th>待機の解除</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><code>join()</code></td>
-<td>指定したスレッドが<strong>終了する</strong>まで</td>
-<td>対象のスレッドが終了したとき</td>
+<td>指定したスレッドが終了したとき</td>
 </tr>
 <tr class="even">
 <td><code>wait()</code></td>
-<td>他のスレッドから<strong>通知される</strong>まで</td>
-<td><code>notify()</code> または <code>notifyAll()</code> が呼ばれたとき</td>
+<td>他のスレッドから通知されたとき（<code>notify()</code> または <code>notifyAll()</code> が呼ばれたとき）</td>
 </tr>
 </tbody>
 </table>
-<section id="sec-join" class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="sec-join"><span class="header-section-number">6.1</span> join：スレッドの終了を待つ</h2>
-<p><code>t.join()</code> を呼ぶと、呼び出したスレッドは、スレッド <code>t</code> が終了するまで待ちます。<code>join()</code> より後の処理は、<code>t</code> が終了してから実行されます。</p>
+</section>
+<section id="sec-join" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="sec-join"><span class="header-section-number">6.2</span> join：スレッドの終了を待つ</h2>
+<p><code>join()</code> は<strong>指定したスレッドが終了するまで</strong>待つメソッドです。</p>
+<p><code>t.join()</code> 以降の処理は、スレッド <code>t</code> が終了してから実行されます。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>JoinTest.java</strong></pre>
@@ -485,7 +490,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="co">/* 手順2で、このコメントを外す</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">        try {</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">            jt.join();  // jt スレッドが終わるまで、メインスレッドはここで待つ</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">            jt.join();  // スレッド jt が終わるまで、メインスレッドはここで待つ</span></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">        } catch (InterruptedException e) {</span></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">        }</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">        */</span></span>
@@ -496,7 +501,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p><strong>手順</strong></p>
 <ol type="1">
-<li>そのまま実行する。メインスレッドの「END」の出力と、<code>jt</code> スレッドの0〜9の出力は並行に行われるため、ENDが表示される位置は実行のたびに変わります（最初に表示されることが多いでしょう）。</li>
+<li>そのまま実行する。メインスレッドの「END」の出力と、スレッド <code>jt</code> の0〜9の出力は並行に行われるため、ENDが表示される位置は実行のたびに変わります（最初に表示されることが多いでしょう）。</li>
 <li>コメントを外して <code>jt.join()</code> を有効にし、再度実行する。メインスレッドは <code>jt</code> が終わるまで待つので、<strong>ENDは必ず最後に</strong>表示されます。</li>
 </ol>
 <p><code>join(long ミリ秒)</code> のように引数を指定すると、対象のスレッドが終わらなくても、指定時間が過ぎれば待機をやめて処理を再開します。</p>
@@ -511,13 +516,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="callout-body-container callout-body">
 <p><code>Thread</code> クラスには <code>stop()</code> メソッドがありますが、使ってはいけません。<code>stop()</code> はスレッドを処理の途中で強制終了するため、共有変数を書き換えの途中のまま残すおそれがあります。現在のJavaでは非推奨であり、新しいバージョンでは呼び出すと例外が発生します。</p>
-<p>スレッドは <code>run()</code> メソッドの最後まで実行すると自動的に終了します。<strong><code>run()</code> が自然に終わるように設計する</strong>のが原則です（<a href="05-race-condition.qmd#sec-volatile">5.5節</a>の <code>running</code> フラグの例を参照）。</p>
+<p>スレッドは <code>run()</code> メソッドの最後まで実行すると自動的に終了します。<strong><code>run()</code> が自然に終わるように設計する</strong>のが原則です（<a href="05-volatile.html#sec-visibility">5.3節</a>の <code>running</code> フラグの例を参照）。</p>
 </div>
 </div>
 </section>
-<section id="sec-wait-notify" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="sec-wait-notify"><span class="header-section-number">6.2</span> wait と notify：条件が整うまで待つ</h2>
-<p><code>join()</code> はスレッドの終了まで待つメソッドでした。これに対して <code>wait()</code> は、<strong>他のスレッドから通知が来るまで</strong>待つメソッドです。「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。</p>
+<section id="sec-wait-notify" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="sec-wait-notify"><span class="header-section-number">6.3</span> wait と notify：条件が整うまで待つ</h2>
+<p><code>wait()</code> は、<strong>他のスレッドから通知が来るまで</strong>待つメソッドです。</p>
+<p>「キューが空なので、誰かが要素を入れるまで待つ」のように、条件が整うまで待ちたいときに使います。</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -555,7 +561,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li><code>wait()</code>・<code>notify()</code>・<code>notifyAll()</code> は、そのオブジェクトのロックを持っている状態、つまり <code>synchronized</code> ブロック（またはメソッド）の中でしか呼べません。外で呼ぶと <code>IllegalMonitorStateException</code> が発生します。</li>
+<li><code>wait()</code>, <code>notify()</code>, <code>notifyAll()</code> は、そのオブジェクトのロックを持っている状態、つまり <strong><code>synchronized</code> ブロック（またはメソッド）の中でしか</strong>呼べません。外で呼ぶと <code>IllegalMonitorStateException</code> が発生します。</li>
 <li><code>wait()</code> を呼んだスレッドはロックを手放すため、その間に他のスレッドが <code>synchronized</code> の中に入れます。</li>
 <li><code>notify()</code> で起こされたスレッドは、すぐには再開しません。<strong>ロックをもう一度取得できてから</strong>、<code>wait()</code> の次の行から再開します。</li>
 </ul>
@@ -568,31 +574,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div>
 <pre class="mermaid mermaid-js">stateDiagram-v2
     direction LR
-    state "実行中（ロックを持っている）" as Running
-    state "待機中（ロックを解放して待つ）" as Waiting
+    state "実行中&lt;br/&gt;（ロックを持っている）" as Running
+    state "待機中&lt;br/&gt;（ロックを解放して待つ）" as Waiting
     state "ロック再取得待ち" as Relock
     Running --&gt; Waiting: wait()
     Waiting --&gt; Relock: notify() / notifyAll()
-    Relock --&gt; Running: ロックを取得したら、wait() の次の行から再開
-</pre>
-</div>
-<p></p><figcaption> wait / notify によるスレッドの状態の移り変わり</figcaption> </figure><p></p>
-</div>
-</div>
-</div>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">stateDiagram-v2
-    direction LR
-    state "実行中（ロックを持っている）" as Running
-    state "待機中（ロックを解放して待つ）" as Waiting
-    state "ロック再取得待ち" as Relock
-    Running --&gt; Waiting: wait()
-    Waiting --&gt; Relock: notify() / notifyAll()
-    Relock --&gt; Running: ロックを取得したら、wait() の次の行から再開
+    Relock --&gt; Running: ロックを取得したら、&lt;br/&gt;wait() の次の行から再開
 
     classDef running fill:#DCFCE7,stroke:#15803D,stroke-width:3px,color:#14532D,font-size:17px
     classDef waiting fill:#FEF3C7,stroke:#B45309,stroke-width:3px,color:#78350F,font-size:17px
@@ -607,9 +594,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="sec-wait-notify-sample" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="sec-wait-notify-sample"><span class="header-section-number">6.3</span> サンプル：上限と下限のあるカウンタ</h2>
-<p>2つのスレッドが、変数 <code>n</code> をそれぞれ1000回ずつ増やす（インクリメント）・減らす（デクリメント）プログラムです。ただし、<code>n</code> は0以上10以下に保ちます。</p>
+<section id="sec-wait-notify-sample" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="sec-wait-notify-sample"><span class="header-section-number">6.4</span> サンプル：上限と下限のあるカウンタ</h2>
+<p>2つのスレッドが、変数 <code>n</code> をそれぞれ1000回ずつインクリメント（<code>n++</code>）／デクリメント（<code>n--</code>）するプログラムです。ただし、<code>n</code> が取りうる値は [0, 10] の範囲に保たれます。</p>
 <ul>
 <li><code>n</code> が10のときに増やそうとしたら、<code>wait()</code> で待つ。</li>
 <li><code>n</code> が0のときに減らそうとしたら、<code>wait()</code> で待つ。</li>
