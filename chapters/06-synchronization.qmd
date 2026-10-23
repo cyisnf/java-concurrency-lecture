@@ -1,4 +1,4 @@
-# スレッドの同期（join, wait, notify） {#sec-synchronization}
+# スレッドの同期 {#sec-synchronization}
 
 ## 概要 {#sec-sync-abstract}
 
@@ -16,7 +16,35 @@
 
 `join()` は**指定したスレッドが終了するまで**待つメソッドです。
 
-`t.join()` 以降の処理は、スレッド `t` が終了してから実行されます。
+処理の流れを @fig-join に示します。
+
+```{mermaid}
+%%| label: fig-join
+%%| fig-cap: "join() による待機"
+sequenceDiagram
+    autonumber
+    participant M as メインスレッド
+    participant J as スレッド t
+
+    rect rgba(234, 88, 12, 0.15)
+    M->>J: t.join()
+    end
+    Note over M: t が終了するまで待機中
+
+    rect rgba(37, 99, 235, 0.15)
+    Note over J: t の処理が終了<br/>（run() の最後まで実行）
+    J-->>M:
+    end
+
+    Note over M: main() の処理を再開
+```
+
+### 具体例
+以下の手順にしたがって、次のコードを実行してください。
+
+1. 何度か実行して、カウントが終わる前にENDが表示されることを確認する。
+3. コメントを外して再度実行し、ENDが必ず最後に表示されることを確認する。
+
 
 ```{.java filename="JoinTest.java"}
 public class JoinTest extends Thread {
@@ -28,12 +56,12 @@ public class JoinTest extends Thread {
     }
 
     public static void main(String[] args) {
-        JoinTest jt = new JoinTest();
-        jt.start();
+        JoinTest t = new JoinTest();
+        t.start();
 
         /* 手順2で、このコメントを外す
         try {
-            jt.join();  // スレッド jt が終わるまで、メインスレッドはここで待つ
+            t.join();  // スレッド t が終わるまで、メインスレッドはここで待つ
         } catch (InterruptedException e) {
         }
         */
@@ -43,12 +71,9 @@ public class JoinTest extends Thread {
 }
 ```
 
-**手順**
-
-1. そのまま実行する。メインスレッドの「END」の出力と、スレッド `jt` の0〜9の出力は並行に行われるため、ENDが表示される位置は実行のたびに変わります（最初に表示されることが多いでしょう）。
-2. コメントを外して `jt.join()` を有効にし、再度実行する。メインスレッドは `jt` が終わるまで待つので、**ENDは必ず最後に**表示されます。
-
+::: {.callout-note}
 `join(long ミリ秒)` のように引数を指定すると、対象のスレッドが終わらなくても、指定時間が過ぎれば待機をやめて処理を再開します。
+:::
 
 ::: {.callout-warning}
 ## スレッドを stop() で止めてはいけない
@@ -57,7 +82,7 @@ public class JoinTest extends Thread {
 スレッドは `run()` メソッドの最後まで実行すると自動的に終了します。**`run()` が自然に終わるように設計する**のが原則です（[5.3節](05-volatile.html#sec-visibility)の `running` フラグの例を参照）。
 :::
 
-## wait と notify：条件が整うまで待つ {#sec-wait-notify}
+## wait と notify / notifyAll ：条件が整うまで待つ {#sec-wait-notify}
 
 `wait()` は、**他のスレッドから通知が来るまで**待つメソッドです。
 
@@ -76,24 +101,65 @@ public class JoinTest extends Thread {
 - `notify()` で起こされたスレッドは、すぐには再開しません。**ロックをもう一度取得できてから**、`wait()` の次の行から再開します。
 :::
 
-```{mermaid}
-%%| fig-cap: "wait / notify によるスレッドの状態の移り変わり"
-stateDiagram-v2
-    direction LR
-    state "実行中<br/>（ロックを持っている）" as Running
-    state "待機中<br/>（ロックを解放して待つ）" as Waiting
-    state "ロック再取得待ち" as Relock
-    Running --> Waiting: wait()
-    Waiting --> Relock: notify() / notifyAll()
-    Relock --> Running: ロックを取得したら、<br/>wait() の次の行から再開
+3つのスレッドが同じオブジェクト `obj` を使って `wait()`・`notify()` を呼ぶ場合の流れを、@fig-notify に示します。
 
-    classDef running fill:#DCFCE7,stroke:#15803D,stroke-width:3px,color:#14532D,font-size:17px
-    classDef waiting fill:#FEF3C7,stroke:#B45309,stroke-width:3px,color:#78350F,font-size:17px
-    classDef relock  fill:#DBEAFE,stroke:#1D4ED8,stroke-width:3px,color:#1E3A8A,font-size:17px
-    class Running running
-    class Waiting waiting
-    class Relock relock
+```{mermaid}
+%%| label: fig-notify
+%%| fig-cap: "notify() の図解"
+sequenceDiagram
+    autonumber
+    participant T1 as スレッド1
+    participant O as 共有オブジェクト obj
+    participant T2 as スレッド2
+    participant T3 as スレッド3
+
+    rect rgba(37, 99, 235, 0.15)
+    T1->>O: wait()
+    end
+    Note over T1: 待機中
+
+    rect rgba(22, 163, 74, 0.15)
+    T3->>O: wait()
+    end
+    Note over T3: 待機中
+
+    rect rgba(234, 88, 12, 0.15)
+    T2->>O: notify()
+    O-->>T1: 起こす
+    end
+    Note over T1: ロックを取得 & 再開
+    Note over T3: 待機中
 ```
+
+手順3の `notify()` では、待機中の2つのスレッドのうち**1つだけ**（この図ではスレッド1）が起こされます。どちらが起こされるかはシステムが決めるため、スレッド3が起こされる場合もあります。
+
+続いて、`notifyAll()` について、同様の流れを @fig-notifyAll に示します。
+
+```{mermaid}
+%%| label: fig-notifyAll
+%%| fig-cap: "notifyAll() の図解"
+sequenceDiagram
+    autonumber
+    participant T1 as スレッド1
+    participant O as 共有オブジェクト obj
+    participant T2 as スレッド2
+    participant T3 as スレッド3
+
+    rect rgba(37, 99, 235, 0.15)
+    T1->>O: wait()
+    end
+    Note over T1: 待機中
+
+    rect rgba(234, 88, 12, 0.15)
+    T2->>O: notifyAll()
+    O-->>T1: 起こす
+    O-->>T3: 起こす
+    end
+    Note over T1: ロックを取得 & 再開
+    Note over T3: ロックを取得 & 再開
+```
+
+手順3の `notifyAll()` では、待機中のスレッドが**すべて**起こされます。ただし、ロックを持てるのは一度に1つだけなので、実際に再開するのは1つずつです。
 
 ## サンプル：上限と下限のあるカウンタ {#sec-wait-notify-sample}
 
