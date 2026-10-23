@@ -13,8 +13,8 @@ Javaのスレッドを使った並行プログラミングの講義資料。
 │   ├── 01-concurrent-parallel.qmd
 │   ├── 02-process-thread.qmd
 │   ├── 03-create-thread.qmd
-│   ├── 04-sleep.qmd
-│   ├── 05-race-condition.qmd    # 練習問題1・2を含む
+│   ├── 04-race-condition.qmd    # 練習問題1・2を含む
+│   ├── 05-volatile.qmd   
 │   ├── 06-synchronization.qmd   # 練習問題3を含む
 │   ├── 07-deadlock.qmd          # 練習問題4を含む
 │   └── 08-parallel.qmd          # 演習を含む
