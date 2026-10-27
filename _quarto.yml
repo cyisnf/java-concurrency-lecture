@@ -5,6 +5,7 @@ project:
   render:
     - index.qmd
     - chapters/*.qmd
+    - solutions/*.qmd
     - appendix/*.qmd
 
 lang: ja
@@ -30,6 +31,10 @@ book:
     - chapters/06-synchronization.qmd
     - chapters/07-deadlock.qmd
     - chapters/08-parallel.qmd
+    # - solutions/ex1.qmd
+    # - solutions/ex2.qmd
+    # - solutions/ex3.qmd
+    # - solutions/ex4.qmd
   appendices:
     - appendix/glossary.qmd
 
