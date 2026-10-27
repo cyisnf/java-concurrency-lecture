@@ -46,6 +46,8 @@ format:
     code-overflow: scroll
     highlight-style: github
     reference-location: margin
+    mermaid:
+      theme: default
 
   # --- PDF版（任意）-----------------------------------------------
   # 日本語のPDFを作るには、手元のPCに TeX Live（LuaLaTeX）が必要です。

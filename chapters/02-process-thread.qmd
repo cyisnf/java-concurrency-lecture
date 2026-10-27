@@ -21,7 +21,7 @@ $ ps
 
 ## プロセスとスレッドの比較 {#sec-process-vs-thread}
 
-両者はともに「プログラムを実行する単位」ですが、重要な違いの一つは**（ヒープと呼ばれる）メモリを他と共有できるかどうか**です。
+両者はともに「プログラムを実行する単位」ですが、重要な違いの一つは**ヒープと呼ばれるメモリを他と共有できるかどうか**です。
 
 ```{mermaid}
 %%| label: fig-process-thread
@@ -33,8 +33,7 @@ flowchart TB
             direction TB
             HA[("メモリ（ヒープ）")]
             M1["メインスレッド"] <--> HA
-            T1["スレッド1"] <--> HA
-            T2["スレッド2"] <--> HA
+            T1["スレッド"] <--> HA
         end
         subgraph PB["プロセスB（gcc）"]
             direction TB
@@ -45,8 +44,8 @@ flowchart TB
     end
 
     %% 見た目の種類を定義する（塗り・枠線・枠の太さ・文字色・文字サイズ）
-    classDef memory fill:#CCFBF1,stroke:#0F766E,stroke-width:3px,color:#134E4A,font-size:17px
-    classDef thread fill:#FFEDD5,stroke:#C2410C,stroke-width:3px,color:#7C2D12,font-size:17px
+    classDef memory fill:#CCFBF1,stroke:#0F766E,stroke-width:3px,color:#134E4A
+    classDef thread fill:#FFEDD5,stroke:#C2410C,stroke-width:3px,color:#7C2D12
 
     %% 箱に種類を割り当てる
     class HA,HB memory
