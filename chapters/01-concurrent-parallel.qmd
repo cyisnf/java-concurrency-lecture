@@ -1,5 +1,7 @@
 # 並行と並列 {#sec-concurrent-parallel}
 
+## 概要 {#sec-abstract}
+
 **並行（Concurrent）は「複数の処理を切り替えながら進めること」、並列（Parallel）は「複数の処理を実際に同時に実行すること」です**。この2つはよく混同されるため、最初に違いを押さえます。
 
 ## 背景 {#sec-background}
