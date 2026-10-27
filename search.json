@@ -54,7 +54,17 @@
     "href": "chapters/01-concurrent-parallel.html",
     "title": "1  並行と並列",
     "section": "",
-    "text": "1.1 背景\n並行（Concurrent）は「複数の処理を切り替えながら進めること」、並列（Parallel）は「複数の処理を実際に同時に実行すること」です。この2つはよく混同されるため、最初に違いを押さえます。\nプログラムを速く動かす手段として、1台のコンピュータに多数のCPU（コア）を積む、または多数のコンピュータを連携させる方法が広く使われています。たとえばスーパーコンピュータ「京（けい）」は約8万8千個のCPUを搭載していました。このような計算機を並列コンピュータと呼びます。\nまた、Java言語は登場時から「並行プログラミング言語」を掲げており、複数の処理を同時に進める仕組み（スレッド）を言語の機能として備えています。",
+    "text": "1.1 概要\n並行（Concurrent）は「複数の処理を切り替えながら進めること」、並列（Parallel）は「複数の処理を実際に同時に実行すること」です。この2つはよく混同されるため、最初に違いを押さえます。",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>並行と並列</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-concurrent-parallel.html#sec-background",
+    "href": "chapters/01-concurrent-parallel.html#sec-background",
+    "title": "1  並行と並列",
+    "section": "1.2 背景",
+    "text": "1.2 背景\nプログラムを速く動かす手段として、1台のコンピュータに多数のCPU（コア）を積む、または多数のコンピュータを連携させる方法が広く使われています。たとえばスーパーコンピュータ「京（けい）」は約8万8千個のCPUを搭載していました。このような計算機を並列コンピュータと呼びます。\nまた、Java言語は登場時から「並行プログラミング言語」を掲げており、複数の処理を同時に進める仕組み（スレッド）を言語の機能として備えています。",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>並行と並列</span>"
     ]
@@ -63,8 +73,8 @@
     "objectID": "chapters/01-concurrent-parallel.html#sec-concurrent",
     "href": "chapters/01-concurrent-parallel.html#sec-concurrent",
     "title": "1  並行と並列",
-    "section": "1.2 並行処理（Concurrent）",
-    "text": "1.2 並行処理（Concurrent）\n並行処理とは、1人（または処理の数より少ない人数）で、複数の作業を少しずつ切り替えながら進める処理です。台所で鍋料理を作る場面で考えます。\n\n鍋に水を入れて火にかける。\n沸騰するまでの間に、野菜を切る。\nまだ沸騰しないので、食卓にお皿を並べ始める。\nお湯が沸いたので、お皿並べを中断し、野菜を鍋に入れる。\n野菜が煮えるまでの間に、お皿並べを再開する。\n\n並行処理では、ある作業の待ち時間に別の作業を進めます。また、優先度の高い出来事（お湯が沸いた）が起きたら、今の作業を中断してそちらに切り替えます。\n一方、作業を1つずつ最後まで終えてから次に進むやり方を逐次処理と呼びます。逐次処理では、お湯が沸くまでただ待つしかありません。急な来客があっても、玄関に出られるのはずっと後になってしまいます。\nWindows、macOS、Linuxなどの現在のOSは、この並行処理（マルチタスクとも呼ぶ）を標準で備えています。そのため、Webページを見ながらメールの受信に気づき、同時に音楽を再生できます。CPUのコアが1つしかなくても、OSはごく短い時間ごとに実行する処理を切り替えています。その結果、複数の処理が同時に動いているように見えるのです。\nこの機能をもつOSをマルチタスクOSと呼び、Windows、Linux、macOS、Androidなど現在の主要なOSのほとんどが該当します。",
+    "section": "1.3 並行処理（Concurrent）",
+    "text": "1.3 並行処理（Concurrent）\n並行処理とは、1人（または処理の数より少ない人数）で、複数の作業を少しずつ切り替えながら進める処理です。台所で鍋料理を作る場面で考えます。\n\n鍋に水を入れて火にかける。\n沸騰するまでの間に、野菜を切る。\nまだ沸騰しないので、食卓にお皿を並べ始める。\nお湯が沸いたので、お皿並べを中断し、野菜を鍋に入れる。\n野菜が煮えるまでの間に、お皿並べを再開する。\n\n並行処理では、ある作業の待ち時間に別の作業を進めます。また、優先度の高い出来事（お湯が沸いた）が起きたら、今の作業を中断してそちらに切り替えます。\n一方、作業を1つずつ最後まで終えてから次に進むやり方を逐次処理と呼びます。逐次処理では、お湯が沸くまでただ待つしかありません。急な来客があっても、玄関に出られるのはずっと後になってしまいます。\nWindows、macOS、Linuxなどの現在のOSは、この並行処理（マルチタスクとも呼ぶ）を標準で備えています。そのため、Webページを見ながらメールの受信に気づき、同時に音楽を再生できます。CPUのコアが1つしかなくても、OSはごく短い時間ごとに実行する処理を切り替えています。その結果、複数の処理が同時に動いているように見えるのです。\nこの機能をもつOSをマルチタスクOSと呼び、Windows、Linux、macOS、Androidなど現在の主要なOSのほとんどが該当します。",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>並行と並列</span>"
     ]
@@ -73,8 +83,8 @@
     "objectID": "chapters/01-concurrent-parallel.html#sec-parallel-intro",
     "href": "chapters/01-concurrent-parallel.html#sec-parallel-intro",
     "title": "1  並行と並列",
-    "section": "1.3 並列処理（Parallel）",
-    "text": "1.3 並列処理（Parallel）\n並列処理とは、タスクと同じ数の人が、それぞれの作業を実際に同時に行う処理です。料理の例では、父がお湯を沸かし、母が野菜を切り、子どもが皿を並べる場合が並列処理にあたります。",
+    "section": "1.4 並列処理（Parallel）",
+    "text": "1.4 並列処理（Parallel）\n並列処理とは、タスクと同じ数の人が、それぞれの作業を実際に同時に行う処理です。料理の例では、父がお湯を沸かし、母が野菜を切り、子どもが皿を並べる場合が並列処理にあたります。",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>並行と並列</span>"
     ]
@@ -83,8 +93,8 @@
     "objectID": "chapters/01-concurrent-parallel.html#sec-difference",
     "href": "chapters/01-concurrent-parallel.html#sec-difference",
     "title": "1  並行と並列",
-    "section": "1.4 並行と並列の違い",
-    "text": "1.4 並行と並列の違い\n\n並行と並列の比較\n\n\n\n\n\n\n\n観点\n並行（Concurrent）\n並列（Parallel）\n\n\n\n\n同時に動く仕組み\n処理を細かく切り替えて、同時に動いているように見せる\n複数のCPU（コア）で、実際に同時に動かす\n\n\n必要なCPU（コア）数\n1つでもよい\nタスクの数以上が理想\n\n\n主な目的\n応答性・可用性の向上（来客にすぐ対応できる）\n処理速度の向上\n\n\n\n概念としては、並行は並列を含みます。並列処理は「同時に実行できるコアの数がタスクの数以上ある場合の並行処理」と言い換えられます。そのため、並行処理を意識して書かれたプログラム（並行アプリケーション）は、コアが十分にあれば並列に動かすこともできます。\nこの資料では、Javaによる並行アプリケーションの作り方（並行プログラミング）を学びます。",
+    "section": "1.5 並行と並列の違い",
+    "text": "1.5 並行と並列の違い\n\n並行と並列の比較\n\n\n\n\n\n\n\n観点\n並行（Concurrent）\n並列（Parallel）\n\n\n\n\n同時に動く仕組み\n処理を細かく切り替えて、同時に動いているように見せる\n複数のCPU（コア）で、実際に同時に動かす\n\n\n必要なCPU（コア）数\n1つでもよい\nタスクの数以上が理想\n\n\n主な目的\n応答性・可用性の向上（来客にすぐ対応できる）\n処理速度の向上\n\n\n\n概念としては、並行は並列を含みます。並列処理は「同時に実行できるコアの数がタスクの数以上ある場合の並行処理」と言い換えられます。そのため、並行処理を意識して書かれたプログラム（並行アプリケーション）は、コアが十分にあれば並列に動かすこともできます。\nこの資料では、Javaによる並行アプリケーションの作り方（並行プログラミング）を学びます。",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>並行と並列</span>"
     ]
@@ -94,7 +104,7 @@
     "href": "chapters/02-process-thread.html",
     "title": "2  プロセスとスレッド",
     "section": "",
-    "text": "2.1 プロセス\nプロセスとは、OS が管理しているプログラムの実行単位です。",
+    "text": "2.1 概要\nプロセスとスレッドは、ともに「プログラムの実行単位」のことです。\nここでは、その特徴や差異を説明します。",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>プロセスとスレッド</span>"
     ]
@@ -103,8 +113,8 @@
     "objectID": "chapters/02-process-thread.html#sec-process",
     "href": "chapters/02-process-thread.html#sec-process",
     "title": "2  プロセスとスレッド",
-    "section": "",
-    "text": "例えば、ターミナルから自作の java プログラムを実行すると、それが1つのプロセスとして実行されます。\nUNIX系OSでは、ps コマンドで実行中のプロセスを一覧できます。\n\n$ ps",
+    "section": "2.2 プロセス",
+    "text": "2.2 プロセス\nプロセスとは、OS が管理しているプログラムの実行単位です。\n\n例えば、ターミナルから自作のJavaプログラムを実行すると、それが1つのプロセスとして実行されます。\nUNIX系OSでは、ps コマンドで実行中のプロセスを一覧できます。\n$ ps\nどのプロセスをいつCPUで実行するか、各プロセスにどのメモリを割り当てるかは、すべてOSが決めます。\nつまり、私たちが書くプログラムの中から、プロセスの動きを細かく制御することはできません。",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>プロセスとスレッド</span>"
     ]
@@ -113,8 +123,8 @@
     "objectID": "chapters/02-process-thread.html#sec-thread",
     "href": "chapters/02-process-thread.html#sec-thread",
     "title": "2  プロセスとスレッド",
-    "section": "2.2 スレッド",
-    "text": "2.2 スレッド\nスレッドとは、プロセスよりも細かいプログラムの実行単位です。\n\n1つのプロセスに複数のスレッドを内包させることができます。\nJavaにはスレッドを簡単に扱う仕組みが用意されています。",
+    "section": "2.3 スレッド",
+    "text": "2.3 スレッド\nスレッドとは、プロセスよりも細かいプログラムの実行単位です。\n\nプロセスとは異なり、スレッドは私たちがプログラムの中で作成し、制御できます。たとえば、次のような操作をプログラムに書けます。\n\n新しいスレッドを作って起動する。\nスレッドを一定時間休ませる。\n他のスレッドが終わるまで待つ。\n\nJavaには、こうしたスレッドの操作を簡単に行う仕組みが用意されています。\n第3期では、それらの仕組みについて学びます。",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>プロセスとスレッド</span>"
     ]
@@ -123,8 +133,8 @@
     "objectID": "chapters/02-process-thread.html#sec-process-vs-thread",
     "href": "chapters/02-process-thread.html#sec-process-vs-thread",
     "title": "2  プロセスとスレッド",
-    "section": "2.3 プロセスとスレッドの比較",
-    "text": "2.3 プロセスとスレッドの比較\n両者はともに「プログラムを実行する単位」ですが、重要な違いの一つはヒープと呼ばれるメモリを他と共有できるかどうかです。\n\n\n\n\n\n\nflowchart TB\n    subgraph OS[\"OS\"]\n        direction LR\n        subgraph PA[\"プロセスA（java）\"]\n            direction TB\n            HA[(\"メモリ（ヒープ）\")]\n            M1[\"メインスレッド\"] &lt;--&gt; HA\n            T1[\"スレッド\"] &lt;--&gt; HA\n        end\n        subgraph PB[\"プロセスB（gcc）\"]\n            direction TB\n            HB[(\"メモリ（ヒープ）\")]\n            M2[\"メインスレッド\"] &lt;--&gt; HB\n        end\n        PA ~~~ PB\n    end\n\n    %% 見た目の種類を定義する（塗り・枠線・枠の太さ・文字色・文字サイズ）\n    classDef memory fill:#CCFBF1,stroke:#0F766E,stroke-width:3px,color:#134E4A\n    classDef thread fill:#FFEDD5,stroke:#C2410C,stroke-width:3px,color:#7C2D12\n\n    %% 箱に種類を割り当てる\n    class HA,HB memory\n    class M1,T1,T2,M2 thread\n\n    %% 外枠（OS とプロセス）の見た目\n    style OS fill:#EDEDED,stroke:#64748B,stroke-width:2px,stroke-dasharray:6 4\n    style PA fill:#EDE9FE,stroke:#6D28D9,stroke-width:3px,color:#3B0764\n    style PB fill:#EDE9FE,stroke:#6D28D9,stroke-width:3px,color:#3B0764\n\n    %% すべての矢印を太く、青くする\n    linkStyle default stroke:#2563EB,stroke-width:3px\n\n\n\n\n図 2.1: プロセスとスレッドの包含関係\n\n\n\n\n\n図 2.1 のように、1つのプロセスの中に複数のスレッドがあり、スレッドどうしはヒープを介してデータを共有できます。\nデータがヒープ上にあったとしても、そのデータを1つのスレッドだけが扱うように設計することで、スレッド専用のデータとして扱う（＝他スレッドにデータを共有しない）こともできます。\n\n\n\n\n\n\n\n\n観点\nプロセス\nスレッド\n\n\n\n\n包含関係\n上位\n下位\n\n\nメモリ領域\nOSの管理により、他のプロセスのメモリは読み書きできない\nプロセス内で、他のスレッドと同じメモリに読み書きできる\n\n\n自由度\n低い\n高い\n\n\n安全性\n互いに干渉しにくく安全\n意図しない干渉が発生する危険\n\n\n\n\n\n\n\n\n\n重要自由度の高さには代償がある\n\n\n\nスレッドは自由度が高い分、正しく扱うための知識と技術が必要になります。その具体的な問題と対策は第5章で扱います。",
+    "section": "2.4 プロセスとスレッドの比較",
+    "text": "2.4 プロセスとスレッドの比較\n両者はともに「プログラムを実行する単位」ですが、重要な違いの一つはヒープと呼ばれるメモリを他と共有できるかどうかです。\n\n\n\n\n\n\nflowchart TB\n    subgraph OS[\"OS\"]\n        direction LR\n        subgraph PA[\"プロセスA（java）\"]\n            direction TB\n            HA[(\"メモリ（ヒープ）\")]\n            M1[\"メインスレッド\"] &lt;--&gt; HA\n            T1[\"スレッド\"] &lt;--&gt; HA\n        end\n        subgraph PB[\"プロセスB（gcc）\"]\n            direction TB\n            HB[(\"メモリ（ヒープ）\")]\n            M2[\"メインスレッド\"] &lt;--&gt; HB\n        end\n        PA ~~~ PB\n    end\n\n    %% 見た目の種類を定義する（塗り・枠線・枠の太さ・文字色・文字サイズ）\n    classDef memory fill:#CCFBF1,stroke:#0F766E,stroke-width:3px,color:#134E4A\n    classDef thread fill:#FFEDD5,stroke:#C2410C,stroke-width:3px,color:#7C2D12\n\n    %% 箱に種類を割り当てる\n    class HA,HB memory\n    class M1,T1,T2,M2 thread\n\n    %% 外枠（OS とプロセス）の見た目\n    style OS fill:#EDEDED,stroke:#64748B,stroke-width:2px,stroke-dasharray:6 4\n    style PA fill:#EDE9FE,stroke:#6D28D9,stroke-width:3px,color:#3B0764\n    style PB fill:#EDE9FE,stroke:#6D28D9,stroke-width:3px,color:#3B0764\n\n    %% すべての矢印を太く、青くする\n    linkStyle default stroke:#2563EB,stroke-width:3px\n\n\n\n\n図 2.1: プロセスとスレッドの包含関係\n\n\n\n\n\n図 2.1 のように、1つのプロセスの中に複数のスレッドを内包させることができ、スレッドどうしはヒープを介してデータを共有できます。\n\n\n\n\n\n\nノート\n\n\n\nデータがヒープ上にあったとしても、そのデータを1つのスレッドだけが扱うように設計することで、スレッド専用のデータとして扱う（＝他スレッドにデータを共有しない）こともできます。\n\n\n\n\n\n\n\n\n\n\n観点\nプロセス\nスレッド\n\n\n\n\n包含関係\n上位\n下位\n\n\nメモリ領域\nOSの管理により、他のプロセスのメモリは読み書きできない\nプロセス内で、他のスレッドと同じメモリに読み書きできる\n\n\n自由度\n低い\n高い\n\n\n安全性\n互いに干渉しにくく安全\n意図しない干渉の懸念\n\n\n\n\n\n\n\n\n\n重要自由度の高さには代償がある\n\n\n\nスレッドは自由度が高い分、正しく扱うための知識と技術が必要になります。その具体的な問題と対策は第4章で扱います。",
     "crumbs": [
       "<span class='chapter-number'>2</span>  <span class='chapter-title'>プロセスとスレッド</span>"
     ]
@@ -274,7 +284,7 @@
     "href": "chapters/04-race-condition.html#sec-ex1",
     "title": "4  競合状態と排他制御",
     "section": "練習問題1：スレッド安全なキュー",
-    "text": "練習問題1：スレッド安全なキュー\n次のキュー（IntQueue）を、複数のスレッドから同時に操作しても正しく動くように変更してください。\n仕様\n\nキューには正の整数だけを入れられる。\ntail は現在の末尾の位置を表す。キューが空のときは tail = -1 とする。\nenqueue（追加）用のスレッドを2つ、dequeue（取り出し）用のスレッドを2つ、並行に動かす。\n\n課題\n\n変更前のプログラムを実行し、表示結果を記録する。\n適切な排他制御を加えて実行し、1の結果と比べる。\nメソッド全体を synchronized にするのが最も手軽ですが、synchronized ブロックで囲むならどの範囲を囲むべきかを考察する。\n\n\n\nIntQueue.java\n\npublic class IntQueue {\n    final int SIZE = 10;\n    private int[] values = new int[SIZE];\n    private int tail = -1;  // 末尾の位置（空のときは -1）\n\n    boolean enqueue(int data) {\n        if (data &lt; 0) {\n            return false;           // 負の値は受け付けない\n        }\n        if (tail == SIZE - 1) {\n            return false;           // 満杯\n        }\n        tail++;\n        values[tail] = data;\n        System.out.println(\"enqueue :\" + data + \" tail:\" + tail);\n        return true;\n    }\n\n    int dequeue() {\n        if (isEmpty()) {\n            return -1;              // 空\n        }\n        int data = values[0];\n        for (int i = 0; i &lt; SIZE - 1; i++) {\n            values[i] = values[i + 1];  // 要素を1つずつ前に詰める\n        }\n        tail--;\n        System.out.println(\"dequeue :\" + data + \" tail:\" + tail);\n        return data;\n    }\n\n    boolean isEmpty() {\n        return (tail == -1);\n    }\n\n    public static void main(String[] args) {\n        IntQueue q = new IntQueue();\n        new EnQueueThread(q).start();\n        new EnQueueThread(q).start();\n        new DeQueueThread(q).start();\n        new DeQueueThread(q).start();\n    }\n}\n\nclass EnQueueThread extends Thread {\n    IntQueue q;\n\n    public EnQueueThread(IntQueue q) {\n        this.q = q;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 100; i++) {\n            int data = (int) (Math.random() * 100 + 1);  // 1〜100の乱数\n            q.enqueue(data);\n        }\n    }\n}\n\nclass DeQueueThread extends Thread {\n    IntQueue q;\n\n    public DeQueueThread(IntQueue q) {\n        this.q = q;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 100; i++) {\n            q.dequeue();\n        }\n    }\n}\n\n\n\n\n\n\n\nヒントヒント（クリックで表示）\n\n\n\n\n\n「tail を確認する処理」と「tail を書き換える処理」の間に、別のスレッドが割り込むと何が起こるかを考えてください。たとえば、満杯の確認の直後に別のスレッドが追加すると、配列の範囲外に書き込む可能性があります。\n\n\n\n\n\n\n\n\n\nノート解答例\n\n\n\n練習問題1の解答例は、提出期限の後に公開します。",
+    "text": "練習問題1：スレッド安全なキュー\n次のキュー（IntQueue）を、複数のスレッドから同時に操作しても正しく動くように変更してください。\n仕様\n\nキューには正の整数だけを入れられる。\ntail は現在の末尾の位置を表す。キューが空のときは tail = -1 とする。\nenqueue（追加）用のスレッドを2つ、dequeue（取り出し）用のスレッドを2つ、並行に動かす。\n\n\n\nIntQueue.java\n\npublic class IntQueue {\n    final int SIZE = 10;\n    private int[] values = new int[SIZE];\n    private int tail = -1;  // 末尾の位置（空のときは -1）\n\n    boolean enqueue(int data) {\n        if (data &lt; 0) {\n            return false;           // 負の値は受け付けない\n        }\n        while (tail == SIZE - 1) {\n            return false;           // 満杯\n        }\n        tail++;\n        values[tail] = data;\n        System.out.println(\"enqueue :\" + data + \" tail:\" + tail);\n        return true;\n    }\n\n    int dequeue() {\n        if (isEmpty()) {\n            return -1;              // 空\n        }\n        int data = values[0];\n        for (int i = 0; i &lt; SIZE - 1; i++) {\n            values[i] = values[i + 1];  // 要素を1つずつ前に詰める\n        }\n        tail--;\n        System.out.println(\"dequeue :\" + data + \" tail:\" + tail);\n        return data;\n    }\n\n    boolean isEmpty() {\n        return (tail == -1);\n    }\n\n    public static void main(String[] args) {\n        IntQueue q = new IntQueue();\n        new EnQueueThread(q).start();\n        new EnQueueThread(q).start();\n        new DeQueueThread(q).start();\n        new DeQueueThread(q).start();\n    }\n}\n\nclass EnQueueThread extends Thread {\n    IntQueue q;\n\n    public EnQueueThread(IntQueue q) {\n        this.q = q;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 100; i++) {\n            int data = (int) (Math.random() * 100 + 1);  // 1〜100の乱数\n            q.enqueue(data);\n        }\n    }\n}\n\nclass DeQueueThread extends Thread {\n    IntQueue q;\n\n    public DeQueueThread(IntQueue q) {\n        this.q = q;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 100; i++) {\n            q.dequeue();\n        }\n    }\n}\n\n\n\n\n\n\n\nヒントヒント（クリックで表示）\n\n\n\n\n\n「tail を確認する処理」と「tail を書き換える処理」の間に、別のスレッドが割り込むと何が起こるかを考えてください。たとえば、満杯の確認の直後に別のスレッドが追加すると、配列の範囲外に書き込む可能性があります。\n\n\n\n\n\n\n\n\n\nノート解答例\n\n\n\n練習問題1の解答例は、提出期限の後に公開します。",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>競合状態と排他制御</span>"
     ]
@@ -284,7 +294,7 @@
     "href": "chapters/04-race-condition.html#sec-ex2",
     "title": "4  競合状態と排他制御",
     "section": "練習問題2：ATMによる送金",
-    "text": "練習問題2：ATMによる送金\nATM と Customer の2つのクラスを使い、口座間でお金を移動するプログラムを完成させてください。\n仕様\n\n口座は100個あり、各口座の初期残高は10万円とする。\n顧客30人（Customer スレッド30個）が同時にATMを操作する。\n各顧客は、0〜9ミリ秒に1回、ランダムに選んだ口座からランダムに選んだ口座へ、ランダムな金額（0〜9999円）を移動する。これを1人1000回行う。\n全員の操作が終わった後、全口座の残高と総額を printMoney() で表示し、総額が 10万円 × 100口座 = 1000万円のままであることを確認する。\n\n課題：printMoney() と move() の中身を書き、排他制御なしの場合と、ありの場合で総額を比べてください。\n\n\nATM.java\n\npublic class ATM {\n    static int SIZE = 100;\n    int[] account;\n\n    public ATM() {\n        account = new int[SIZE];\n        for (int i = 0; i &lt; SIZE; i++) {\n            account[i] = 100000;  // 初期残高10万円\n        }\n    }\n\n    void printMoney() {\n        // ここを記述：各口座の残高と総額を表示する\n    }\n\n    void move(int from, int to, int money) {\n        // ここを記述：口座 from から口座 to へ money 円を移動する\n    }\n\n    public static void main(String[] args) {\n        ATM atm = new ATM();\n        for (int i = 0; i &lt; 30; i++) {\n            new Customer(atm).start();\n        }\n    }\n}\n\nclass Customer extends Thread {\n    ATM atm;\n\n    public Customer(ATM atm) {\n        this.atm = atm;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 1000; i++) {\n            int from = (int) (Math.random() * ATM.SIZE);\n            int to = (int) (Math.random() * ATM.SIZE);\n            int money = (int) (Math.random() * 10000);\n            atm.move(from, to, money);\n            try {\n                sleep((int) (Math.random() * 10));  // 0〜9ミリ秒休止\n            } catch (InterruptedException e) {\n                System.err.println(e);\n            }\n        }\n        atm.printMoney();  // 各顧客が操作を終えるたびに表示（最後の表示が最終結果）\n    }\n}\n\n\n\n\n\n\n\nヒントヒント（クリックで表示）\n\n\n\n\n\nprintMoney() は顧客が操作を終えるたびに呼ばれるため、全部で30回表示されます。最後に表示される総額が最終結果です。全員の終了を待ってから1回だけ表示したい場合は、第6章の join() を使って main メソッドを書き換えてください。\n\n\n\n発展：残高が足りない場合は移動しないようにすると、より現実的になります。その場合も、総額が変わらないことを確認してください。\n\n\n\n\n\n\nノート解答例\n\n\n\n練習問題2の解答例は、提出期限の後に公開します。",
+    "text": "練習問題2：ATMによる送金\nprintMoney() と move() の中身を書き、口座間でお金を移動するプログラムを完成させてください。\n仕様\n\n口座は100個あり、各口座の初期残高は10万円とする。\n顧客30人（Customer スレッド30個）が同時にATMを操作する。\n各顧客は、0〜9ミリ秒に1回、ランダムに選んだ口座からランダムに選んだ口座へ、ランダムな金額（0〜9999円）を移動する。これを1Aさん000回行う。\n全員の操作が終わった後、全口座の残高と総額を printMoney() で表示し、総額が 10万円 × 100口座 = 1000万円のままであることを確認する。\n\n\n\nATM.java\n\npublic class ATM {\n    static int SIZE = 100;\n    int[] account;\n\n    public ATM() {\n        account = new int[SIZE];\n        for (int i = 0; i &lt; SIZE; i++) {\n            account[i] = 100000;  // 初期残高10万円\n        }\n    }\n\n    void printMoney() {\n        // ここを記述：各口座の残高と総額を表示する\n    }\n\n    void move(int from, int to, int money) {\n        // ここを記述：口座 from から口座 to へ money 円を移動する\n    }\n\n    public static void main(String[] args) {\n        ATM atm = new ATM();\n        for (int i = 0; i &lt; 30; i++) {\n            new Customer(atm).start();\n        }\n    }\n}\n\nclass Customer extends Thread {\n    ATM atm;\n\n    public Customer(ATM atm) {\n        this.atm = atm;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 1000; i++) {\n            int from = (int) (Math.random() * ATM.SIZE);\n            int to = (int) (Math.random() * ATM.SIZE);\n            int money = (int) (Math.random() * 10000);\n            atm.move(from, to, money);\n            try {\n                sleep((int) (Math.random() * 10));  // 0〜9ミリ秒休止\n            } catch (InterruptedException e) {\n                System.err.println(e);\n            }\n        }\n        atm.printMoney();  // 各顧客が操作を終えるたびに表示（最後の表示が最終結果）\n    }\n}\n\n\n\n\n\n\n\nヒントヒント（クリックで表示）\n\n\n\n\n\n「入金」「出金」「残高の確認・出力」が同時に発生しないようにする。\n\n\n\n発展：残高が足りない場合は移動しないようにすると、より現実的になります。その場合も、総額が変わらないことを確認してください。\n\n\n\n\n\n\nノート解答例\n\n\n\n練習問題2の解答例は、提出期限の後に公開します。",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>競合状態と排他制御</span>"
     ]

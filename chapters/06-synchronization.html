@@ -462,26 +462,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </colgroup>
 <thead>
 <tr class="header">
-<th>メソッド</th>
-<th>働き</th>
+<th style="text-align: left;">メソッド</th>
+<th style="text-align: left;">働き</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>join()</code></td>
-<td>指定した<strong>スレッドが終了する</strong>まで待機</td>
+<td style="text-align: left;"><code>join()</code></td>
+<td style="text-align: left;">指定した<strong>スレッドが終了する</strong>まで待機</td>
 </tr>
 <tr class="even">
-<td><code>wait()</code></td>
-<td>他の<strong>スレッドから通知される</strong>まで待機</td>
+<td style="text-align: left;"><code>wait()</code></td>
+<td style="text-align: left;">他の<strong>スレッドから通知される</strong>まで待機</td>
 </tr>
 <tr class="odd">
-<td><code>notify()</code></td>
-<td>同じオブジェクトで <code>wait()</code> しているスレッドのうち、<strong>1つだけ</strong>に通知（どれに通知するかはシステムが決める）</td>
+<td style="text-align: left;"><code>notify()</code></td>
+<td style="text-align: left;">同じオブジェクトで <code>wait()</code> しているスレッドのうち、<strong>1つだけ</strong>に通知（どれに通知するかはシステムが決める）</td>
 </tr>
 <tr class="even">
-<td><code>notifyAll()</code></td>
-<td>同じオブジェクトで <code>wait()</code> している<strong>すべて</strong>のスレッドに通知</td>
+<td style="text-align: left;"><code>notifyAll()</code></td>
+<td style="text-align: left;">同じオブジェクトで <code>wait()</code> している<strong>すべて</strong>のスレッドに通知</td>
 </tr>
 </tbody>
 </table>
@@ -788,23 +788,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>その結果、各スレッドが<strong>必ず100回ずつ</strong> <code>enqueue()</code> または <code>dequeue()</code> を成功させるようにする。</li>
 </ul>
 <p><strong>実行結果の例</strong></p>
-<pre><code>$ java IntQueue
-（中略）
-dequeue :42 tail:3
-dequeue :49 tail:2
-dequeue :22 tail:1
-dequeue :80 tail:0
-dequeue :47 tail:-1
-dequeue :Queue Empty.. wait enqueue()
-enqueue :98 tail:0
-（中略）
-enqueue :76 tail:6
-enqueue :19 tail:7
-enqueue :100 tail:8
-enqueue :58 tail:9
-enqueue :Queue Full.. wait dequeue()
-dequeue :33 tail:8
-dequeue :53 tail:7</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> java IntQueue</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">（中略）</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dequeue</span> :42 tail:3</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">dequeue</span> :49 tail:2</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">dequeue</span> :22 tail:1</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ex">dequeue</span> :80 tail:0</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">dequeue</span> :47 tail:-1</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ex">dequeue</span> :Queue Empty.. wait enqueue<span class="er">(</span><span class="kw">)</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ex">enqueue</span> :98 tail:0</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="ex">（中略）</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="ex">enqueue</span> :76 tail:6</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ex">enqueue</span> :19 tail:7</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ex">enqueue</span> :100 tail:8</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="ex">enqueue</span> :58 tail:9</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ex">enqueue</span> :Queue Full.. wait dequeue<span class="er">(</span><span class="kw">)</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ex">dequeue</span> :33 tail:8</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ex">dequeue</span> :53 tail:7</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">

@@ -365,10 +365,11 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-background" id="toc-sec-background" class="nav-link active" data-scroll-target="#sec-background"><span class="header-section-number">1.1</span> 背景</a></li>
-  <li><a href="#sec-concurrent" id="toc-sec-concurrent" class="nav-link" data-scroll-target="#sec-concurrent"><span class="header-section-number">1.2</span> 並行処理（Concurrent）</a></li>
-  <li><a href="#sec-parallel-intro" id="toc-sec-parallel-intro" class="nav-link" data-scroll-target="#sec-parallel-intro"><span class="header-section-number">1.3</span> 並列処理（Parallel）</a></li>
-  <li><a href="#sec-difference" id="toc-sec-difference" class="nav-link" data-scroll-target="#sec-difference"><span class="header-section-number">1.4</span> 並行と並列の違い</a></li>
+  <li><a href="#sec-abstract" id="toc-sec-abstract" class="nav-link active" data-scroll-target="#sec-abstract"><span class="header-section-number">1.1</span> 概要</a></li>
+  <li><a href="#sec-background" id="toc-sec-background" class="nav-link" data-scroll-target="#sec-background"><span class="header-section-number">1.2</span> 背景</a></li>
+  <li><a href="#sec-concurrent" id="toc-sec-concurrent" class="nav-link" data-scroll-target="#sec-concurrent"><span class="header-section-number">1.3</span> 並行処理（Concurrent）</a></li>
+  <li><a href="#sec-parallel-intro" id="toc-sec-parallel-intro" class="nav-link" data-scroll-target="#sec-parallel-intro"><span class="header-section-number">1.4</span> 並列処理（Parallel）</a></li>
+  <li><a href="#sec-difference" id="toc-sec-difference" class="nav-link" data-scroll-target="#sec-difference"><span class="header-section-number">1.5</span> 並行と並列の違い</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/01-concurrent-parallel.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
@@ -395,14 +396,17 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="sec-abstract" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="sec-abstract"><span class="header-section-number">1.1</span> 概要</h2>
 <p><strong>並行（Concurrent）は「複数の処理を切り替えながら進めること」、並列（Parallel）は「複数の処理を実際に同時に実行すること」です</strong>。この2つはよく混同されるため、最初に違いを押さえます。</p>
-<section id="sec-background" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="sec-background"><span class="header-section-number">1.1</span> 背景</h2>
+</section>
+<section id="sec-background" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="sec-background"><span class="header-section-number">1.2</span> 背景</h2>
 <p>プログラムを速く動かす手段として、1台のコンピュータに多数のCPU（コア）を積む、または多数のコンピュータを連携させる方法が広く使われています。たとえばスーパーコンピュータ「京（けい）」は約8万8千個のCPUを搭載していました。このような計算機を<strong>並列コンピュータ</strong>と呼びます。</p>
 <p>また、Java言語は登場時から「並行プログラミング言語」を掲げており、複数の処理を同時に進める仕組み（スレッド）を言語の機能として備えています。</p>
 </section>
-<section id="sec-concurrent" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="sec-concurrent"><span class="header-section-number">1.2</span> 並行処理（Concurrent）</h2>
+<section id="sec-concurrent" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="sec-concurrent"><span class="header-section-number">1.3</span> 並行処理（Concurrent）</h2>
 <p>並行処理とは、<strong>1人（または処理の数より少ない人数）で、複数の作業を少しずつ切り替えながら進める</strong>処理です。台所で鍋料理を作る場面で考えます。</p>
 <ol type="1">
 <li>鍋に水を入れて火にかける。</li>
@@ -416,12 +420,12 @@ ul.task-list li input[type="checkbox"] {
 <p>Windows、macOS、Linuxなどの現在のOSは、この並行処理（<strong>マルチタスク</strong>とも呼ぶ）を標準で備えています。そのため、Webページを見ながらメールの受信に気づき、同時に音楽を再生できます。CPUのコアが1つしかなくても、OSはごく短い時間ごとに実行する処理を切り替えています。その結果、複数の処理が同時に動いている<strong>ように見える</strong>のです。</p>
 <p>この機能をもつOSを<strong>マルチタスクOS</strong>と呼び、Windows、Linux、macOS、Androidなど現在の主要なOSのほとんどが該当します。</p>
 </section>
-<section id="sec-parallel-intro" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="sec-parallel-intro"><span class="header-section-number">1.3</span> 並列処理（Parallel）</h2>
+<section id="sec-parallel-intro" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="sec-parallel-intro"><span class="header-section-number">1.4</span> 並列処理（Parallel）</h2>
 <p>並列処理とは、<strong>タスクと同じ数の人が、それぞれの作業を実際に同時に行う</strong>処理です。料理の例では、父がお湯を沸かし、母が野菜を切り、子どもが皿を並べる場合が並列処理にあたります。</p>
 </section>
-<section id="sec-difference" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="sec-difference"><span class="header-section-number">1.4</span> 並行と並列の違い</h2>
+<section id="sec-difference" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="sec-difference"><span class="header-section-number">1.5</span> 並行と並列の違い</h2>
 <table class="table-striped caption-top table">
 <caption>並行と並列の比較</caption>
 <colgroup>
