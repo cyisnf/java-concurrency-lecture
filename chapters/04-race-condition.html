@@ -741,13 +741,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ヒント</span>ヒント（クリックで表示）
+<span class="screen-reader-only">ヒント</span>ヒント（最初は自力でやってみる。クリックで表示）
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>「<code>tail</code> を確認する処理」と「<code>tail</code> を書き換える処理」の間に、別のスレッドが割り込むと何が起こるかを考えてください。たとえば、満杯の確認の直後に別のスレッドが追加すると、配列の範囲外に書き込む可能性があります。</p>
+<ul>
+<li>「<code>tail</code> の確認」から「<code>tail</code>・<code>values</code> の書き換えと表示」までを、割り込まれない1つのまとまりにします。</li>
+<li><code>enqueue()</code> と <code>dequeue()</code> の両方に、同じロックで排他制御を追加します（<a href="#sec-sync-method" class="quarto-xref"><span>セクション 4.5</span></a>）。</li>
+</ul>
 </div>
 </div>
 </div>
@@ -835,13 +838,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ヒント</span>ヒント（クリックで表示）
+<span class="screen-reader-only">ヒント</span>ヒント（最初は自力でやってみる。クリックで表示）
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>「入金」「出金」「残高の確認・出力」が同時に発生しないようにする。</p>
+<ul>
+<li><code>move()</code>：出金と入金を書き、2つを割り込まれない1つのまとまりにします。</li>
+<li><code>printMoney()</code>：全口座を表示しながら総額を求めます。この処理全体を、<code>move()</code> と<strong>同じオブジェクトのロック</strong>で守ります。</li>
+</ul>
 </div>
 </div>
 </div>

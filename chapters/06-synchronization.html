@@ -811,16 +811,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ヒント</span>ヒント（クリックで表示）
+<span class="screen-reader-only">ヒント</span>ヒント（最初は自力でやってみる。クリックで表示）
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
-<li><a href="#sec-wait-notify-sample">6.3節</a>のサンプルと同じく、待つ条件は <code>while</code> で確かめてください。</li>
-<li>この問題では、追加側と取り出し側のスレッドが<strong>2つずつ</strong>あります。<code>notify()</code> だと、同じ側のスレッド（例：取り出し側のスレッドが、別の取り出し側のスレッド）を起こしてしまい、全員が待ち続ける可能性があります。<code>notifyAll()</code> を使うのが安全です。</li>
-<li>すべてのスレッドが終了し、プログラムが正常に終わることも確認してください。</li>
+<li>満杯・空のときの <code>return</code> を、<code>while</code> で条件を確かめながら <code>wait()</code> で待つ処理に置き換えます（<a href="#sec-wait-notify-sample" class="quarto-xref"><span>セクション 6.3.3</span></a>）。</li>
+<li>追加・取り出しに成功した後で、待っているスレッドを起こす処理を追加します。追加側と取り出し側が2つずつあることを踏まえて、<code>notify()</code> と <code>notifyAll()</code> のどちらを使うか選びます。</li>
 </ul>
 </div>
 </div>
