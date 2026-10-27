@@ -190,7 +190,7 @@ public class IntQueue {
         if (data < 0) {
             return false;           // 負の値は受け付けない
         }
-        while (tail == SIZE - 1) {
+        if (tail == SIZE - 1) {
             return false;           // 満杯
         }
         tail++;
