@@ -465,7 +465,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="sec-para-sample" class="level2" data-number="8.3">
 <h2 data-number="8.3" class="anchored" data-anchor-id="sec-para-sample"><span class="header-section-number">8.3</span> サンプル：配列の要素を分担して増やす</h2>
-<p>100万個の要素をもつ配列の各要素を、10000回ずつ1増やすプログラムです。コマンドライン引数でスレッド数を指定し、配列を<strong>スレッド数で等分して</strong>、各スレッドに担当させます。</p>
+<p>要素数が100万の配列について、各要素を1万回、1ずつ増やすプログラムです。</p>
+<p>コマンドライン引数でスレッド数を指定し、配列を<strong>スレッド数で等分して</strong>、各スレッドに担当させます。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>ParaSample.java</strong></pre>

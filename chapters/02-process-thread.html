@@ -114,6 +114,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "サーチ"
   }
 }</script>
+<meta name="mermaid-theme" content="default">
 <script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
 <script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
 <link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
@@ -451,7 +452,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="sec-process-vs-thread" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="sec-process-vs-thread"><span class="header-section-number">2.3</span> プロセスとスレッドの比較</h2>
-<p>両者はともに「プログラムを実行する単位」ですが、重要な違いの一つは<strong>（ヒープと呼ばれる）メモリを他と共有できるかどうか</strong>です。</p>
+<p>両者はともに「プログラムを実行する単位」ですが、重要な違いの一つは<strong>ヒープと呼ばれるメモリを他と共有できるかどうか</strong>です。</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div id="fig-process-thread" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -465,8 +466,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
             direction TB
             HA[("メモリ（ヒープ）")]
             M1["メインスレッド"] &lt;--&gt; HA
-            T1["スレッド1"] &lt;--&gt; HA
-            T2["スレッド2"] &lt;--&gt; HA
+            T1["スレッド"] &lt;--&gt; HA
         end
         subgraph PB["プロセスB（gcc）"]
             direction TB
@@ -477,8 +477,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     end
 
     %% 見た目の種類を定義する（塗り・枠線・枠の太さ・文字色・文字サイズ）
-    classDef memory fill:#CCFBF1,stroke:#0F766E,stroke-width:3px,color:#134E4A,font-size:17px
-    classDef thread fill:#FFEDD5,stroke:#C2410C,stroke-width:3px,color:#7C2D12,font-size:17px
+    classDef memory fill:#CCFBF1,stroke:#0F766E,stroke-width:3px,color:#134E4A
+    classDef thread fill:#FFEDD5,stroke:#C2410C,stroke-width:3px,color:#7C2D12
 
     %% 箱に種類を割り当てる
     class HA,HB memory
