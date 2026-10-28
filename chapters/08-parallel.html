@@ -84,9 +84,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-3737459a709222b8c3531ce17b4632b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-7d9ab679c82f4cdd3315c3a76f2ba6ee.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-3737459a709222b8c3531ce17b4632b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-886608eb2eabd9caf1de71508903c6ab.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-3e767cae2e9f38f88abb0917055022a1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-886608eb2eabd9caf1de71508903c6ab.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -405,7 +405,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#sec-para-sample" id="toc-sec-para-sample" class="nav-link" data-scroll-target="#sec-para-sample"><span class="header-section-number">8.3</span> サンプル：配列の要素を分担して増やす</a></li>
   <li><a href="#sec-measure" id="toc-sec-measure" class="nav-link" data-scroll-target="#sec-measure"><span class="header-section-number">8.4</span> 実行時間の測り方</a></li>
   <li><a href="#sec-suitability" id="toc-sec-suitability" class="nav-link" data-scroll-target="#sec-suitability"><span class="header-section-number">8.5</span> 並列処理に向くプログラム、向かないプログラム</a></li>
-  <li><a href="#sec-exercise" id="toc-sec-exercise" class="nav-link" data-scroll-target="#sec-exercise">演習：スレッド数と処理時間の関係</a></li>
+  <li><a href="#sec-exercise" id="toc-sec-exercise" class="nav-link" data-scroll-target="#sec-exercise">練習：スレッド数と処理時間の関係</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/08-parallel.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
@@ -611,84 +611,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>並列化を考えるときは、まず<strong>他の処理から独立して実行できる部分</strong>を探すことから始めましょう。</p>
 </section>
 <section id="sec-exercise" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="sec-exercise">演習：スレッド数と処理時間の関係</h2>
+<h2 class="unnumbered anchored" data-anchor-id="sec-exercise">練習：スレッド数と処理時間の関係</h2>
 <p>スレッド数を増やしていくと、どこまで速くなるかを調べてください。</p>
 <ol type="1">
 <li><code>nproc</code> で、使用している計算機の論理プロセッサ数を確認する。</li>
-<li>スレッド数を 1, 2, 4, 8, 16, 32 と変えて、それぞれ3回ずつ実行時間を測り、平均を求める。</li>
-<li><strong>速度向上率</strong>（1スレッドの時間 ÷ nスレッドの時間）を計算し、下の表を埋める。</li>
-<li>速度向上が止まるスレッド数と、その理由を、<a href="#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a> と <a href="#sec-suitability" class="quarto-xref"><span>セクション 8.5</span></a> の内容をもとに考察する。</li>
+<li>スレッド数を 1, 2, 4, 8, … のように変化させ、それぞれの実行時間を比較する。</li>
 </ol>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>スレッド数</th>
-<th>1回目（ミリ秒）</th>
-<th>2回目（ミリ秒）</th>
-<th>3回目（ミリ秒）</th>
-<th>平均（ミリ秒）</th>
-<th>速度向上率</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>1.00</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>4</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>8</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>16</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>32</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 
 
 </section>
