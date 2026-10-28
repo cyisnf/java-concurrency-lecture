@@ -21,7 +21,6 @@ Javaのスレッドを使った並行プログラミングの講義資料。
 ├── appendix/
 │   └── glossary.qmd             # 付録：用語集
 ├── styles.css                   # 見た目の微調整
-├── INSTRUCTOR_NOTES.md          # 指導者向けメモ（サイトには公開されない）
 └── .github/workflows/publish.yml  # GitHub Pages への自動公開
 ```
 
@@ -80,7 +79,7 @@ solutions/
 └── styles.css
 ```
 
-HTMLを作るには、`solutions/` に移動して次のコマンドを実行する。`solutions/_site/` に問題ごとのHTMLが作られ、そのまま1ファイルずつ配布できる。講義サイト本体の `quarto render` や GitHub Actions では、解答例は作られない。
+HTMLを作るには、`solutions/` に移動して次のコマンドを実行する。`solutions/_site/` に問題ごとのHTMLが作られ、そのまま1ファイルずつ配布できる。
 
 ```bash
 cd solutions
