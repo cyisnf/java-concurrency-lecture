@@ -30,7 +30,8 @@ Javaのクラス、継承、インタフェース、例外処理（`try`〜`catc
 | [第5章](chapters/05-volatile.qmd) | 可視性と原子性 |  |
 | [第6章](chapters/06-synchronization.qmd) | スレッドの同期 | 練習問題3 |
 | [第7章](chapters/07-deadlock.qmd) | デッドロック | 練習問題4 |
-| [第8章](chapters/08-parallel.qmd) | 並列処理による高速化 | 演習 |
+| [第8章](chapters/08-parallel.qmd) | 並列処理による高速化 |  |
+| [第8章](chapters/09-exercises.qmd) | 総合演習 |  |
 | [付録A](appendix/glossary.qmd) | 用語集 | |
 
 資料の誤りに気づいた場合は、各ページの目次の下にあるリンクから、GitHubのIssueで知らせてください。

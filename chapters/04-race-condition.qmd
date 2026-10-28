@@ -267,7 +267,7 @@ class DeQueueThread extends Thread {
 ```
 
 ::: {.callout-tip collapse="true"}
-## ヒント（最初は自力でやってみる。クリックで表示）
+## ヒント（最初は自力でやってみること。クリックで表示）
 - 「`tail` の確認」から「`tail`・`values` の書き換えと表示」までを、割り込まれない1つのまとまりにします。
 - `enqueue()` と `dequeue()` の両方に、同じロックで排他制御を追加します（@sec-sync-method）。
 :::
@@ -341,7 +341,7 @@ class Customer extends Thread {
 ```
 
 ::: {.callout-tip collapse="true"}
-## ヒント（最初は自力でやってみる。クリックで表示）
+## ヒント（最初は自力でやってみること。クリックで表示）
 - `move()`：出金と入金を書き、2つを割り込まれない1つのまとまりにします。
 - `printMoney()`：全口座を表示しながら総額を求めます。この処理全体を、`move()` と**同じオブジェクトのロック**で守ります。
 :::

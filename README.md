@@ -17,7 +17,8 @@ Javaのスレッドを使った並行プログラミングの講義資料。
 │   ├── 05-volatile.qmd
 │   ├── 06-synchronization.qmd   # 練習問題3を含む
 │   ├── 07-deadlock.qmd          # 練習問題4を含む
-│   └── 08-parallel.qmd          # 演習を含む
+│   ├── 08-parallel.qmd
+│   └── 09-exercises.qmd
 ├── appendix/
 │   └── glossary.qmd             # 付録：用語集
 ├── styles.css                   # 見た目の微調整
