@@ -515,7 +515,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>各メソッドは <code>synchronized</code> なので、<a href="../chapters/04-race-condition.html">第5章</a>の競合状態は起こりません。それでもデッドロックは起こります。つまり、<strong>排他制御が正しくても、資源の取り方（アルゴリズム）に問題があればデッドロックは起こる</strong>のです。</p>
+<p>各メソッドは <code>synchronized</code> なので、<a href="04-race-condition.html" class="quarto-xref"><span>チャプター 4</span></a> の競合状態は起こりません。それでもデッドロックは起こります。つまり、<strong>排他制御が正しくても、資源の取り方（アルゴリズム）に問題があればデッドロックは起こる</strong>のです。</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -535,11 +535,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>次の4つの条件が<strong>すべて</strong>そろったときに、デッドロックが起こりえます。逆に、どれか1つでも崩せばデッドロックは起こりません。</p>
 <table class="table-striped caption-top table">
 <caption>デッドロックが起こる4つの条件（コフマン条件）</caption>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>条件</th>
 <th>意味</th>
-<th><a href="#sec-deadlock-sample">7.2節</a>のサンプルでは</th>
+<th><a href="#sec-deadlock-sample" class="quarto-xref"><span>セクション 7.2</span></a> の例</th>
 </tr>
 </thead>
 <tbody>

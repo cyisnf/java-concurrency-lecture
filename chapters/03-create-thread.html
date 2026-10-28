@@ -400,7 +400,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-abstract" id="toc-sec-abstract" class="nav-link active" data-scroll-target="#sec-abstract"><span class="header-section-number">3.1</span> 概要</a></li>
+  <li><a href="#sec-03-abstract" id="toc-sec-03-abstract" class="nav-link active" data-scroll-target="#sec-03-abstract"><span class="header-section-number">3.1</span> 概要</a></li>
   <li><a href="#sec-runnable" id="toc-sec-runnable" class="nav-link" data-scroll-target="#sec-runnable"><span class="header-section-number">3.2</span> 方法1：Runnable インタフェースを実装する</a></li>
   <li><a href="#sec-extends-thread" id="toc-sec-extends-thread" class="nav-link" data-scroll-target="#sec-extends-thread"><span class="header-section-number">3.3</span> 方法2：Threadクラスを継承する</a></li>
   <li><a href="#sec-similarity" id="toc-sec-similarity" class="nav-link" data-scroll-target="#sec-similarity"><span class="header-section-number">3.4</span> 2つの方法の共通点</a></li>
@@ -433,8 +433,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="sec-abstract" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="sec-abstract"><span class="header-section-number">3.1</span> 概要</h2>
+<section id="sec-03-abstract" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="sec-03-abstract"><span class="header-section-number">3.1</span> 概要</h2>
 <p>Javaでスレッドを作る 2 つの方法を説明します。</p>
 <ol type="1">
 <li><code>Runnable</code> インタフェースを実装する方法</li>
@@ -457,8 +457,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p><strong>実装（implements）：</strong></p>
 <ul>
-<li>実装クラスが持つべきメソッドを定めたもの（これをインターフェイスと呼ぶ）に対して、その処理内容を記述すること。</li>
-<li>1つのクラスは複数のインターフェイスを実装できる。</li>
+<li>実装クラスが持つべきメソッドを定めたもの（これをインタフェースと呼ぶ）に対して、その処理内容を記述すること。</li>
+<li>1つのクラスは複数のインタフェースを実装できる。</li>
 </ul>
 </div>
 </div>
@@ -602,14 +602,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="sec-output" class="level2" data-number="3.6">
 <h2 data-number="3.6" class="anchored" data-anchor-id="sec-output"><span class="header-section-number">3.6</span> 実行結果の見方</h2>
 <p><a href="#sec-runnable">方法1</a>または<a href="#sec-extends-thread">方法2</a>のプログラムを実行すると、環境によって多少異なりますが、次のような出力が続きます。</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">AAA</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">AAA</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">AAA</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">BBB</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">BBB</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ex">BBB</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ex">AAA</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ex">（以下略）</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>AAA</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>AAA</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>AAA</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>BBB</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>BBB</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>BBB</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>AAA</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>（以下略）</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>現在の多くのコンピュータはマルチコアなので、2つ程度のスレッドであれば、切り替えではなく<strong>ほぼ並列に</strong>同時実行されます。</li>
 <li>同じ文字がまとまって出力されるのは、各スレッドがある程度の時間続けて実行されてから、別のスレッドに切り替わるためです。AAAとBBBの順番は実行のたびに変わります。</li>
@@ -664,7 +664,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><code>sleep()</code> の引数の単位は<strong>ミリ秒</strong>です（1000ミリ秒 = 1秒）。</li>
 <li><code>sleep()</code> は、休止中に他のスレッドから中断（<code>interrupt()</code>）されると <code>InterruptedException</code> という例外を投げます。この例外は<strong>チェック例外</strong>（例外処理が必須の例外）なので、<code>try</code>〜<code>catch</code> で必ず処理する必要があります。</li>
-<li><code>Thread</code> を継承したクラスの中では <code>sleep(100)</code> と書けますが、それ以外の場所（<code>main</code> メソッドなど）では <code>Thread.sleep(100)</code> と書きます。</li>
+<li><code>Thread</code> を継承したクラスの中では <code>sleep(100)</code> と書けますが、それ以外のクラスでは <code>Thread.sleep(100)</code> と書きます。</li>
 </ul>
 </div>
 </div>

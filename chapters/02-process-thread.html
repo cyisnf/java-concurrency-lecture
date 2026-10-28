@@ -441,32 +441,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="sec-process" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="sec-process"><span class="header-section-number">2.2</span> プロセス</h2>
-<p><strong>プロセス</strong>とは、<strong>OS が管理</strong>しているプログラムの実行単位です。</p>
+<p><strong>プロセス</strong>とは、OSがプログラムを実行するときの単位です。</p>
 <ul>
-<li><p>例えば、ターミナルから自作のJavaプログラムを実行すると、それが1つのプロセスとして実行されます。</p></li>
-<li><p>UNIX系OSでは、<code>ps</code> コマンドで実行中のプロセスを一覧できます。</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ps</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div></li>
-<li><p>どのプロセスをいつCPUで実行するか、各プロセスにどのメモリを割り当てるかは、すべてOSが決めます。</p></li>
-<li><p>つまり、<strong>私たちが書くプログラムの中から、プロセスの動きを細かく制御することはできません。</strong></p></li>
+<li>例えば、ターミナルから自作のJavaプログラムを実行すると、それが1つのプロセスとして実行されます。</li>
+<li>OSは、プロセスを作るたびに、そのプロセス<strong>専用のメモリ領域</strong>を割り当てます。</li>
+<li>あるプロセスが、他のプロセスのメモリ領域を直接読み書きすることはできません。</li>
 </ul>
+<p>UNIX系OSでは、<code>ps</code> コマンドで実行中のプロセスを一覧できます。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ps</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="sec-thread" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="sec-thread"><span class="header-section-number">2.3</span> スレッド</h2>
-<p><strong>スレッド</strong>とは、プロセスよりも細かいプログラムの実行単位です。</p>
+<p><strong>スレッド</strong>とは、プロセスの中で処理を実行する流れのことです。</p>
 <ul>
-<li>プロセスとは異なり、スレッドは<strong>私たちがプログラムの中で作成し、制御できます</strong>。たとえば、次のような操作をプログラムに書けます。
-<ul>
-<li>新しいスレッドを作って起動する。</li>
-<li>スレッドを一定時間休ませる。</li>
-<li>他のスレッドが終わるまで待つ。</li>
-</ul></li>
-<li>Javaには、こうしたスレッドの操作を簡単に行う仕組みが用意されています。</li>
-<li>第3期では、それらの仕組みについて学びます。</li>
+<li>どのプロセスにも、少なくとも1つのスレッドがあります。Javaのプログラムでは、<code>main</code> メソッドを実行する<strong>メインスレッド</strong>がそれにあたります。</li>
+<li>1つのプロセスの中に、スレッドを<strong>複数</strong>作ることができます。</li>
 </ul>
+<p>第3期では、Javaでスレッドを制御して、高速な処理を実現する方法を学びます。</p>
 </section>
 <section id="sec-process-vs-thread" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="sec-process-vs-thread"><span class="header-section-number">2.4</span> プロセスとスレッドの比較</h2>
-<p>両者はともに「プログラムを実行する単位」ですが、重要な違いの一つは<strong>ヒープと呼ばれるメモリを他と共有できるかどうか</strong>です。</p>
+<p>両者はともに「プログラムを実行する単位」ですが、本質的な違いは<strong>メモリを共有するかどうか</strong>です。</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div id="fig-process-thread" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -515,20 +510,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p><a href="#fig-process-thread" class="quarto-xref">図&nbsp;<span>2.1</span></a> のように、<strong>1つのプロセスの中に複数のスレッドを内包</strong>させることができ、スレッドどうしはヒープを介してデータを共有できます。</p>
+<p><a href="#fig-process-thread" class="quarto-xref">図&nbsp;<span>2.1</span></a> のように、1つのプロセスの中には複数のスレッドを作ることができます。</p>
+<ul>
+<li><strong>同じプロセスの中のスレッドどうし</strong>は、ヒープを介して、同じオブジェクトや変数を読み書きできます。</li>
+<li><strong>異なるプロセスどうし</strong>は、メモリが分かれているため、互いのデータを直接読み書きできません。データをやり取りするには、ファイルや通信など、OSの仕組みを経由する必要があります。</li>
+</ul>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-ノート
+<span class="screen-reader-only">ノート</span>ヒープとスタック
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>データがヒープ上にあったとしても、そのデータを1つのスレッドだけが扱うように設計することで、スレッド専用のデータとして扱う<strong>（＝他スレッドにデータを共有しない）こともできます</strong>。</p>
+<p><code>new</code> で作ったオブジェクトや、そのフィールドは<strong>ヒープ</strong>に置かれ、同じプロセスの全スレッドで共有されます。一方、メソッドの中で宣言したローカル変数は、スレッドごとに用意される<strong>スタック</strong>に置かれるため、他のスレッドと共有されません。</p>
+<p>また、ヒープ上のデータであっても、1つのスレッドだけが扱うように設計すれば、そのスレッド専用のデータとして扱うことができます。</p>
 </div>
 </div>
+<div id="tbl-process-vs-thread" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-process-vs-thread-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;2.1: プロセスとスレッドの比較
+</figcaption>
+<div aria-describedby="tbl-process-vs-thread-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -537,45 +543,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </colgroup>
 <thead>
 <tr class="header">
-<th>観点</th>
+<th></th>
 <th>プロセス</th>
 <th>スレッド</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>包含関係</td>
-<td>上位</td>
-<td>下位</td>
+<td>関係性</td>
+<td>1つのプロセスが、複数スレッドを含む</td>
+<td>プロセスの中で作られる</td>
 </tr>
 <tr class="even">
-<td>メモリ領域</td>
-<td>OSの管理により、他のプロセスのメモリは読み書きできない</td>
-<td>プロセス内で、他のスレッドと同じメモリに読み書きできる</td>
+<td>メモリ</td>
+<td>プロセスごとに専用</td>
+<td>同じプロセスのスレッド同士で共有</td>
 </tr>
 <tr class="odd">
-<td>自由度</td>
-<td>低い</td>
-<td>高い</td>
+<td>データのやり取り</td>
+<td>ファイルや通信などを経由</td>
+<td>共有する変数を読み書きするだけでよい</td>
 </tr>
 <tr class="even">
 <td>安全性</td>
-<td>互いに干渉しにくく安全</td>
-<td>意図しない干渉の懸念</td>
+<td>互いに干渉しにくい</td>
+<td>意図しない干渉が起こりうる</td>
 </tr>
 </tbody>
 </table>
+</div>
+</figure>
+</div>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">重要</span>自由度の高さには代償がある
+<span class="screen-reader-only">重要</span>データを共有できることには代償がある
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>スレッドは自由度が高い分、正しく扱うための知識と技術が必要になります。その具体的な問題と対策は<a href="../chapters/04-race-condition.html">第4章</a>で扱います。</p>
+<p>スレッドは、変数を共有するだけで簡単にデータをやり取りできます。その反面、複数のスレッドが同じ変数を同時に書き換えると、思わぬ不具合が起こります。その具体的な問題と対策は <a href="04-race-condition.html" class="quarto-xref"><span>チャプター 4</span></a> で扱います。</p>
 </div>
 </div>
 

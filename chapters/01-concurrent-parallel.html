@@ -365,7 +365,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">目次</h2>
    
   <ul>
-  <li><a href="#sec-abstract" id="toc-sec-abstract" class="nav-link active" data-scroll-target="#sec-abstract"><span class="header-section-number">1.1</span> 概要</a></li>
+  <li><a href="#sec-01-abstract" id="toc-sec-01-abstract" class="nav-link active" data-scroll-target="#sec-01-abstract"><span class="header-section-number">1.1</span> 概要</a></li>
   <li><a href="#sec-background" id="toc-sec-background" class="nav-link" data-scroll-target="#sec-background"><span class="header-section-number">1.2</span> 背景</a></li>
   <li><a href="#sec-concurrent" id="toc-sec-concurrent" class="nav-link" data-scroll-target="#sec-concurrent"><span class="header-section-number">1.3</span> 並行処理（Concurrent）</a></li>
   <li><a href="#sec-parallel-intro" id="toc-sec-parallel-intro" class="nav-link" data-scroll-target="#sec-parallel-intro"><span class="header-section-number">1.4</span> 並列処理（Parallel）</a></li>
@@ -396,8 +396,8 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="sec-abstract" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="sec-abstract"><span class="header-section-number">1.1</span> 概要</h2>
+<section id="sec-01-abstract" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="sec-01-abstract"><span class="header-section-number">1.1</span> 概要</h2>
 <p><strong>並行（Concurrent）は「複数の処理を切り替えながら進めること」、並列（Parallel）は「複数の処理を実際に同時に実行すること」です</strong>。この2つはよく混同されるため、最初に違いを押さえます。</p>
 </section>
 <section id="sec-background" class="level2" data-number="1.2">
@@ -418,7 +418,7 @@ ul.task-list li input[type="checkbox"] {
 <p>並行処理では、ある作業の待ち時間に別の作業を進めます。また、優先度の高い出来事（お湯が沸いた）が起きたら、今の作業を中断してそちらに切り替えます。</p>
 <p>一方、作業を1つずつ最後まで終えてから次に進むやり方を<strong>逐次処理</strong>と呼びます。逐次処理では、お湯が沸くまでただ待つしかありません。急な来客があっても、玄関に出られるのはずっと後になってしまいます。</p>
 <p>Windows、macOS、Linuxなどの現在のOSは、この並行処理（<strong>マルチタスク</strong>とも呼ぶ）を標準で備えています。そのため、Webページを見ながらメールの受信に気づき、同時に音楽を再生できます。CPUのコアが1つしかなくても、OSはごく短い時間ごとに実行する処理を切り替えています。その結果、複数の処理が同時に動いている<strong>ように見える</strong>のです。</p>
-<p>この機能をもつOSを<strong>マルチタスクOS</strong>と呼び、Windows、Linux、macOS、Androidなど現在の主要なOSのほとんどが該当します。</p>
+<p>この機能をもつOSを<strong>マルチタスクOS</strong>と呼びます。</p>
 </section>
 <section id="sec-parallel-intro" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="sec-parallel-intro"><span class="header-section-number">1.4</span> 並列処理（Parallel）</h2>
