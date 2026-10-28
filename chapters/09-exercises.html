@@ -470,7 +470,7 @@ window.Quarto = {
 
 <section id="sec-exercises-abstract" class="level2" data-number="9.1">
 <h2 data-number="9.1" class="anchored" data-anchor-id="sec-exercises-abstract"><span class="header-section-number">9.1</span> 概要</h2>
-<p>この章では、これまでに学んだ内容を組み合わせて、2つの課題に取り組みます。</p>
+<p>これまでに学んだ内容を組み合わせて、2つの課題に取り組みましょう。</p>
 <div id="tbl-exercises" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-exercises-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -776,7 +776,7 @@ window.Quarto = {
 </div>
 <p><strong>考察</strong></p>
 <ol type="1">
-<li>排他制御なしの場合に、重複や欠番が生じる理由を <a href="04-race-condition.html" class="quarto-xref"><span>チャプター 4</span></a> の内容を参考にして説明せよ。</li>
+<li>排他制御なしの場合に、重複や欠番が生じる理由を説明せよ（<a href="04-race-condition.html#sec-race-cause" class="quarto-xref"><span>セクション 4.3</span></a>）。</li>
 <li><code>volatile</code> 版で重複や欠番を防げるかどうかを、実行結果に基づいて答えよ。また、その理由を「原子性」と「可視性」という言葉を使って説明せよ（<a href="05-volatile.html#sec-volatile-not-atomic" class="quarto-xref"><span>セクション 5.5</span></a>）。</li>
 </ol>
 <div class="callout callout-style-default callout-warning callout-titled">
@@ -952,7 +952,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <tbody>
 <tr class="odd">
 <td><code>ParallelMultiply</code></td>
-<td>仕事を分けて、まとめる</td>
+<td>スレッドに仕事を割り当てる</td>
 <td>結果を書き込む配列 <code>c</code> を作る。<span class="math inline">\(C\)</span> の行をスレッド数で等分し、<code>MultiplyThread</code> を作って起動する。すべてのスレッドの終了を待ち、<code>getResult()</code> で <code>c</code> を返す</td>
 </tr>
 <tr class="even">
@@ -972,7 +972,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <div aria-describedby="fig-task2-classes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div>
 <pre class="mermaid mermaid-js" data-label="fig-task2-classes">flowchart TB
-    M["main メソッド"] --&gt;|"a, b, スレッド数"| P["ParallelMultiply&lt;br/&gt;（仕事を分けて、まとめる）"]
+    M["main メソッド"] --&gt;|"a, b, スレッド数"| P["ParallelMultiply&lt;br/&gt;（仕事を割り当てる）"]
     P --&gt;|"0〜432行目"| T0["MultiplyThread 0"]
     P --&gt;|"433〜865行目"| T1["MultiplyThread 1"]
     P --&gt;|"866〜1299行目"| T2["MultiplyThread 2"]
@@ -995,8 +995,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <pre><strong>Matrix.java（並列版）の main メソッドの変更箇所</strong></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-filename="Matrix.java（並列版）の main メソッドの変更箇所"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>        <span class="co">// ここから行列の積の計算の呼び出し</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>        ParallelMultiply mm <span class="op">=</span> <span class="kw">new</span> <span class="fu">ParallelMultiply</span><span class="op">(</span>a<span class="op">,</span> b<span class="op">,</span> num<span class="op">);</span>  <span class="co">// SequentialMultiply を置き換える</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span><span class="op">[][]</span> c <span class="op">=</span> mm<span class="op">.</span><span class="fu">getResult</span><span class="op">();</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>        ParallelMultiply mm <span class="op">=</span> <span class="kw">new</span> <span class="fu">ParallelMultiply</span><span class="op">(</span>a<span class="op">,</span> b<span class="op">,</span> num<span class="op">);</span>  <span class="co">// SequentialMultiply を置き換える</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>SequentialMultiply</code> クラスは削除し、代わりに次の2つのクラスを書きます。「ここを記述」の部分を完成させてください。</p>
 <div class="code-with-filename">
@@ -1057,23 +1056,21 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>全スレッドが同じ配列 <code>c</code> に書き込みますが、このプログラムでは <code>synchronized</code> などの<strong>排他制御は必要ありません</strong>。排他制御を加えると、かえって遅くなります。なぜ不要なのかは、考察1で考えます。</p>
+<p>全スレッドが同じ配列 <code>c</code> に書き込みますが、このプログラムでは <code>synchronized</code> などの<strong>排他制御は必要ありません</strong>。排他制御を加えると、かえって遅くなります。なぜ不要なのかは、考察1で考えましょう。</p>
 </div>
 </div>
 <p><strong>仕様</strong></p>
 <ul>
 <li>行列の積を正しく（「OK」と表示されるように）計算する。</li>
-<li><strong>逐次版よりも速く</strong>する。</li>
 <li><code>check()</code> と <code>randomMatrix()</code> は変更しない。</li>
 <li>排他制御（<code>synchronized</code>）は使わない。</li>
-<li>スレッド数は<strong>最大15</strong>とする（演習室の計算機の論理プロセッサ数が15のため）。</li>
 </ul>
 <p><strong>手順</strong></p>
 <ol type="1">
-<li><code>nproc</code> などで、使用している計算機の論理プロセッサ数が15であることを確認する（<a href="08-parallel.html#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a>）。</li>
+<li><code>nproc</code> などで、使用している計算機の論理プロセッサ数を確認する（<a href="08-parallel.html#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a>）。</li>
 <li><strong>逐次版</strong>を3回実行し、処理時間とその平均を <a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.6</span></a> に記録する。</li>
-<li><strong>並列版</strong>：<code>main</code> メソッドを変更し、<code>ParallelMultiply</code> と <code>MultiplyThread</code> の「ここを記述」の部分を完成させる。<span class="math inline">\(C\)</span> の行は、<a href="08-parallel.html#sec-para-sample" class="quarto-xref"><span>セクション 8.3</span></a> と同じく、スレッド数で等分してスレッドに割り当てる。</li>
-<li>スレッド数を1, 2, 4, 8, 15と変えて、それぞれ3回ずつ実行し、処理時間とその平均を <a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a> に記録する。</li>
+<li><strong>並列版</strong>：<code>main</code> メソッドを変更し、<code>ParallelMultiply</code> と <code>MultiplyThread</code> の「ここを記述」の部分を完成させる。</li>
+<li>スレッド数を1, 2, 4, 8, 16, 32 と変えて、それぞれ3回ずつ実行し、処理時間とその平均を <a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a> に記録する。</li>
 <li>スレッド数ごとに、次の2つの値を計算し、<a href="#tbl-task2-speedup" class="quarto-xref">表&nbsp;<span>9.8</span></a> に記録する。小数第2位まで求める。
 <ul>
 <li><strong>速度向上率</strong>：逐次版の平均（<a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.6</span></a>）を、並列版の平均（<a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a>）で割った値。並列版が逐次版の何倍速いかを表す。</li>
@@ -1083,16 +1080,16 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <div id="tbl-task2-seq" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-seq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.6: 課題2：逐次版の処理時間
+表&nbsp;9.6: 課題2：逐次版の処理時間（ミリ秒）
 </figcaption>
 <div aria-describedby="tbl-task2-seq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>1回目（ミリ秒）</th>
-<th>2回目（ミリ秒）</th>
-<th>3回目（ミリ秒）</th>
-<th>平均（ミリ秒）</th>
+<th>1回目</th>
+<th>2回目</th>
+<th>3回目</th>
+<th>平均</th>
 </tr>
 </thead>
 <tbody>
@@ -1110,24 +1107,17 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <div id="tbl-task2-par" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-par-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.7: 課題2：並列版の処理時間
+表&nbsp;9.7: 課題2：並列版の処理時間（ミリ秒）
 </figcaption>
 <div aria-describedby="tbl-task2-par-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
-<colgroup>
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-<col style="width: 20%">
-</colgroup>
 <thead>
 <tr class="header">
 <th>スレッド数</th>
-<th>1回目（ミリ秒）</th>
-<th>2回目（ミリ秒）</th>
-<th>3回目（ミリ秒）</th>
-<th>平均（ミリ秒）</th>
+<th>1回目</th>
+<th>2回目</th>
+<th>3回目</th>
+<th>平均</th>
 </tr>
 </thead>
 <tbody>
@@ -1160,7 +1150,14 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <td></td>
 </tr>
 <tr class="odd">
-<td>15</td>
+<td>16</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>32</td>
 <td></td>
 <td></td>
 <td></td>
@@ -1211,6 +1208,16 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <td></td>
 <td></td>
 </tr>
+<tr class="even">
+<td>16</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>32</td>
+<td></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1218,26 +1225,9 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 </div>
 <p><strong>考察</strong></p>
 <ol type="1">
-<li>全スレッドが同じ配列 <code>c</code> に書き込んでいるのに、排他制御が不要である理由を説明せよ。配列 <code>c</code> と、配列 <code>a</code>・<code>b</code> のそれぞれについて答えること（<a href="04-race-condition.html#sec-race-cause" class="quarto-xref"><span>セクション 4.3</span></a>）。</li>
+<li>全スレッドが同じ配列を扱っているのに、排他制御が不要である理由を説明せよ。配列 <code>c</code> と、配列 <code>a</code>・<code>b</code> のそれぞれについて答えること（<a href="04-race-condition.html#sec-race-cause" class="quarto-xref"><span>セクション 4.3</span></a>）。</li>
 <li>スレッド数を増やしたとき、速度向上率と並列化効率はどのように変化したか。並列化効率が1.00に届かない理由を考察せよ（<a href="08-parallel.html#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a>、<a href="08-parallel.html#sec-suitability" class="quarto-xref"><span>セクション 8.5</span></a>）。</li>
-<li>（発展）<code>SequentialMultiply</code> の <code>multiply()</code> のループの順番を、次のように i-k-j に変えると、逐次版の処理時間はどう変わるか。並列版にも同じ変更をして、処理時間を比べよ。また、処理時間が変わる理由を、配列 <code>b</code> の要素を読む順番に注目して考察せよ。</li>
 </ol>
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>ループの順番を i-k-j に変えた multiply()</strong></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-filename="ループの順番を i-k-j に変えた multiply()"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">void</span> <span class="fu">multiply</span><span class="op">()</span> <span class="op">{</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> n <span class="op">=</span> a<span class="op">.</span><span class="fu">length</span><span class="op">;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> k <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> k <span class="op">&lt;</span> n<span class="op">;</span> k<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>                <span class="dt">int</span> aik <span class="op">=</span> a<span class="op">[</span>i<span class="op">][</span>k<span class="op">];</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> n<span class="op">;</span> j<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>                    c<span class="op">[</span>i<span class="op">][</span>j<span class="op">]</span> <span class="op">+=</span> aik <span class="op">*</span> b<span class="op">[</span>k<span class="op">][</span>j<span class="op">];</span>  <span class="co">// c の要素は、new で作ったときに0になっている</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -1251,9 +1241,9 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
-<li><strong><code>ParallelMultiply</code> の (1)</strong>：<a href="08-parallel.html#sec-para-sample" class="quarto-xref"><span>セクション 8.3</span></a> の <code>main</code> メソッドで、担当範囲を計算してスレッドを起動している部分が参考になります。各スレッドには、<code>ParallelMultiply</code> が作った配列 <code>c</code> をそのまま渡します。</li>
-<li><strong><code>MultiplyThread</code> の <code>run()</code></strong>：逐次版の <code>multiply()</code> とほぼ同じです。いちばん外側のループで、<code>i</code> を 0〜n-1 ではなく、<code>start</code>〜<code>end-1</code> の範囲で回します。</li>
-<li><strong>担当する行の端数</strong>：1300 は、8 や 15 では割り切れません。最後のスレッドに端数の行も担当させてください（<a href="08-parallel.html#sec-para-sample" class="quarto-xref"><span>セクション 8.3</span></a>）。端数を担当させないと、8スレッドと15スレッドで「NG」になります。</li>
+<li><strong>ParallelMultiply の (1)</strong>：<a href="08-parallel.html#sec-para-sample" class="quarto-xref"><span>セクション 8.3</span></a> の <code>main</code> メソッドで、担当範囲を計算してスレッドを起動している部分が参考になります。各スレッドには、<code>ParallelMultiply</code> が作った配列 <code>c</code> をそのまま渡します。</li>
+<li><strong>MultiplyThread の run()</strong>：逐次版の <code>multiply()</code> とほぼ同じです。いちばん外側のループで、<code>i</code> を 0〜n-1 ではなく、<code>start</code>〜<code>end-1</code> の範囲で回します。</li>
+<li><strong>担当する行の端数</strong>：1300 は、例えば 8 では割り切れません。最後のスレッドに端数の行も担当させてください（<a href="08-parallel.html#sec-para-sample" class="quarto-xref"><span>セクション 8.3</span></a>）。端数を担当させないと「NG」と出力されます。</li>
 <li><strong>終了を待つ</strong>：計算結果を <code>main</code> メソッドに返す前に、すべてのスレッドの <code>join()</code> を呼びます（<a href="06-synchronization.html#sec-join" class="quarto-xref"><span>セクション 6.2</span></a>）。<code>start()</code> を呼ぶループと <code>join()</code> を呼ぶループは、<strong>分けて</strong>書いてください。同じループの中で <code>start()</code> の直後に <code>join()</code> を呼ぶと、1つのスレッドが終わるまで次のスレッドが起動されず、逐次版と同じ速さになります。</li>
 </ul>
 </div>
