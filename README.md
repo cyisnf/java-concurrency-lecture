@@ -97,4 +97,4 @@ quarto render --to pdf
 
 ## ライセンス
 
-公開前に、資料の利用条件を決めて `LICENSE` ファイルを追加せよ（教材では CC BY 4.0 などがよく使われる）。
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
