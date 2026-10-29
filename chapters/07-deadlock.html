@@ -390,7 +390,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#概要" id="toc-概要" class="nav-link active" data-scroll-target="#概要"><span class="header-section-number">7.1</span> 概要</a></li>
-  <li><a href="#sec-deadlock-sample" id="toc-sec-deadlock-sample" class="nav-link" data-scroll-target="#sec-deadlock-sample"><span class="header-section-number">7.2</span> サンプル：ナイフとフォークで食事する人々</a></li>
+  <li><a href="#sec-deadlock-sample" id="toc-sec-deadlock-sample" class="nav-link" data-scroll-target="#sec-deadlock-sample"><span class="header-section-number">7.2</span> サンプル：ナイフとフォーク</a></li>
   <li><a href="#sec-deadlock-conditions" id="toc-sec-deadlock-conditions" class="nav-link" data-scroll-target="#sec-deadlock-conditions"><span class="header-section-number">7.3</span> デッドロックが起こる4つの条件</a></li>
   <li><a href="#sec-ex4" id="toc-sec-ex4" class="nav-link" data-scroll-target="#sec-ex4">練習問題4：デッドロックしない設計</a></li>
   </ul>
@@ -424,22 +424,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><strong>デッドロック</strong>とは、2つ以上のスレッド（またはプロセス）が<strong>互いに相手の持つ資源の解放を待ち合い</strong>、どれも先に進めなくなる状態です。並行プログラミングで最も代表的な落とし穴です。</p>
 </section>
 <section id="sec-deadlock-sample" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="sec-deadlock-sample"><span class="header-section-number">7.2</span> サンプル：ナイフとフォークで食事する人々</h2>
+<h2 data-number="7.2" class="anchored" data-anchor-id="sec-deadlock-sample"><span class="header-section-number">7.2</span> サンプル：ナイフとフォーク</h2>
 <p>デッドロックという現象を理解するために、次のような状況を考えてください。</p>
 <ul>
-<li>8人（Aさん, Bさん, …）がいるが、ナイフとフォークは<strong>1本ずつ</strong>しかない。</li>
-<li>食事をするには、ナイフとフォークの<strong>両方</strong>を持っている必要がある。</li>
-<li>食事が終わったら、ナイフとフォークを返す。</li>
-<li>8人は、それぞれ10回ずつ食事をしなければならない。</li>
+<li>8人（Aさん, Bさん, …）がいる</li>
+<li>しかし、ナイフとフォークは<strong>1本ずつ</strong>しかない</li>
+<li>食事をするには、ナイフとフォークの両方を持っている必要がある</li>
+<li>食事が終わったら、ナイフとフォークを返却する</li>
+<li>8人は、10回ずつ食事をしなければならない</li>
 </ul>
 <p>何が起こるか：</p>
 <ul>
-<li>Aさんがフォークを、Bさんがナイフを取ったとします。</li>
-<li>Aさんはナイフを、Bさんはフォークが利用可能になるのを待ち続けます。</li>
-<li>どちらも自分の道具を手放しません。</li>
-<li>誰も食事ができなくなり、プログラムは終わらなくなります。</li>
+<li>Aさんがフォークを、Bさんがナイフを取ったとします</li>
+<li>Aさんはナイフの返却を、Bさんはフォークの返却を待ち続けます</li>
+<li>どちらも自分の道具を手放しません</li>
+<li>誰も食事ができなくなり、プログラムは終わらなくなります</li>
 </ul>
-<p>上記の例をプログラムとして表現すると、以下のようになります。これはデッドロックを起こす<strong>可能性がある</strong>プログラムです。</p>
+<p>上記の例をプログラムとして表現すると、以下のようになります。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>DeadLockTest.java</strong></pre>
@@ -577,7 +578,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="callout-body-container callout-body">
 <ul>
 <li><a href="#sec-deadlock-conditions" class="quarto-xref"><span>セクション 7.3</span></a> の4条件のうち、「保持と待機」か「循環待ち」のどちらかを崩します。</li>
-<li>方針の例：取れなかったら持っている道具を返して取り直す／両方空いているときだけ両方取る／ナイフを取る前に、フォークを持っているかを確かめる。</li>
+<li><strong>方針の例:</strong> 取れなかったら持っている道具を返して取り直す／両方空いているときだけ両方取る／ナイフを取る前に、フォークを持っているかを確かめる。</li>
 </ul>
 </div>
 </div>
@@ -592,7 +593,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><a href="../solutions/ex4.html">練習問題4の解答例</a>は、提出期限の後に公開します。</p>
+<p><a href="../solutions/ex4.html">練習問題4の解答例</a>です。</p>
 </div>
 </div>
 

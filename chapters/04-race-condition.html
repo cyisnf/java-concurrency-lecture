@@ -394,7 +394,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#sec-04-abstract" id="toc-sec-04-abstract" class="nav-link active" data-scroll-target="#sec-04-abstract"><span class="header-section-number">4.1</span> 概要</a></li>
-  <li><a href="#sec-race-demo" id="toc-sec-race-demo" class="nav-link" data-scroll-target="#sec-race-demo"><span class="header-section-number">4.2</span> 問題の再現</a></li>
+  <li><a href="#sec-race-demo" id="toc-sec-race-demo" class="nav-link" data-scroll-target="#sec-race-demo"><span class="header-section-number">4.2</span> 問題の確認</a></li>
   <li><a href="#sec-race-cause" id="toc-sec-race-cause" class="nav-link" data-scroll-target="#sec-race-cause"><span class="header-section-number">4.3</span> なぜ値が失われるのか</a></li>
   <li><a href="#sec-sync-block" id="toc-sec-sync-block" class="nav-link" data-scroll-target="#sec-sync-block"><span class="header-section-number">4.4</span> 対処法1：synchronizedブロック</a></li>
   <li><a href="#sec-sync-method" id="toc-sec-sync-method" class="nav-link" data-scroll-target="#sec-sync-method"><span class="header-section-number">4.5</span> 対処法2：synchronizedメソッド</a></li>
@@ -430,13 +430,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="sec-04-abstract" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="sec-04-abstract"><span class="header-section-number">4.1</span> 概要</h2>
-<p>ある変数を<strong>複数のスレッドから同時に更新</strong>した際に、更新の一部が失われることがあります（<strong>競合状態</strong>）。 <strong>一度に1つのスレッドだけがその処理を実行</strong>できるようにすることで、これを防ぐことができます（<strong>排他制御</strong>）。</p>
+<p>ある変数を<strong>複数のスレッドから同時に更新</strong>した際に、更新の一部が失われることがあります（<strong>競合状態</strong>）。</p>
+<p><strong>一度に1つのスレッドだけがその処理を実行</strong>できるようにすることで、これを防ぐことができます（<strong>排他制御</strong>）。</p>
 </section>
 <section id="sec-race-demo" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="sec-race-demo"><span class="header-section-number">4.2</span> 問題の再現</h2>
+<h2 data-number="4.2" class="anchored" data-anchor-id="sec-race-demo"><span class="header-section-number">4.2</span> 問題の確認</h2>
 <ul>
 <li>3つのスレッドがあり、変数 <code>c</code> を共有しているとします。</li>
-<li>各スレッドは、変数 <code>c</code> の値を1増やす処理を、それぞれ10000回ずつ行います。</li>
+<li>各スレッドは、10000回ずつ変数 <code>c</code> の値をインクリメント（<code>c++</code>）します。</li>
 <li>正しく動けば、最終的な <code>c</code> は <strong>30000</strong> になるはずです。</li>
 </ul>
 <div class="code-with-filename">
@@ -477,11 +478,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>何度か実行すると、30000になることもありますが、<strong>30000未満</strong>になることがあります。</p>
+<p>何度か実行すると、結果が<strong>30000未満</strong>になることがあります。</p>
 </section>
 <section id="sec-race-cause" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="sec-race-cause"><span class="header-section-number">4.3</span> なぜ値が失われるのか</h2>
-<p><code>count.c++;</code> は1行の文ですが、実際には次の<strong>3つの操作</strong>に分かれて実行されます。</p>
+<p><code>count.c++;</code> は、実際には次の<strong>3つの操作</strong>に分かれて実行されます。</p>
 <ol type="1">
 <li><strong>読み込み</strong>：変数 <code>c</code> の値を読み込む。</li>
 <li><strong>計算</strong>：読み込んだ値に1を足す。</li>
@@ -523,7 +524,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     rect rgba(234, 88, 12, 0.15)
     T2-&gt;&gt;C: 11 を書く
     end
-    Note over C: c = 11（本来は 12）&lt;br/&gt;スレッド1の更新は失われた
+    Note over C: c = 11（期待する結果は 12）
 </pre>
 </div>
 </div>
@@ -545,7 +546,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>スレッドの利点は、同じ変数を共有できることです。しかし、共有変数を複数のスレッドで書き換えるときは、<strong>正しく対処しなければ、必ずこの問題が起こりうる</strong>と考えてください。</p>
+<p>スレッドの利点は、同じ変数を共有できることです。しかし、共有変数を複数のスレッドで書き換えるときは常に、<strong>正しく対処しなければ、この問題が起こりうる</strong>と考えてください。</p>
 </div>
 </div>
 </section>
@@ -554,7 +555,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Javaのすべてのオブジェクトは、<strong>ロック</strong>（鍵）を1つずつ持っています。</p>
 <ul>
 <li>スレッドは <code>synchronized (オブジェクト) { … }</code> と記述されたブロックに入るときに、そのオブジェクトのロックを取得します。</li>
-<li>ブロックを出るときに、ロックを解放します。</li>
+<li>そして、ブロックを出るときには、ロックを解放します。</li>
 <li>あるスレッドがロックを持っている間、他のスレッドは同じロックを取得できず、<strong>ロックが解放されるまで待たされます</strong>。</li>
 </ul>
 <p>これを使って、<code>c++</code> の操作を「同時に1つのスレッドだけに行わせる」ことができます。</p>
@@ -596,7 +597,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>排他制御によって割り込みを防げるのは、<strong>同じオブジェクトのロック</strong>を取得しようとするスレッドだけです。 <code>synchronized</code> を使わずに同じ変数を読み書きする処理があると、その処理は割り込むことができてしまいます。</p>
+<p>排他制御によって割り込みを防げるのは、<strong>同じオブジェクトのロックを取得しようとする</strong>スレッドだけです。</p>
+<p><code>synchronized</code> を使わず（＝ロックを取得しようとせず）に同じ変数を読み書きする処理があると、その処理は割り込むことができてしまいます。</p>
 </div>
 </div>
 </section>
@@ -607,6 +609,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    c<span class="op">++;</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p>これは、メソッドの中身全体を <code>synchronized (this) { … }</code> で囲んだのと同じ意味です。</p>
+<p>メソッド全体を排他制御すると、本来は排他制御の必要がない処理まで1つのスレッドしか実行できなくなり、処理が遅くなることがあります。</p>
+<p><strong>排他制御の範囲は必要な部分だけに絞る</strong>のが基本です。</p>
 </section>
 <section id="sec-sync-comparing" class="level2" data-number="4.6">
 <h2 data-number="4.6" class="anchored" data-anchor-id="sec-sync-comparing"><span class="header-section-number">4.6</span> 2つの方法の比較</h2>
@@ -636,8 +640,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>メソッド全体を排他制御すると、本来は排他制御の必要がない処理まで1つのスレッドしか実行できなくなり、処理が遅くなることがあります。</p>
-<p><strong>排他制御の範囲は必要な部分だけに絞る</strong>のが基本です。</p>
 </section>
 <section id="sec-thread-id" class="level2" data-number="4.7">
 <h2 data-number="4.7" class="anchored" data-anchor-id="sec-thread-id"><span class="header-section-number">4.7</span> 補足：スレッドの識別番号</h2>
@@ -760,7 +762,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><a href="../solutions/ex1.html">練習問題1の解答例</a>は、提出期限の後に公開します。</p>
+<p><a href="../solutions/ex1.html">練習問題1の解答例</a>です。</p>
 </div>
 </div>
 </section>
@@ -847,7 +849,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p><strong>発展</strong>：残高が足りない場合は移動しないようにすると、より現実的になります。その場合も、総額が変わらないことを確認してください。</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -858,7 +859,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><a href="../solutions/ex2.html">練習問題2の解答例</a>は、提出期限の後に公開します。</p>
+<p><a href="../solutions/ex2.html">練習問題2の解答例</a>です。</p>
 </div>
 </div>
 

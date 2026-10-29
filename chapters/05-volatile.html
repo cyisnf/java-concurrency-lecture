@@ -394,21 +394,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#sec-av-abstract" id="toc-sec-av-abstract" class="nav-link active" data-scroll-target="#sec-av-abstract"><span class="header-section-number">5.1</span> 概要</a></li>
-  <li><a href="#sec-problem-goal-means" id="toc-sec-problem-goal-means" class="nav-link" data-scroll-target="#sec-problem-goal-means"><span class="header-section-number">5.2</span> 問題・目的・手段の関係</a>
+  <li><a href="#sec-problem-goal-means" id="toc-sec-problem-goal-means" class="nav-link" data-scroll-target="#sec-problem-goal-means"><span class="header-section-number">5.2</span> 問題解決の整理</a>
   <ul class="collapse">
   <li><a href="#sec-atomicity" id="toc-sec-atomicity" class="nav-link" data-scroll-target="#sec-atomicity">原子性とは</a></li>
   <li><a href="#sec-mutex-for-atomicity" id="toc-sec-mutex-for-atomicity" class="nav-link" data-scroll-target="#sec-mutex-for-atomicity">排他制御は原子性を実現する手段</a></li>
   </ul></li>
   <li><a href="#sec-visibility" id="toc-sec-visibility" class="nav-link" data-scroll-target="#sec-visibility"><span class="header-section-number">5.3</span> 可視性</a>
   <ul class="collapse">
-  <li><a href="#sec-visibility-demo" id="toc-sec-visibility-demo" class="nav-link" data-scroll-target="#sec-visibility-demo">問題の再現</a></li>
+  <li><a href="#sec-visibility-demo" id="toc-sec-visibility-demo" class="nav-link" data-scroll-target="#sec-visibility-demo">問題の確認</a></li>
   <li><a href="#sec-visibility-cause" id="toc-sec-visibility-cause" class="nav-link" data-scroll-target="#sec-visibility-cause">なぜ値が見えないのか</a></li>
   <li><a href="#sec-sync-visibility" id="toc-sec-sync-visibility" class="nav-link" data-scroll-target="#sec-sync-visibility">synchronized は可視性も保証する</a></li>
   </ul></li>
-  <li><a href="#sec-volatile" id="toc-sec-volatile" class="nav-link" data-scroll-target="#sec-volatile"><span class="header-section-number">5.4</span> volatile変数</a></li>
-  <li><a href="#sec-volatile-not-atomic" id="toc-sec-volatile-not-atomic" class="nav-link" data-scroll-target="#sec-volatile-not-atomic"><span class="header-section-number">5.5</span> volatileでは競合状態を防げない</a></li>
-  <li><a href="#sec-volatile-usage" id="toc-sec-volatile-usage" class="nav-link" data-scroll-target="#sec-volatile-usage"><span class="header-section-number">5.6</span> volatile の用途</a></li>
-  <li><a href="#sec-av-summary" id="toc-sec-av-summary" class="nav-link" data-scroll-target="#sec-av-summary"><span class="header-section-number">5.7</span> この章のまとめ</a></li>
+  <li><a href="#sec-volatile" id="toc-sec-volatile" class="nav-link" data-scroll-target="#sec-volatile"><span class="header-section-number">5.4</span> volatile変数</a>
+  <ul class="collapse">
+  <li><a href="#sec-volatile-not-atomic" id="toc-sec-volatile-not-atomic" class="nav-link" data-scroll-target="#sec-volatile-not-atomic">volatile は競合状態を防がない</a></li>
+  <li><a href="#sec-volatile-usage" id="toc-sec-volatile-usage" class="nav-link" data-scroll-target="#sec-volatile-usage">volatile の用途</a></li>
+  </ul></li>
+  <li><a href="#sec-av-summary" id="toc-sec-av-summary" class="nav-link" data-scroll-target="#sec-av-summary"><span class="header-section-number">5.5</span> この章のまとめ</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/05-volatile.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
@@ -437,39 +439,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="sec-av-abstract" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="sec-av-abstract"><span class="header-section-number">5.1</span> 概要</h2>
-<p><a href="04-race-condition.html" class="quarto-xref"><span>チャプター 4</span></a> では、<strong>競合状態</strong>という問題を、<code>synchronized</code> による<strong>排他制御</strong>で防ぎました。 この章では、排他制御によって何が保証されていたのかを、<strong>原子性</strong>と<strong>可視性</strong>という2つの性質に分けて整理します。</p>
-<p>そのうえで、可視性だけを保証する <code>volatile</code> 修飾子を学び、<strong><code>volatile</code> では競合状態を防げない</strong>理由を説明します。</p>
+<p><a href="04-race-condition.html" class="quarto-xref"><span>チャプター 4</span></a> では、<strong>競合状態</strong>という問題を、<code>synchronized</code> による<strong>排他制御</strong>で防ぎました。</p>
+<p>この章では、</p>
+<ul>
+<li><strong>排他制御によって何が保証されていたのか</strong>を、<strong>原子性</strong>と<strong>可視性</strong>という2つの性質に分けて整理します。</li>
+<li>可視性だけを保証する <code>volatile</code> 修飾子を紹介し、<strong><code>volatile</code> では競合状態を防げない</strong>理由を説明します。</li>
+</ul>
 </section>
 <section id="sec-problem-goal-means" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="sec-problem-goal-means"><span class="header-section-number">5.2</span> 問題・目的・手段の関係</h2>
-<p>第4章の内容は、「問題」「目的」「手段」の3つの関係として整理できます。</p>
+<h2 data-number="5.2" class="anchored" data-anchor-id="sec-problem-goal-means"><span class="header-section-number">5.2</span> 問題解決の整理</h2>
+<p><a href="04-race-condition.html" class="quarto-xref"><span>チャプター 4</span></a> の内容は、以下のように整理できます。</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 16%">
+<col style="width: 83%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>区分</th>
-<th>名前</th>
 <th>内容</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>問題</td>
-<td>競合状態</td>
 <td>複数のスレッドが共有変数を同時に更新し、更新の一部が失われる</td>
 </tr>
 <tr class="even">
 <td>目的</td>
-<td>原子性</td>
 <td>一連の操作を、途中で他のスレッドに割り込まれずに行う</td>
 </tr>
 <tr class="odd">
 <td>手段</td>
-<td>排他制御</td>
 <td><code>synchronized</code> を使い、その処理を同時に1つのスレッドだけに実行させる</td>
 </tr>
 </tbody>
@@ -496,14 +497,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="sec-atomicity" class="level3">
 <h3 class="anchored" data-anchor-id="sec-atomicity">原子性とは</h3>
 <p><strong>原子性</strong>とは、<strong>操作の途中に他のスレッドが割り込めない</strong>性質です。 「原子」という言葉は、「それ以上分けられないもの」という意味で使われています。</p>
-<p><a href="04-race-condition.html#sec-race-cause" class="quarto-xref"><span>セクション 4.3</span></a> で見たとおり、<code>c++</code> は「読み込み・計算・書き込み」の3つの操作に分かれるため、原子性がありません。 そのため <a href="04-race-condition.html#fig-race" class="quarto-xref">図&nbsp;<span>4.1</span></a> のように、スレッド1の読み込みと書き込みの間にスレッド2が割り込み、更新が失われました。</p>
-<p>つまり、<strong>競合状態は、原子性のない操作を、複数のスレッドが同時に行うことで起こる問題</strong>です。 逆に、<code>c++</code> の3つの操作を原子的に（途中で割り込まれずに）行うことができれば、競合状態は起こりません。 したがって、原子性は、競合状態を防ぐために達成すべき<strong>目的</strong>です。</p>
+<p><a href="04-race-condition.html#sec-race-cause" class="quarto-xref"><span>セクション 4.3</span></a> で見たとおり、<code>c++</code> は「読み込み・計算・書き込み」の3つの操作に分かれるため、原子性がありません。 そのため <a href="04-race-condition.html#fig-race" class="quarto-xref">図&nbsp;<span>4.1</span></a> のように、スレッド1が読み書きする間にスレッド2が割り込むことで、更新が失われました。</p>
+<p>つまり、<strong>競合状態は、原子性のない操作を、複数のスレッドが同時に行うことで起こる問題</strong>です。 逆に、<code>c++</code> の3つの操作を原子的に（途中で割り込まれずに）行うことができれば、競合状態は起こりません。</p>
 </section>
 <section id="sec-mutex-for-atomicity" class="level3">
 <h3 class="anchored" data-anchor-id="sec-mutex-for-atomicity">排他制御は原子性を実現する手段</h3>
 <p>Javaでは、<code>c++</code> と書いただけでは原子性は得られません。そこで <a href="04-race-condition.html#sec-sync-block" class="quarto-xref"><span>セクション 4.4</span></a> では、<code>c++</code> を <code>synchronized</code> で囲みました。</p>
 <ul>
-<li>ロックを持つスレッドが3つの操作をすべて終えるまで、他のスレッドは同じロックを使う処理に入れません。</li>
+<li>ロックを持つスレッドが3つの操作をすべて終えるまで、他のスレッドは同じロックを使う処理に割り込めません。</li>
 <li>その結果、他のスレッドから見ると、3つの操作がまとめて一度に行われたように見えます。</li>
 </ul>
 <p>このように、<strong>排他制御は、原子性を実現するための手段</strong>です。</p>
@@ -511,11 +512,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="sec-visibility" class="level2" data-number="5.3">
 <h2 data-number="5.3" class="anchored" data-anchor-id="sec-visibility"><span class="header-section-number">5.3</span> 可視性</h2>
-<p>共有変数を複数のスレッドで扱うときには、<strong>競合状態とは別の問題</strong>もあります。 それは、あるスレッドが書き込んだ値が、他のスレッドから<strong>いつまでも見えない</strong>ことがある、という問題です。</p>
-<p><strong>可視性</strong>とは、あるスレッドが書き込んだ値を、他のスレッドが読めることが保証される性質です。</p>
+<p><strong>可視性</strong>とは、「あるスレッドが書き込んだ値を、他のスレッドが読み込むことができる」という性質です。</p>
+<p>共有変数を複数のスレッドで扱うときには、可視性が保証されない（＝あるスレッドが<strong>書き込んだ値</strong>を、他のスレッドが<strong>いつまで経っても読み込めない</strong>ことがある）という問題があります。</p>
 <section id="sec-visibility-demo" class="level3">
-<h3 class="anchored" data-anchor-id="sec-visibility-demo">問題の再現</h3>
-<p>次のプログラムでは、メインスレッドが1秒後に <code>running</code> を <code>false</code> にして、スレッド <code>t</code> に停止を指示します。 スレッド <code>t</code> は <code>running</code> が <code>true</code> の間だけループを続けるので、本来は1秒後に終了するはずです。</p>
+<h3 class="anchored" data-anchor-id="sec-visibility-demo">問題の確認</h3>
+<p>次のプログラムでは、メインスレッドが1秒後に <code>running</code> を <code>false</code> にして、スレッド <code>t</code> に停止を指示します。</p>
+<p>スレッド <code>t</code> は <code>running</code> が <code>true</code> の間だけループを続けるので、本来は1秒後に終了するはずです。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>StopTest.java（volatileなし）</strong></pre>
@@ -544,13 +546,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>実行すると、「メイン：停止を指示しました」と表示された後、<strong>プログラムが終わらない</strong>ことがあります（Ctrl + C で停止してください）。 メインスレッドは確かに <code>running</code> を <code>false</code> にしたのに、スレッド <code>t</code> にはその書き込みが見えていないのです。</p>
+<p>しかし、「メイン：停止を指示しました」と表示された後、<strong>プログラムが終わらない</strong>ことがあります（Ctrl + C で停止してください）。</p>
+<p>メインスレッドは確かに <code>running</code> を <code>false</code> にしたのに、スレッド <code>t</code> にはその書き込みが見えていないのです。</p>
 </section>
 <section id="sec-visibility-cause" class="level3">
 <h3 class="anchored" data-anchor-id="sec-visibility-cause">なぜ値が見えないのか</h3>
 <ul>
 <li>各スレッドは、処理を速くするために、共有変数の値を<strong>一時的に手元（CPUのレジスタなど）に保持</strong>することがあります。</li>
-<li>また、Javaの実行環境（JITコンパイラ）は、最適化のために、ループの中で変数を毎回読み込むのを省略し、<strong>最初に1回だけ読み込む</strong>ように書き換えることがあります。</li>
+<li>また、Javaのコンパイラが、最適化のために、ループの中で変数を毎回読み込むのを省略し、<strong>最初に1回だけ読み込む</strong>ように書き換えることがあります。</li>
 <li>その結果、スレッド <code>t</code> は最初に読んだ <code>true</code> を使い続け、他のスレッドによる書き換えに気づきません。</li>
 </ul>
 <div class="cell" data-layout-align="default">
@@ -589,26 +592,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p><a href="04-race-condition.html#fig-race" class="quarto-xref">図&nbsp;<span>4.1</span></a> と比べてください。<a href="04-race-condition.html#fig-race" class="quarto-xref">図&nbsp;<span>4.1</span></a> では、2つのスレッドが<strong>最新の値を正しく読んだうえで</strong>、互いの操作の間に割り込んだことが問題でした。 一方、<a href="#fig-visibility" class="quarto-xref">図&nbsp;<span>5.2</span></a> では割り込みは起きておらず、<strong>書き込まれた値が見えない</strong>ことが問題です。 この2つは、原因の異なる別々の問題です。</p>
+<p><a href="04-race-condition.html#fig-race" class="quarto-xref">図&nbsp;<span>4.1</span></a> では、2つのスレッドが<strong>最新の値を正しく読んだうえで</strong>、互いの操作の間に割り込んだことが問題でした。</p>
+<p><a href="#fig-visibility" class="quarto-xref">図&nbsp;<span>5.2</span></a> では、スレッド<code>t</code>が<strong>最新の値を正しく読み込めていない</strong>ことが問題であり、割り込みは起きていません。</p>
+<p>つまり、この2つは、原因の異なる別々の問題です。</p>
 </section>
 <section id="sec-sync-visibility" class="level3">
 <h3 class="anchored" data-anchor-id="sec-sync-visibility">synchronized は可視性も保証する</h3>
-<p><code>synchronized</code> は、原子性だけでなく、可視性も保証します。 あるスレッドがロックを解放する前に書き込んだ値は、その後で同じロックを取得したスレッドから必ず見えます。</p>
-<p><a href="04-race-condition.html#sec-sync-block" class="quarto-xref"><span>セクション 4.4</span></a> の <code>Count</code> が <code>synchronized</code> によって正しく30000になったのは、次の2つがどちらも保証されていたためです。</p>
-<ul>
-<li><strong>原子性</strong>：「読み込み・計算・書き込み」の途中に、他のスレッドが割り込まない。</li>
-<li><strong>可視性</strong>：ロックを取得したスレッドは、前にロックを持っていたスレッドが書き込んだ最新の値を読める。</li>
-</ul>
+<p><code>synchronized</code> は、原子性だけでなく、可視性も保証します。</p>
+<p>あるスレッドがロックを解放する前に書き込んだ値は、その後で同じロックを取得したスレッドから必ず読み込めます。</p>
+<p><a href="04-race-condition.html#sec-sync-block" class="quarto-xref"><span>セクション 4.4</span></a> の <code>Count</code> が <code>synchronized</code> によって正しく30000になったのは、原子性と可視性がどちらも保証されていたためです。</p>
 </section>
 </section>
 <section id="sec-volatile" class="level2" data-number="5.4">
 <h2 data-number="5.4" class="anchored" data-anchor-id="sec-volatile"><span class="header-section-number">5.4</span> volatile変数</h2>
 <p><code>volatile</code> は、変数の<strong>可視性を保証する</strong>修飾子です。</p>
-<ul>
-<li><code>volatile</code> を付けた変数への書き込みは、すぐに他のスレッドから見えるようになります。</li>
-<li><code>volatile</code> を付けた変数を読み込むときは、<strong>常に最新の値</strong>が読まれます。手元に保持した古い値が使われたり、読み込みが省略されたりすることはありません。</li>
-</ul>
-<p><a href="#sec-visibility-demo">前節</a>の <code>StopTest</code> は、<code>running</code> に <code>volatile</code> を付けるだけで正しく終了するようになります。</p>
+<p><code>volatile</code> を付けた変数を読み込むとき、<strong>常に最新の値</strong>が読まれます。手元に保持した古い値が使われたり、読み込みが省略されたりすることはありません。</p>
+<p><a href="#sec-visibility-demo" class="quarto-xref"><span>セクション 5.3.1</span></a> の <code>StopTest</code> は、<code>running</code> に <code>volatile</code> を付けるだけで正しく終了するようになります。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>StopTest.java（volatile版）の変更箇所</strong></pre>
@@ -619,10 +618,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>スレッド <code>t</code> は、ループのたびに <code>running</code> の最新の値を読むため、メインスレッドが <code>false</code> を書き込んだ後にループを抜けて終了します。</p>
-</section>
-<section id="sec-volatile-not-atomic" class="level2" data-number="5.5">
-<h2 data-number="5.5" class="anchored" data-anchor-id="sec-volatile-not-atomic"><span class="header-section-number">5.5</span> volatileでは競合状態を防げない</h2>
-<p>では、<a href="04-race-condition.html#sec-race-demo" class="quarto-xref"><span>セクション 4.2</span></a> の <code>Count</code> の変数 <code>c</code> に <code>volatile</code> を付ければ、競合状態は防げるでしょうか。</p>
+<section id="sec-volatile-not-atomic" class="level3">
+<h3 class="anchored" data-anchor-id="sec-volatile-not-atomic">volatile は競合状態を防がない</h3>
+<p><a href="04-race-condition.html#sec-race-demo" class="quarto-xref"><span>セクション 4.2</span></a> の <code>Count</code> の変数 <code>c</code> に <code>volatile</code> を付けても、競合状態を防ぐことはできません。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Count.java（volatile版）の変更箇所</strong></pre>
@@ -635,11 +633,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>実行すると、<code>volatile</code> を付けない場合と同じく、最終結果が<strong>30000未満</strong>になることがあります。</p>
 <p>その理由は、<a href="04-race-condition.html#fig-race" class="quarto-xref">図&nbsp;<span>4.1</span></a> をもう一度見るとわかります。</p>
 <ul>
-<li>手順2でスレッド2が読んだ10は、その時点での<strong>最新の値</strong>です。つまり、この図では可視性の問題は起きていません。</li>
-<li>問題は、スレッド1の「読み込み」と「書き込み」の間に、スレッド2が割り込んだことです。つまり、<strong>原子性がない</strong>ことが原因です。</li>
-<li><code>volatile</code> は、1回1回の読み込み・書き込みで最新の値を使うようにするだけです。「読み込み・計算・書き込み」の3つの操作を、ひとまとまりにする働きはありません。</li>
+<li>手順2でスレッド2が読んだ10は、すでに、その時点での<strong>最新の値</strong>です。</li>
+<li>問題は、スレッド1の「読み込み」と「書き込み」の間に、スレッド2が割り込んだこと、つまり、<strong>原子性がない</strong>ことです。</li>
+<li><code>volatile</code> は、読み書きの際に最新の値を使うようにするだけで、「読み込み・計算・書き込み」の3つの操作を、ひとまとまりにする働きはありません。</li>
 </ul>
-<p>したがって、<code>volatile</code> を付けても、<a href="04-race-condition.html#fig-race" class="quarto-xref">図&nbsp;<span>4.1</span></a> と同じ実行順は起こりえます。</p>
+<p>以上の内容を <a href="#tbl-sync-vs-volatile" class="quarto-xref">表&nbsp;<span>5.1</span></a> にまとめます。</p>
 <div id="tbl-sync-vs-volatile" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sync-vs-volatile-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -658,14 +656,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td><code>synchronized</code></td>
-<td>○ 保証される</td>
-<td>○ 保証される</td>
+<td>○ 保証する</td>
+<td>○ 保証する</td>
 <td>○ 防げる</td>
 </tr>
 <tr class="even">
 <td><code>volatile</code></td>
-<td>○ 保証される</td>
-<td><strong>✕ 保証されない</strong></td>
+<td>○ 保証する</td>
+<td><strong>✕ 保証しない</strong></td>
 <td><strong>✕ 防げない</strong></td>
 </tr>
 </tbody>
@@ -673,32 +671,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </figure>
 </div>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">重要</span>volatile で競合状態を防げない理由
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ol type="1">
-<li>競合状態を防ぐには、<strong>原子性</strong>が必要である。</li>
-<li><code>volatile</code> は<strong>可視性</strong>を保証するが、<strong>原子性</strong>は保証しない。</li>
-<li>したがって、<code>volatile</code> では競合状態を防げない。競合状態を防ぐには、<code>synchronized</code> による排他制御を使う。</li>
-</ol>
-</div>
-</div>
 </section>
-<section id="sec-volatile-usage" class="level2" data-number="5.6">
-<h2 data-number="5.6" class="anchored" data-anchor-id="sec-volatile-usage"><span class="header-section-number">5.6</span> volatile の用途</h2>
-<p><code>volatile</code> だけで正しく扱えるのは、次の2つの条件を満たす変数です。</p>
+<section id="sec-volatile-usage" class="level3">
+<h3 class="anchored" data-anchor-id="sec-volatile-usage">volatile の用途</h3>
+<p><code>volatile</code> は、次の2つの条件を満たす場合に有効です。</p>
 <ul>
-<li><strong>1つのスレッドだけが書き込み</strong>、他のスレッドは読むだけである。</li>
-<li>書き込む値が、<strong>変数の現在の値に依存しない</strong>（<code>running = false</code> のような単純な代入であり、<code>c = c + 1</code> のように「読んでから書く」操作ではない）。</li>
+<li><strong>1つのスレッドだけが書き込み、他のスレッドは読み込むだけ</strong>。</li>
+<li><strong>書き込む値が、変数の現在の値に依存しない</strong>（<code>running = false</code> のような単純な代入であり、<code>c = c + 1</code> のように「読んでから書く」操作ではない）。</li>
 </ul>
 <p>代表例は、<a href="#sec-visibility-demo" class="quarto-xref"><span>セクション 5.3.1</span></a> の <code>running</code> のような、スレッドを止めるためのフラグです。</p>
+</section>
+</section>
+<section id="sec-av-summary" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="sec-av-summary"><span class="header-section-number">5.5</span> この章のまとめ</h2>
+<p>初めのうちは、次のように覚えておけば十分です。</p>
+<ul>
+<li><strong>複数のスレッドから共有変数を書き換える処理には<code>synchronized</code> を使う。</strong></li>
+<li><code>volatile</code> は、停止フラグのように「1つのスレッドが書き、他のスレッドは読むだけ」の場合に使う。</li>
+</ul>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -712,14 +702,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>カウンタのように「読んで、変えて、書く」変数を安全に扱うには、<code>synchronized</code> のほか、<code>java.util.concurrent.atomic.AtomicInteger</code> の <code>incrementAndGet()</code> を使う方法もあります。 <code>incrementAndGet()</code> は、1増やす操作を原子的に行うメソッドです。ロックを使わずに原子性と可視性を実現する仕組みになっています。</p>
 </div>
 </div>
-<p>初めのうちは、次のように覚えておけば十分です。</p>
-<ul>
-<li><strong>複数のスレッドから共有変数を書き換える処理には<code>synchronized</code> を使う。</strong></li>
-<li><code>volatile</code> は、停止フラグのように「1つのスレッドが書き、他のスレッドは読むだけ」の場合にのみ使う。</li>
-</ul>
-</section>
-<section id="sec-av-summary" class="level2" data-number="5.7">
-<h2 data-number="5.7" class="anchored" data-anchor-id="sec-av-summary"><span class="header-section-number">5.7</span> この章のまとめ</h2>
 <div id="tbl-av-summary" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-av-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -746,13 +728,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>原子性</td>
 <td>一連の操作が、途中で他のスレッドに割り込まれない</td>
 <td>競合状態（更新が失われる）</td>
-<td><code>synchronized</code></td>
+<td><code>synchronized</code>, <code>AtomicInteger</code></td>
 </tr>
 <tr class="even">
 <td>可視性</td>
 <td>あるスレッドが書き込んだ値を、他のスレッドが読める</td>
 <td>書き込んだ値が見えない（スレッドが止まらないなど）</td>
-<td><code>synchronized</code>, <code>volatile</code></td>
+<td><code>synchronized</code>, <code>volatile</code>, <code>AtomicInteger</code></td>
 </tr>
 </tbody>
 </table>

@@ -476,18 +476,18 @@ window.Quarto = {
 <tr class="even">
 <td><a href="#sec-task2">課題2</a></td>
 <td>行列の積の並列化（スレッド数と処理時間の関係）</td>
-<td><a href="06-synchronization.html#sec-join" class="quarto-xref"><span>セクション 6.2</span></a>, <a href="08-parallel.html" class="quarto-xref"><span>チャプター 8</span></a></td>
+<td><a href="06-synchronization.html" class="quarto-xref"><span>チャプター 6</span></a>, <a href="08-parallel.html" class="quarto-xref"><span>チャプター 8</span></a></td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
 </div>
-<p>どちらの課題も、<strong>プログラムが正しく動いているかを確かめる仕組み</strong>が、配布するプログラムに含まれています。 必ず「OK」と表示されることを確認してから、結果をまとめてください。</p>
+<p>どちらの課題も、プログラムが正しく動いているかを確かめる仕組みが、配布するプログラムに含まれています。 必ず<strong>「OK」と表示されることを確認</strong>してから、結果をまとめてください。</p>
 <p><strong>提出物</strong>（提出方法は授業で指示します）</p>
 <ol type="1">
 <li>作成したプログラムのソースファイル</li>
-<li>実行結果をまとめた表と考察が記されたPDF</li>
+<li>実行結果をまとめた表と、指定された考察が記されたPDF</li>
 </ol>
 </section>
 <section id="sec-task1" class="level2 unnumbered">
@@ -573,9 +573,10 @@ window.Quarto = {
 <li><strong>排他制御なし</strong>：<code>issue()</code> の中身を書き、5回実行して、重複した番号と欠番の数を記録する。</li>
 <li><strong>synchronized 版</strong>：<code>issue()</code> を <code>synchronized</code> メソッドにして、5回実行する。</li>
 <li><strong>volatile 版</strong>：<code>synchronized</code> を外し、代わりに変数 <code>next</code> に <code>volatile</code> を付けて、5回実行する。</li>
-<li><strong>AtomicInteger 版</strong>：変数 <code>next</code> を <code>java.util.concurrent.atomic.AtomicInteger</code> 型に変え、<code>synchronized</code> も <code>volatile</code> も使わずに <code>issue()</code> を書き直して、5回実行する。</li>
-<li>結果を、次の3つの表にまとめる。各欄には、<code>check()</code> が表示した値をそのまま書く。「範囲外」は、<code>issue()</code> を正しく書けていれば0になるため、記録しなくてよい。</li>
+<li><strong>AtomicInteger 版</strong>：変数 <code>next</code> を <code>java.util.concurrent.atomic.AtomicInteger</code> 型に変え、<code>issue()</code> を <code>incrementAndGet()</code> を使って書き直して、5回実行する（<a href="05-volatile.html#sec-av-summary" class="quarto-xref"><span>セクション 5.5</span></a>）。</li>
+<li>結果を、次の3つの表にまとめる。各欄には、<code>check()</code> が表示した値をそのまま書く。</li>
 </ol>
+<p>「範囲外」は、<code>issue()</code> を正しく書けていれば 0 になるため、記録しなくてよいです。</p>
 <div id="tbl-task1-duplicated" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task1-duplicated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -759,7 +760,7 @@ window.Quarto = {
 <p><strong>考察</strong></p>
 <ol type="1">
 <li>排他制御なしの場合に、重複や欠番が生じる理由を説明せよ（<a href="04-race-condition.html#sec-race-cause" class="quarto-xref"><span>セクション 4.3</span></a>）。</li>
-<li><code>volatile</code> 版で重複や欠番を防げるかどうかを、実行結果に基づいて答えよ。また、その理由を「原子性」と「可視性」という言葉を使って説明せよ（<a href="05-volatile.html#sec-volatile-not-atomic" class="quarto-xref"><span>セクション 5.5</span></a>）。</li>
+<li><code>volatile</code> 版で重複や欠番を防げるかどうかを、実行結果に基づいて答えよ。また、その理由を「原子性」と「可視性」という言葉を使って説明せよ（<a href="05-volatile.html#sec-volatile-not-atomic" class="quarto-xref"><span>セクション 5.4.1</span></a>）。</li>
 </ol>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -798,7 +799,7 @@ window.Quarto = {
 <section id="sec-task2" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="sec-task2">課題2：行列の積の並列化</h2>
 <p>N行N列の2つの行列 <span class="math inline">\(A\)</span>、<span class="math inline">\(B\)</span> の積 <span class="math inline">\(C = A \times B\)</span> を求めるプログラムを、並列処理で高速化してください。</p>
-<p>行列の積 <span class="math inline">\(C\)</span> の <span class="math inline">\(i\)</span> 行 <span class="math inline">\(j\)</span> 列の要素 <span class="math inline">\(c_{ij}\)</span> は、<span class="math inline">\(A\)</span> の <span class="math inline">\(i\)</span> 行目と <span class="math inline">\(B\)</span> の <span class="math inline">\(j\)</span> 列目の、対応する要素どうしの積の和です。</p>
+<p>行列の積 <span class="math inline">\(C\)</span> の <span class="math inline">\(i\)</span> 行 <span class="math inline">\(j\)</span> 列の要素 <span class="math inline">\(c_{ij}\)</span> は、<span class="math inline">\(A\)</span> の <span class="math inline">\(i\)</span> 行目と <span class="math inline">\(B\)</span> の <span class="math inline">\(j\)</span> 列目の、対応する要素同士の積の和です。</p>
 <p><span class="math display">\[
 c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=0}^{N-1} a_{ik} b_{kj}
 \]</span></p>
@@ -907,7 +908,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>check()</code> は、計算した <span class="math inline">\(C\)</span> が <span class="math inline">\(A \times B\)</span> と等しいかを、短い時間で調べるメソッドです。1つでも誤った要素があれば、「NG」と表示されます。</p>
+<p><code>check()</code> は、計算した <span class="math inline">\(C\)</span> が <span class="math inline">\(A \times B\)</span> と等しいかを、短い時間で調べるメソッドです。<strong>1つでも誤った要素があれば、「NG」と表示されます。</strong></p>
 <p>スレッド数は、<a href="08-parallel.html#sec-para-sample" class="quarto-xref"><span>セクション 8.3</span></a> と同じく、コマンドライン引数で指定します。</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> java Matrix 4      <span class="co"># 4スレッドで実行する</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>並列版の構成</strong></p>

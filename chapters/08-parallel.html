@@ -427,7 +427,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="sec-cpu-count" class="level2" data-number="8.2">
 <h2 data-number="8.2" class="anchored" data-anchor-id="sec-cpu-count"><span class="header-section-number">8.2</span> CPU（コア）数の確認</h2>
-<p>まず、使っているコンピュータが同時にいくつの処理を実行できるかを確認します。Linuxでは次のコマンドで確認できます。</p>
+<p>まず、使っているコンピュータが同時にいくつの処理を実行できるかを確認します。Linuxでは <code>nproc</code> コマンドで確認できます。</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>$ nproc                              # 同時に実行できる処理の数（論理プロセッサ数）</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>8</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>$ grep processor /proc/cpuinfo       # 論理プロセッサの一覧</span>
@@ -454,7 +454,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="sec-para-sample" class="level2" data-number="8.3">
 <h2 data-number="8.3" class="anchored" data-anchor-id="sec-para-sample"><span class="header-section-number">8.3</span> サンプル：配列の要素を分担して増やす</h2>
-<p>要素数が100万の配列について、各要素を1万回、1ずつ増やすプログラムです。</p>
+<p>要素数が100万である配列を考えます。</p>
+<p>以下は、各要素を、1万回インクリメントするプログラムです。</p>
 <p>コマンドライン引数でスレッド数を指定し、配列を<strong>スレッド数で等分して</strong>、各スレッドに担当させます。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -509,8 +510,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>各スレッドは配列の<strong>別々の範囲</strong>だけを書き換えるため、同じ要素を複数のスレッドが触ることはありません。そのため、<a href="04-race-condition.html" class="quarto-xref"><span>チャプター 4</span></a> の排他制御は不要です。</p>
-<p>※ 担当範囲の終わりは、最後のスレッドだけ <code>SIZE</code> にしています。たとえば3スレッドの場合、1000000 ÷ 3 の余り（1要素）が、どのスレッドにも割り当てられずに残るのを防ぐためです。</p>
+<p>各スレッドは配列の<strong>別々の範囲</strong>だけを書き換えるため、同じ要素を複数のスレッドが触ることはありません。そのため、<a href="04-race-condition.html" class="quarto-xref"><span>チャプター 4</span></a> の<strong>排他制御は不要</strong>です。</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+警告
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>担当範囲の終わりは、最後のスレッドだけ <code>SIZE</code> にしています。たとえば3スレッドの場合、1000000 ÷ 3 の余り（1要素）が、どのスレッドにも割り当てられずに残るのを防ぐためです。</p>
+</div>
+</div>
 </section>
 <section id="sec-measure" class="level2" data-number="8.4">
 <h2 data-number="8.4" class="anchored" data-anchor-id="sec-measure"><span class="header-section-number">8.4</span> 実行時間の測り方</h2>
@@ -519,7 +532,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">// 計測したい処理</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="dt">long</span> endTime <span class="op">=</span> <span class="bu">System</span><span class="op">.</span><span class="fu">currentTimeMillis</span><span class="op">();</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">System</span><span class="op">.</span><span class="fu">out</span><span class="op">.</span><span class="fu">println</span><span class="op">((</span>endTime <span class="op">-</span> startTime<span class="op">)</span> <span class="op">+</span> <span class="st">" ミリ秒"</span><span class="op">);</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>方法2：<code>time</code> コマンドで測る</strong>（JVMの起動時間も含めた、プログラム全体の時間）</p>
+<p><strong>方法2：<code>time</code> コマンドで測る</strong>（Java仮想マシンの起動時間も含めた、プログラム全体の時間）</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>$ time java ParaSample 1 &gt; /dev/null</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>real    0m5.886s</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>user    0m6.210s</span>
@@ -534,7 +547,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>real    0m2.034s</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>user    0m5.849s</span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>sys     0m0.016s</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
-<table class="caption-top table">
+<table class="table-striped caption-top table">
+<caption>実行結果の見方</caption>
 <colgroup>
 <col style="width: 33%">
 <col style="width: 33%">
@@ -571,37 +585,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="sec-suitability" class="level2" data-number="8.5">
 <h2 data-number="8.5" class="anchored" data-anchor-id="sec-suitability"><span class="header-section-number">8.5</span> 並列処理に向くプログラム、向かないプログラム</h2>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
 <thead>
 <tr class="header">
+<th>特性</th>
 <th>向いているプログラム</th>
 <th>向いていないプログラム</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>各処理が<strong>互いに独立</strong>している（他の処理の結果を待たない）</td>
-<td>各処理が<strong>互いに依存</strong>している（他の処理の結果を待つ必要がある）</td>
+<td>各処理の依存関係</td>
+<td><strong>互いに独立</strong></td>
+<td><strong>互いに依存</strong></td>
 </tr>
 <tr class="even">
-<td>各スレッドの仕事量が<strong>ほぼ等しい</strong></td>
-<td>各スレッドの仕事量に<strong>大きな偏り</strong>がある</td>
-</tr>
-<tr class="odd">
-<td>例：<a href="#sec-para-sample" class="quarto-xref"><span>セクション 8.3</span></a> のように、配列を範囲で分けて処理する</td>
-<td>例：前の計算結果を使って次の計算をする処理</td>
+<td>各スレッドの仕事量</td>
+<td><strong>ほぼ等しい</strong></td>
+<td><strong>大きな偏り</strong>がある</td>
 </tr>
 </tbody>
 </table>
-<p>依存関係があると、待ち時間が生じて速度が伸びません。仕事量に偏りがあると、全体の終了時刻は<strong>最も遅いスレッド</strong>で決まります。また、プログラムの中に並列化できない部分があると、スレッドをいくら増やしてもその部分の時間は短くなりません（これを<strong>アムダールの法則</strong>と呼びます）。</p>
-<p>並列化を考えるときは、まず<strong>他の処理から独立して実行できる部分</strong>を探すことから始めましょう。</p>
+<ul>
+<li>依存関係があると、他の処理を待つ時間が生じて速度が伸びません</li>
+<li>仕事量に偏りがあると、<strong>仕事量が多いスレッドの実行時間が延び</strong>、 結果として全体の処理時間が延びてしまいます</li>
+<li>プログラムの中に並列化できない部分があると、スレッドをいくら増やしてもその部分の時間は短くなりません（これを<strong>アムダールの法則</strong>と呼びます）</li>
+</ul>
 </section>
 <section id="sec-exercise" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="sec-exercise">練習：スレッド数と処理時間の関係</h2>
-<p>スレッド数を増やしていくと、どこまで速くなるかを調べてください。</p>
+<p><a href="#sec-para-sample" class="quarto-xref"><span>セクション 8.3</span></a> のプログラムについて、スレッド数を増やしていくと、どこまで速くなるかを確認してみてください。</p>
 <ol type="1">
 <li><code>nproc</code> で、使用している計算機の論理プロセッサ数を確認する。</li>
 <li>スレッド数を 1, 2, 4, 8, … のように変化させ、それぞれの実行時間を比較する。</li>

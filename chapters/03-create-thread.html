@@ -482,9 +482,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>処理の流れは次のとおりです。</p>
 <ol type="1">
-<li>プログラム開始時に自動で<strong>メインスレッド</strong>が作られ、そのスレッドで <code>main</code> メソッドが実行されます。</li>
-<li><code>thread.start()</code> によって<strong>新しいスレッド</strong>が作られ、そのスレッドで <code>run()</code> メソッドが実行されます。</li>
-<li>以後、メインスレッド（AAAを表示）と新しいスレッド（BBBを表示）が並行に動きます。</li>
+<li>プログラム開始時に自動で<strong>メインスレッド</strong>が作られる。<br>→ メインスレッドで <code>main</code> メソッドが実行される。</li>
+<li><code>thread.start()</code> によって<strong>新しいスレッド</strong>が作られる。<br>→ 新しいスレッドで <code>run()</code> メソッドが実行される。</li>
+<li>以後、メインスレッド（AAAを表示）と新しいスレッド（BBBを表示）が並行に動作する。</li>
 </ol>
 </section>
 <section id="sec-extends-thread" class="level2" data-number="3.3">
@@ -535,7 +535,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="sec-runnable-vs-thread" class="level2" data-number="3.5">
 <h2 data-number="3.5" class="anchored" data-anchor-id="sec-runnable-vs-thread"><span class="header-section-number">3.5</span> 2つの方法の使い分け</h2>
-<p>Javaはクラスの<strong>多重継承を認めていない</strong>ため、継承できるスーパークラスは1つだけです。方法2を使うと、その1つを <code>Thread</code> に使ってしまいます。他のクラスを継承したい場合は、方法1を選んでください。</p>
+<p>Javaの仕様上、<strong>継承できるスーパークラスは1つだけ</strong>です。</p>
+<p>方法2を使う（ <code>Thread</code> を継承する）と、もう他のクラスを継承することはできません。他のクラスを継承したい場合は、方法1（<code>Runnable</code> を実装）を選んでください。</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -556,16 +557,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>不可能</td>
 </tr>
 <tr class="even">
-<td>他インタフェースの実装</td>
-<td>可能</td>
-<td>可能</td>
-</tr>
-<tr class="odd">
-<td><code>Thread</code> のメソッドの呼び出し</td>
+<td><code>Thread</code> に属するメソッドの呼び出し</td>
 <td><code>Thread.currentThread().getName()</code> のように経由が必要</td>
 <td><code>getName()</code>、<code>sleep()</code> などを直接呼べる</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>向いている場面</td>
 <td>一般的な場面（推奨されることが多い）</td>
 <td>スレッドを細かく操作したい場面</td>
@@ -601,7 +597,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>（以下略）</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li>現在の多くのコンピュータはマルチコアなので、2つ程度のスレッドであれば、切り替えではなく<strong>ほぼ並列に</strong>同時実行されます。</li>
-<li>同じ文字がまとまって出力されるのは、各スレッドがある程度の時間続けて実行されてから、別のスレッドに切り替わるためです。AAAとBBBの順番は実行のたびに変わります。</li>
+<li>同じ文字がまとまって出力されるのは、各スレッドがある程度の時間続けて実行されてから、別のスレッドに切り替わるためです。</li>
+<li>AAAとBBBの順番は実行のたびに変わります。</li>
 <li>使えるコアが1つしかない場合や、他のプログラムがコアを占有している場合には、どちらか一方の文字列ばかりが出力されることもあります。</li>
 </ul>
 </section>
@@ -639,7 +636,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>実行すると、AAAとBBBが約0.1秒ごとに、ほぼ交互に表示されます。</p>
+<p>これを実行すると、AAAとBBBが約0.1秒ごとに、ほぼ交互に表示されます。</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -653,7 +650,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><code>sleep()</code> の引数の単位は<strong>ミリ秒</strong>です（1000ミリ秒 = 1秒）。</li>
 <li><code>sleep()</code> は、休止中に他のスレッドから中断（<code>interrupt()</code>）されると <code>InterruptedException</code> という例外を投げます。この例外は<strong>チェック例外</strong>（例外処理が必須の例外）なので、<code>try</code>〜<code>catch</code> で必ず処理する必要があります。</li>
-<li><code>Thread</code> を継承したクラスの中では <code>sleep(100)</code> と書けますが、それ以外のクラスでは <code>Thread.sleep(100)</code> と書きます。</li>
 </ul>
 </div>
 </div>
