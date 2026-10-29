@@ -85,7 +85,7 @@ gantt
 逐次（@fig-sequential）と並行（@fig-concurrent）の違いを、@tbl-cmp-seg-and-con に整理します。
 
 |  | 逐次処理 | 並行処理 |
-| ---: | --- | --- |
+| --- | --- | --- |
 | 来客への応答 | 遅い | 早い |
 | 全作業が終わる時間 | 時間 0〜13 | 同左 |
 : 逐次と並行の比較 {#tbl-cmp-seg-and-con}
@@ -132,7 +132,7 @@ gantt
 
 1つの仕事を分割して同時に行うこの考え方は、@sec-parallel で、配列や行列の計算を複数のスレッドで分担して高速化するときに使います。
 
-## 並行と並列 {#sec-concurrent-and-parallel}
+## 整理：並行と並列 {#sec-concurrent-and-parallel}
 
 - **並行（Concurrent）:** 複数の処理を、1つが終わるのを待たずに、期間が重なるように進めること
 - **並列（Parallel）:**複数の主体が、処理を実際に同時に実行すること
