@@ -389,7 +389,6 @@ class MultiplyThread extends Thread {
 | 2 |  |  |
 | 4 |  |  |
 | 8 |  |  |
-| 15 |  |  |
 | 16 |  |  |
 | 32 |  |  |
 : 課題2：速度向上率と並列化効率 {#tbl-task2-speedup}

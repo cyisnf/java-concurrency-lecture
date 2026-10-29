@@ -6,7 +6,6 @@ project:
     - index.qmd
     - chapters/*.qmd
     # - solutions/*.qmd
-    - appendix/*.qmd
 
 lang: ja
 
@@ -36,8 +35,6 @@ book:
     # - solutions/ex2.qmd
     # - solutions/ex3.qmd
     # - solutions/ex4.qmd
-  appendices:
-    - appendix/glossary.qmd
 
 format:
   html:

@@ -125,7 +125,7 @@ public class Count {
 }
 
 class CounterThread extends Thread {
-    // …（フィールドとコンストラクタは5.1と同じ）
+    // …（フィールドとコンストラクタは変更無し）
     public void run() {
         for (int i = 0; i < 10000; i++) {
             count.inc();  // c++ の代わりに inc() を呼ぶ

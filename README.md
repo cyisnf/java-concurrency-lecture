@@ -19,8 +19,6 @@ Javaのスレッドを使った並行プログラミングの講義資料。
 │   ├── 07-deadlock.qmd          # 練習問題4を含む
 │   ├── 08-parallel.qmd
 │   └── 09-exercises.qmd
-├── appendix/
-│   └── glossary.qmd             # 付録：用語集
 ├── styles.css                   # 見た目の微調整
 └── .github/workflows/publish.yml  # GitHub Pages への自動公開
 ```
