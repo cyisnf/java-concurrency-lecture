@@ -84,9 +84,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-3737459a709222b8c3531ce17b4632b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-7d9ab679c82f4cdd3315c3a76f2ba6ee.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-3737459a709222b8c3531ce17b4632b4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-886608eb2eabd9caf1de71508903c6ab.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-3e767cae2e9f38f88abb0917055022a1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-886608eb2eabd9caf1de71508903c6ab.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -383,23 +383,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">総合演習</span></span></a>
   </div>
 </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">付録</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="セクションを切り替え">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../appendix/glossary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">用語集</span></span></a>
-  </div>
-</li>
-      </ul>
-  </li>
     </ul>
     </div>
 </nav>
@@ -449,16 +432,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="2.2" class="anchored" data-anchor-id="sec-process"><span class="header-section-number">2.2</span> プロセス</h2>
 <p><strong>プロセス</strong>とは、OSがプログラムを実行するときの単位です。</p>
 <ul>
-<li>例えば、ターミナルから自作のJavaプログラムを実行すると、それが1つのプロセスとして実行されます。</li>
-<li>OSは、プロセスを作るたびに、そのプロセス<strong>専用のメモリ領域</strong>を割り当てます。</li>
-<li>あるプロセスが、他のプロセスのメモリ領域を直接読み書きすることはできません。</li>
+<li>ターミナルからJavaプログラムを実行すると、1つのプロセスとして実行されます。</li>
+<li>その際、OSは、プロセスに<strong>専用のメモリ領域</strong>を割り当てます。</li>
+<li>あるプロセスが、他のプロセスのメモリ領域を直接読み書きすることはできません。<br> （例： <code>java</code> は <code>gcc</code> のメモリ領域を直接読み書きできない）</li>
 </ul>
 <p>UNIX系OSでは、<code>ps</code> コマンドで実行中のプロセスを一覧できます。</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ps</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="sec-thread" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="sec-thread"><span class="header-section-number">2.3</span> スレッド</h2>
-<p><strong>スレッド</strong>とは、プロセスの中で処理を実行する流れのことです。</p>
+<p><strong>スレッド</strong>とは、プロセスの中にある「実行単位（処理の流れ）」のことです。</p>
 <ul>
 <li>どのプロセスにも、少なくとも1つのスレッドがあります。Javaのプログラムでは、<code>main</code> メソッドを実行する<strong>メインスレッド</strong>がそれにあたります。</li>
 <li>1つのプロセスの中に、スレッドを<strong>複数</strong>作ることができます。</li>
@@ -497,7 +480,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
     %% 箱に種類を割り当てる
     class HA,HB memory
-    class M1,T1,T2,M2 thread
+    class M1,T1,M2 thread
 
     %% 外枠（OS とプロセス）の見た目
     style OS fill:#EDEDED,stroke:#64748B,stroke-width:2px,stroke-dasharray:6 4
