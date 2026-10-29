@@ -398,7 +398,7 @@ class MultiplyThread extends Thread {
 
 **考察**
 
-1. 全スレッドが同じ配列を扱っているのに、排他制御が不要である理由を説明せよ。配列 `c` と、配列 `a`・`b` のそれぞれについて答えること（@sec-race-cause）。
+1. 全スレッドが同じ配列を扱っているのに、排他制御が不要である理由を説明せよ。配列 `c` と、配列 `a`, `b` のそれぞれについて答えること（@sec-race-cause）。
 2. スレッド数を増やしたとき、速度向上率と並列化効率はどのように変化したか。並列化効率が1.00に届かない理由を考察せよ（@sec-cpu-count、@sec-suitability）。
 
 ::: {.callout-tip collapse="true"}
