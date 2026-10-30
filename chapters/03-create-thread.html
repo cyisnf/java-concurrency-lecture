@@ -636,7 +636,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>これを実行すると、AAAとBBBが約0.1秒ごとに、ほぼ交互に表示されます。</p>
+<p><code>sleep</code> が<strong>ない</strong>場合、各スレッドは休まずに出力を続けるので、<code>AAA</code> や <code>BBB</code> がまとまって表示されました（<a href="#sec-output" class="quarto-xref"><span>セクション 3.6</span></a>）。</p>
+<p><code>sleep(100)</code> を入れると、各スレッドは<strong>1行出力するたびに0.1秒休む</strong>ようになります。同じスレッドが続けて2行出力することがなくなるので、出力が1行ずつ交互に並びます。</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+警告
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>sleep</code> は「指定した時間<strong>以上</strong>休止する」ことを指示するだけで、他のスレッドとの実行順序は何も保証しません。つまり、「たまたま交互に見える」状態を作っているだけで、「必ず交互に実行させる」ことはできません。</p>
+<p>スレッド間で実行の順序や処理のタイミングを確実に合わせるには、<a href="06-synchronization.html" class="quarto-xref"><span>チャプター 6</span></a> で学ぶ仕組みを使う必要があります。</p>
+</div>
+</div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
