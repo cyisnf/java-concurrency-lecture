@@ -435,7 +435,10 @@ window.Quarto = {
   <li><a href="#sec-wait-notify-sample" id="toc-sec-wait-notify-sample" class="nav-link" data-scroll-target="#sec-wait-notify-sample">サンプル：上限と下限のあるカウンタ</a></li>
   </ul></li>
   <li><a href="#まとめ" id="toc-まとめ" class="nav-link" data-scroll-target="#まとめ"><span class="header-section-number">6.4</span> まとめ</a></li>
-  <li><a href="#sec-ex3" id="toc-sec-ex3" class="nav-link" data-scroll-target="#sec-ex3">練習問題3：条件が整うまで待つキュー</a></li>
+  <li><a href="#sec-ex3" id="toc-sec-ex3" class="nav-link" data-scroll-target="#sec-ex3">練習問題3：条件が整うまで待つキュー</a>
+  <ul class="collapse">
+  <li><a href="#実行結果の確認方法" id="toc-実行結果の確認方法" class="nav-link" data-scroll-target="#実行結果の確認方法">実行結果の確認方法</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/edit/main/chapters/06-synchronization.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture.git/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
@@ -829,6 +832,18 @@ window.Quarto = {
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>enqueue :Queue Full.. wait dequeue()</span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>dequeue :33 tail:8</span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>dequeue :53 tail:7</span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="実行結果の確認方法" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="実行結果の確認方法">実行結果の確認方法</h3>
+<ul>
+<li><code>enqueue :数値</code> の行と <code>dequeue :数値</code> の行が、<strong>それぞれちょうど200行</strong>表示される（各スレッドが100回ずつ成功する）。</li>
+<li>最後に表示される <code>tail</code> は -1 になる（追加と取り出しの回数が等しいため）。</li>
+<li>プログラムが止まらずに終了する。</li>
+</ul>
+<p>次のコマンドで、行数を数えて確かめられます（<code>Queue</code> を含む行は待機の表示なので除きます）。</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> java IntQueue <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-v</span> Queue <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-c</span> <span class="st">'^enqueue'</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">200</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> java IntQueue <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-v</span> Queue <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-c</span> <span class="st">'^dequeue'</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">200</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -863,6 +878,7 @@ window.Quarto = {
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
