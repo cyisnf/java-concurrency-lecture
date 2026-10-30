@@ -264,18 +264,19 @@ class DecThread extends Thread {
 
 ```{.default}
 $ java IntQueue
-（中略）
+（略）
 dequeue :22 tail:1
 dequeue :80 tail:0
 dequeue :47 tail:-1
 dequeue :Queue Empty.. wait enqueue()
 enqueue :98 tail:0
-（中略）
+（略）
 enqueue :100 tail:8
 enqueue :58 tail:9
 enqueue :Queue Full.. wait dequeue()
 dequeue :33 tail:8
 dequeue :53 tail:7
+（略）
 ```
 
 ### 実行結果の確認方法 {.unnumbered}
