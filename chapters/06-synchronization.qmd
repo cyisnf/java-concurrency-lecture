@@ -265,16 +265,12 @@ class DecThread extends Thread {
 ```{.default}
 $ java IntQueue
 （中略）
-dequeue :42 tail:3
-dequeue :49 tail:2
 dequeue :22 tail:1
 dequeue :80 tail:0
 dequeue :47 tail:-1
 dequeue :Queue Empty.. wait enqueue()
 enqueue :98 tail:0
 （中略）
-enqueue :76 tail:6
-enqueue :19 tail:7
 enqueue :100 tail:8
 enqueue :58 tail:9
 enqueue :Queue Full.. wait dequeue()
@@ -284,9 +280,9 @@ dequeue :53 tail:7
 
 ### 実行結果の確認方法 {.unnumbered}
 
-- `enqueue :数値` の行と `dequeue :数値` の行が、**それぞれちょうど200行**表示される（各スレッドが100回ずつ成功する）。
-- 最後に表示される `tail` は -1 になる（追加と取り出しの回数が等しいため）。
-- プログラムが止まらずに終了する。
+- プログラムが止まらずに終了する
+- 最後に表示される `tail` は -1 になる（追加と取り出しの回数が等しいため）
+- `enqueue :数値` の行と `dequeue :数値` の行が、**それぞれちょうど200行**表示される
 
 次のコマンドで、行数を数えて確かめられます（`Queue` を含む行は待機の表示なので除きます）。
 
