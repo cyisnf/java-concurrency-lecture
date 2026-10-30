@@ -52,7 +52,7 @@ public class Runnable_Thread implements Runnable {
 
 1. プログラム開始時に自動で**メインスレッド**が作られる。<br/>→ メインスレッドで `main` メソッドが実行される。
 2. `thread.start()` によって**新しいスレッド**が作られる。<br/>→ 新しいスレッドで `run()` メソッドが実行される。
-3. 以後、メインスレッド（AAAを表示）と新しいスレッド（BBBを表示）が並行に動作する。
+3. 以後、メインスレッド（AAAを表示）と新しいスレッド（BBBを表示）が並行に動作する（Ctrl + C で停止してください）。
 
 ## 方法2：Threadクラスを継承する {#sec-extends-thread}
 

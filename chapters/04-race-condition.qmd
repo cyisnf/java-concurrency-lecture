@@ -174,7 +174,11 @@ public synchronized void inc() {
 
 ## 補足：スレッドの識別番号 {#sec-thread-id}
 
-各スレッドには一意の識別番号（スレッドID）があり、`getId()` で取得できます。スレッドIDは正の `long` 型の値で、そのスレッドが存在する間は変わりません。スレッドの終了後は、同じ値が再利用されることがあります。どのスレッドが出力したかを確かめたいときは、次のように表示するとよいでしょう。
+各スレッドには一意の識別番号（スレッドID）があり、`getId()` で取得できます。
+
+スレッドIDは正の `long` 型の値で、そのスレッドが存在する間は変わりません。スレッドの終了後は、同じ値が再利用されることがあります。
+
+どのスレッドが処理を行ったのかを確かめたいときは、`run()` の中に次を追加するとよいでしょう。
 
 ```java
 System.out.println(getId() + ":" + count.c);
@@ -206,6 +210,7 @@ public class IntQueue {
         if (tail == SIZE - 1) {
             return false;           // 満杯
         }
+        pause();                    // 競合を起こりやすくするための休止（下の説明を参照）
         tail++;
         values[tail] = data;
         System.out.println("enqueue :" + data + " tail:" + tail);
@@ -216,6 +221,7 @@ public class IntQueue {
         if (isEmpty()) {
             return -1;              // 空
         }
+        pause();                    // 競合を起こりやすくするための休止
         int data = values[0];
         for (int i = 0; i < SIZE - 1; i++) {
             values[i] = values[i + 1];  // 要素を1つずつ前に詰める
@@ -227,6 +233,14 @@ public class IntQueue {
 
     boolean isEmpty() {
         return (tail == -1);
+    }
+
+    // 1ミリ秒だけ休止する（キューの機能には不要。競合を観察しやすくするための処理）
+    static void pause() {
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+        }
     }
 
     public static void main(String[] args) {
@@ -267,6 +281,17 @@ class DeQueueThread extends Thread {
     }
 }
 ```
+
+::: {.callout-note}
+## pause() を入れている理由
+`pause()` は、`tail` を確かめてから書き換えるまでの間に1ミリ秒休み、その間に他のスレッドが割り込む機会を増やします。
+
+`pause()` がなくても割り込みは起こりえますが、めったに起こらないため、何度実行しても問題が見えないことがあります。
+
+**`pause()` は消さずに課題に取り組んでください。**
+
+余裕があれば、`pause()` の呼び出しを消して実行し、結果を比べてみましょう。**例外が出なくなっても、プログラムが正しくなったわけではありません。**
+:::
 
 ::: {.callout-tip collapse="true"}
 ## ヒント（最初は自力でやってみること。クリックで表示）
@@ -331,11 +356,6 @@ class Customer extends Thread {
             int to = (int) (Math.random() * ATM.SIZE);
             int money = (int) (Math.random() * 10000);
             atm.move(from, to, money);
-            try {
-                sleep((int) (Math.random() * 10));  // 0〜9ミリ秒休止
-            } catch (InterruptedException e) {
-                System.err.println(e);
-            }
         }
         atm.printMoney();  // 各顧客が操作を終えるたびに表示（最後の表示が最終結果）
     }
