@@ -8,7 +8,7 @@
 
 デッドロックという現象を理解するために、次のような状況を考えてください。
 
-- 8人（Aさん, Bさん, ...）がいる
+- 8人（Aさん, Bさん, ..., Hさん）がいる
 - しかし、ナイフとフォークは**1本ずつ**しかない
 - 食事をするには、ナイフとフォークの両方を持っている必要がある
 - 食事が終わったら、ナイフとフォークを返却する
@@ -25,17 +25,22 @@
 
 ```{.java filename="DeadLockTest.java"}
 public class DeadLockTest {
-    // fork と knife には、それを持っている人のID番号が入る
+    // fork と knife には、それを持っている人のID番号（1〜8）が入る
     // ただし、誰もそれを持っていなければ 0 が入る
     int fork = 0;   // フォークを持っている人のID
     int knife = 0;  // ナイフを持っている人のID
+
+    // ID番号を名前に変換する（1 → A, 2 → B, ..., 8 → H）
+    static char name(int n) {
+        return (char) ('A' + n - 1);
+    }
 
     synchronized void getFork(int n) {
         if (fork != 0) {
             return;  // 誰かが持っているので取れない
         }
         fork = n;
-        System.out.println(n + " get Fork");
+        System.out.println(name(n) + " get Fork");
     }
 
     synchronized void getKnife(int n) {
@@ -43,7 +48,7 @@ public class DeadLockTest {
             return;
         }
         knife = n;
-        System.out.println(n + " get Knife");
+        System.out.println(name(n) + " get Knife");
     }
 
     synchronized void reset(int n) {  // 自分が持っている道具を返す
@@ -78,7 +83,7 @@ class HumanThread extends Thread {
                 dlt.getFork(id);
                 dlt.getKnife(id);
             }
-            System.out.println(id + " ate a meal.");
+            System.out.println(DeadLockTest.name(id) + " ate a meal.");
             dlt.reset(id);
         }
     }
