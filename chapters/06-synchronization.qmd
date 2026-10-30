@@ -282,6 +282,21 @@ dequeue :33 tail:8
 dequeue :53 tail:7
 ```
 
+### 実行結果の確認方法 {.unnumbered}
+
+- `enqueue :数値` の行と `dequeue :数値` の行が、**それぞれちょうど200行**表示される（各スレッドが100回ずつ成功する）。
+- 最後に表示される `tail` は -1 になる（追加と取り出しの回数が等しいため）。
+- プログラムが止まらずに終了する。
+
+次のコマンドで、行数を数えて確かめられます（`Queue` を含む行は待機の表示なので除きます）。
+
+```{.bash}
+$ java IntQueue | grep -v Queue | grep -c '^enqueue'
+200
+$ java IntQueue | grep -v Queue | grep -c '^dequeue'
+200
+```
+
 ::: {.callout-tip collapse="true"}
 ## ヒント（最初は自力でやってみること。クリックで表示）
 - 満杯・空のときの `return` を、`while` で条件を確かめながら `wait()` で待つ処理に置き換えます（@sec-wait-notify-sample）。
