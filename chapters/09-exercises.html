@@ -492,12 +492,23 @@ window.Quarto = {
 </div>
 </figure>
 </div>
-<p>どちらの課題も、プログラムが正しく動いているかを確かめる仕組みが、配布するプログラムに含まれています。 必ず<strong>「OK」と表示されることを確認</strong>してから、結果をまとめてください。</p>
-<p><strong>提出物</strong>（提出方法は授業で指示します）</p>
+<p><strong>提出物</strong></p>
+<p>以下のファイルを LETUS 上に提出してください。</p>
 <ol type="1">
-<li>作成したプログラムのソースファイル</li>
-<li>実行結果をまとめた表と、指定された考察が記されたPDF</li>
+<li>作成したプログラムのソースファイル
+<ul>
+<li><code>TicketSync.java</code></li>
+<li><code>TicketVolatile.java</code></li>
+<li><code>TicketAtomic.java</code></li>
+<li><code>MatrixPara.java</code></li>
+</ul></li>
+<li>実行結果をまとめた表と、指定された考察が記されたPDF
+<ul>
+<li><code>Report_学籍番号.pdf</code></li>
+</ul></li>
 </ol>
+<p><strong>必ず大学のLinux教育環境で実行できるようにしてください。</strong></p>
+<p>また、PDF は 「レポートの構成について」に従って作成してください。</p>
 </section>
 <section id="sec-task1" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="sec-task1">課題1：整理番号の発行</h2>
@@ -580,9 +591,9 @@ window.Quarto = {
 <p><strong>手順</strong></p>
 <ol type="1">
 <li><strong>排他制御なし</strong>：<code>issue()</code> の中身を書き、3回実行して、重複した番号と欠番の数を記録する。</li>
-<li><strong>synchronized 版</strong>：<code>issue()</code> を <code>synchronized</code> メソッドにして、3回実行する。</li>
-<li><strong>volatile 版</strong>：<code>synchronized</code> を外し、代わりに変数 <code>next</code> に <code>volatile</code> を付けて、3回実行する。</li>
-<li><strong>AtomicInteger 版</strong>：変数 <code>next</code> を <code>java.util.concurrent.atomic.AtomicInteger</code> 型に変え、<code>issue()</code> を <code>incrementAndGet()</code> を使って書き直して、3回実行する（<a href="05-volatile.html#sec-av-summary" class="quarto-xref"><span>セクション 5.5</span></a>）。</li>
+<li><strong>synchronized 版</strong>：<code>issue()</code> を <code>synchronized</code> メソッドにして、3回実行する。<code>TicketSync.java</code> と名付ける。</li>
+<li><strong>volatile 版</strong>：<code>synchronized</code> を外し、代わりに変数 <code>next</code> に <code>volatile</code> を付けて、3回実行する。<code>TicketVolatile.java</code> と名付ける。</li>
+<li><strong>AtomicInteger 版</strong>：変数 <code>next</code> を <code>java.util.concurrent.atomic.AtomicInteger</code> 型に変え、<code>issue()</code> を <code>incrementAndGet()</code> を使って書き直して、3回実行する（<a href="05-volatile.html#sec-av-summary" class="quarto-xref"><span>セクション 5.5</span></a>）。<code>TicketAtomic.java</code> と名付ける。</li>
 <li>結果を、次の3つの表にまとめる。各欄には、<code>check()</code> が表示した値をそのまま書く。</li>
 </ol>
 <p>「平均」は小数点以下を切り捨て、整数とすること。</p>
@@ -887,9 +898,9 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>check()</code> は、計算した <span class="math inline">\(C\)</span> が <span class="math inline">\(A \times B\)</span> と等しいかを、短い時間で調べるメソッドです。<strong>1つでも誤った要素があれば、「NG」と表示されます。</strong></p>
+<p><code>check()</code> は、計算した <span class="math inline">\(C\)</span> が <span class="math inline">\(A \times B\)</span> と等しいかを、短い時間で調べるメソッドです。<strong>1つでも誤った要素があれば、「NG」と表示されます。</strong> 必ず<strong>「OK」と表示されることを確認</strong>してから、結果をまとめてください。</p>
 <p>スレッド数は、<a href="08-parallel.html#sec-para-sample" class="quarto-xref"><span>セクション 8.3</span></a> と同じく、コマンドライン引数で指定します。</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> java Matrix 4      <span class="co"># 4スレッドで実行する</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> java MatrixPara 4      <span class="co"># 4スレッドで実行する</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>並列版の構成</strong></p>
 <p>並列版は、役割の異なる次の2つのクラスで作ります。</p>
 <div id="tbl-task2-classes" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -955,17 +966,17 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <p><code>main</code> メソッドの「ここから行列の積の計算の呼び出し」の部分は、次のように1行だけ変更します。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
-<pre><strong>Matrix.java（並列版）の main メソッドの変更箇所</strong></pre>
+<pre><strong>MatrixPara.java（並列版）の main メソッドの変更箇所</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-filename="Matrix.java（並列版）の main メソッドの変更箇所"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>        <span class="co">// ここから行列の積の計算の呼び出し</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-filename="MatrixPara.java（並列版）の main メソッドの変更箇所"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>        <span class="co">// ここから行列の積の計算の呼び出し</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>        ParallelMultiply mm <span class="op">=</span> <span class="kw">new</span> <span class="fu">ParallelMultiply</span><span class="op">(</span>a<span class="op">,</span> b<span class="op">,</span> num<span class="op">);</span>  <span class="co">// SequentialMultiply を置き換える</span></span></code></pre></div><button title="コピー" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>SequentialMultiply</code> クラスは削除し、代わりに次の2つのクラスを書きます。「ここを記述」の部分を完成させてください。</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
-<pre><strong>Matrix.java（並列版）の ParallelMultiply と MultiplyThread</strong></pre>
+<pre><strong>MatrixPara.java（並列版）の ParallelMultiply と MultiplyThread</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-filename="Matrix.java（並列版）の ParallelMultiply と MultiplyThread"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">/**</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-filename="MatrixPara.java（並列版）の ParallelMultiply と MultiplyThread"><pre class="sourceCode java code-with-copy"><code class="sourceCode java"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">/**</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>   <span class="co">行列の積を求める（並列）</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>   <span class="co">仕事を分けてスレッドに渡し、すべてのスレッドの終了を待つ</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">*/</span></span>
@@ -1032,7 +1043,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <ol type="1">
 <li><code>nproc</code> などで、使用している計算機の論理プロセッサ数を確認する（<a href="08-parallel.html#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a>）。</li>
 <li><strong>逐次版</strong>を3回実行し、処理時間とその平均を <a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.6</span></a> に記録する。</li>
-<li><strong>並列版</strong>：<code>main</code> メソッドを変更し、<code>ParallelMultiply</code> と <code>MultiplyThread</code> の「ここを記述」の部分を完成させる。</li>
+<li><strong>並列版</strong>：<code>main</code> メソッドを変更し、<code>ParallelMultiply</code> と <code>MultiplyThread</code> の「ここを記述」の部分を完成させる。<code>MatrixPara.java</code>と名付ける。</li>
 <li>スレッド数を1, 2, 4, 8, 15, 16, 32 と変えて、それぞれ3回ずつ実行し、処理時間とその平均を <a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a> に記録する。平均は小数点以下を切り捨て、<strong>整数</strong>とする。</li>
 <li>スレッド数ごとに、次の2つの値を計算し、<a href="#tbl-task2-speedup" class="quarto-xref">表&nbsp;<span>9.8</span></a> に記録する。それぞれ<strong>小数第2位</strong>まで求める。
 <ul>
