@@ -84,9 +84,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-5de16f5e46225c21e2daa90d340bf64f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e38c6f09d09fb5807c02a3ec22ed2b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-fd136b7982169becce9db50a4c43202c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-e38c6f09d09fb5807c02a3ec22ed2b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-77fdbab0736b33e3f707b40452a26753.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-43d210e1fa51943c1b4eac53965c7fad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-77fdbab0736b33e3f707b40452a26753.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -585,61 +585,11 @@ window.Quarto = {
 <li><strong>AtomicInteger 版</strong>：変数 <code>next</code> を <code>java.util.concurrent.atomic.AtomicInteger</code> 型に変え、<code>issue()</code> を <code>incrementAndGet()</code> を使って書き直して、3回実行する（<a href="05-volatile.html#sec-av-summary" class="quarto-xref"><span>セクション 5.5</span></a>）。</li>
 <li>結果を、次の3つの表にまとめる。各欄には、<code>check()</code> が表示した値をそのまま書く。</li>
 </ol>
-<p>「平均」は小数点以下を切り捨て、整数とする。</p>
-<div id="tbl-task1-out" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task1-out-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.2: 課題1：範囲外の数
-</figcaption>
-<div aria-describedby="tbl-task1-out-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>方法</th>
-<th>1回目</th>
-<th>2回目</th>
-<th>3回目</th>
-<th>平均</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>排他制御なし</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><code>synchronized</code></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td><code>volatile</code></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td><code>AtomicInteger</code></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-</div>
+<p>「平均」は小数点以下を切り捨て、整数とすること。</p>
 <div id="tbl-task1-duplicated" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task1-duplicated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.3: 課題1：重複した番号の数
+表&nbsp;9.2: 課題1：重複した番号の数
 </figcaption>
 <div aria-describedby="tbl-task1-duplicated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -689,7 +639,7 @@ window.Quarto = {
 <div id="tbl-task1-missing" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task1-missing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.4: 課題1：欠番の数
+表&nbsp;9.3: 課題1：欠番の数
 </figcaption>
 <div aria-describedby="tbl-task1-missing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -739,7 +689,7 @@ window.Quarto = {
 <div id="tbl-task1-judge" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task1-judge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.5: 課題1：判定（OK または NG）
+表&nbsp;9.4: 課題1：判定（OK または NG）
 </figcaption>
 <div aria-describedby="tbl-task1-judge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -945,7 +895,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <div id="tbl-task2-classes" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-classes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.6: 並列版の2つのクラスの役割
+表&nbsp;9.5: 並列版の2つのクラスの役割
 </figcaption>
 <div aria-describedby="tbl-task2-classes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1081,19 +1031,19 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <p><strong>手順</strong></p>
 <ol type="1">
 <li><code>nproc</code> などで、使用している計算機の論理プロセッサ数を確認する（<a href="08-parallel.html#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a>）。</li>
-<li><strong>逐次版</strong>を3回実行し、処理時間とその平均を <a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.7</span></a> に記録する。</li>
+<li><strong>逐次版</strong>を3回実行し、処理時間とその平均を <a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.6</span></a> に記録する。</li>
 <li><strong>並列版</strong>：<code>main</code> メソッドを変更し、<code>ParallelMultiply</code> と <code>MultiplyThread</code> の「ここを記述」の部分を完成させる。</li>
-<li>スレッド数を1, 2, 4, 8, 15, 16, 32 と変えて、それぞれ3回ずつ実行し、処理時間とその平均を <a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.8</span></a> に記録する。平均は小数点以下を切り捨て、<strong>整数</strong>とする。</li>
-<li>スレッド数ごとに、次の2つの値を計算し、<a href="#tbl-task2-speedup" class="quarto-xref">表&nbsp;<span>9.9</span></a> に記録する。それぞれ<strong>小数第2位</strong>まで求める。
+<li>スレッド数を1, 2, 4, 8, 15, 16, 32 と変えて、それぞれ3回ずつ実行し、処理時間とその平均を <a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a> に記録する。平均は小数点以下を切り捨て、<strong>整数</strong>とする。</li>
+<li>スレッド数ごとに、次の2つの値を計算し、<a href="#tbl-task2-speedup" class="quarto-xref">表&nbsp;<span>9.8</span></a> に記録する。それぞれ<strong>小数第2位</strong>まで求める。
 <ul>
-<li><strong>速度向上率</strong>：並列版の平均（<a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.8</span></a>）を、逐次版の平均（<a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.7</span></a>）で割った値。並列版が逐次版の何倍速いかを表す。</li>
+<li><strong>速度向上率</strong>：並列版の平均（<a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a>）を、逐次版の平均（<a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.6</span></a>）で割った値。並列版が逐次版の何倍速いかを表す。</li>
 <li><strong>並列化効率</strong>：速度向上率を、スレッド数で割った値。理想は1.00で、これは「スレッド数を2倍にすると、処理時間がちょうど半分になる」場合にあたる。</li>
 </ul></li>
 </ol>
 <div id="tbl-task2-seq" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-seq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.7: 課題2：逐次版の処理時間（ミリ秒）
+表&nbsp;9.6: 課題2：逐次版の処理時間（ミリ秒）
 </figcaption>
 <div aria-describedby="tbl-task2-seq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1120,7 +1070,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <div id="tbl-task2-par" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-par-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.8: 課題2：並列版の処理時間（ミリ秒）
+表&nbsp;9.7: 課題2：並列版の処理時間（ミリ秒）
 </figcaption>
 <div aria-describedby="tbl-task2-par-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1191,7 +1141,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <div id="tbl-task2-speedup" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-speedup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.9: 課題2：速度向上率と並列化効率
+表&nbsp;9.8: 課題2：速度向上率と並列化効率
 </figcaption>
 <div aria-describedby="tbl-task2-speedup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1246,7 +1196,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <p><strong>考察</strong></p>
 <ol type="1">
 <li>全スレッドが同じ配列を扱っているのに、排他制御が不要である理由を説明せよ。配列 <code>c</code> と、配列 <code>a</code>, <code>b</code> のそれぞれについて答えること（<a href="04-race-condition.html#sec-race-cause" class="quarto-xref"><span>セクション 4.3</span></a>）。</li>
-<li>スレッド数を増やしたとき、速度向上率と並列化効率はどのように変化したか。速度向上率が単調に増加しない理由と、並列化効率が殆ど単調に減少する理由を考察せよ（<a href="08-parallel.html#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a>、<a href="08-parallel.html#sec-suitability" class="quarto-xref"><span>セクション 8.5</span></a>）。</li>
+<li>スレッド数を増やしたとき、速度向上率と並列化効率はどのように変化したか。速度向上率が単調に増加しない理由と、並列化効率が単調に減少する理由を考察せよ（<a href="08-parallel.html#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a>、<a href="08-parallel.html#sec-suitability" class="quarto-xref"><span>セクション 8.5</span></a>）。</li>
 </ol>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
