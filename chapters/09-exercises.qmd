@@ -99,37 +99,44 @@ class Window extends Thread {
 
 **手順**
 
-1. **排他制御なし**：`issue()` の中身を書き、5回実行して、重複した番号と欠番の数を記録する。
-2. **synchronized 版**：`issue()` を `synchronized` メソッドにして、5回実行する。
-3. **volatile 版**：`synchronized` を外し、代わりに変数 `next` に `volatile` を付けて、5回実行する。
-4. **AtomicInteger 版**：変数 `next` を `java.util.concurrent.atomic.AtomicInteger` 型に変え、`issue()` を `incrementAndGet()` を使って書き直して、5回実行する（@sec-av-summary）。
+1. **排他制御なし**：`issue()` の中身を書き、3回実行して、重複した番号と欠番の数を記録する。
+2. **synchronized 版**：`issue()` を `synchronized` メソッドにして、3回実行する。
+3. **volatile 版**：`synchronized` を外し、代わりに変数 `next` に `volatile` を付けて、3回実行する。
+4. **AtomicInteger 版**：変数 `next` を `java.util.concurrent.atomic.AtomicInteger` 型に変え、`issue()` を `incrementAndGet()` を使って書き直して、3回実行する（@sec-av-summary）。
 5. 結果を、次の3つの表にまとめる。各欄には、`check()` が表示した値をそのまま書く。
 
-「範囲外」は、`issue()` を正しく書けていれば 0 になるため、記録しなくてよいです。
+「平均」は小数点以下を切り捨て、整数とする。
 
+| 方法 | 1回目 | 2回目 | 3回目 | 平均 |
+| --- | --- | --- | --- | --- |
+| 排他制御なし |   |  |  |  |
+| `synchronized` |   |  |  |  |
+| `volatile` |   |  |  |  |
+| `AtomicInteger` |   |  |  |  |
+: 課題1：範囲外の数 {#tbl-task1-out}
 
-| 方法 | 1回目 | 2回目 | 3回目 | 4回目 | 5回目 | 合計 |
-| --- | --- | --- | --- | --- | --- | --- |
-| 排他制御なし |   |  |  |  |  |  |
-| `synchronized` |   |  |  |  |  |  |
-| `volatile` |   |  |  |  |  |  |
-| `AtomicInteger` |   |  |  |  |  |  |
+| 方法 | 1回目 | 2回目 | 3回目 | 平均 |
+| --- | --- | --- | --- | --- |
+| 排他制御なし |   |  |  |  |
+| `synchronized` |   |  |  |  |
+| `volatile` |   |  |  |  |
+| `AtomicInteger` |   |  |  |  |
 : 課題1：重複した番号の数 {#tbl-task1-duplicated}
 
-| 方法 | 1回目 | 2回目 | 3回目 | 4回目 | 5回目 | 合計 |
-| --- | --- | --- | --- | --- | --- | --- |
-| 排他制御なし |   |  |  |  |  |  |
-| `synchronized` |   |  |  |  |  |  |
-| `volatile` |   |  |  |  |  |  |
-| `AtomicInteger` |   |  |  |  |  |  |
+| 方法 | 1回目 | 2回目 | 3回目 | 平均 |
+| --- | --- | --- | --- | --- |
+| 排他制御なし |   |  |  |  |
+| `synchronized` |   |  |  |  |
+| `volatile` |   |  |  |  |
+| `AtomicInteger` |   |  |  |  |
 : 課題1：欠番の数 {#tbl-task1-missing}
 
-| 方法 | 1回目 | 2回目 | 3回目 | 4回目 | 5回目 | OK の回数 |
-| --- | --- | --- | --- | --- | --- | --- |
-| 排他制御なし |   |  |  |  |  |  |
-| `synchronized` |   |  |  |  |  |  |
-| `volatile` |   |  |  |  |  |  |
-| `AtomicInteger` |   |  |  |  |  |  |
+| 方法 | 1回目 | 2回目 | 3回目 | OK の回数 |
+| --- | --- | --- | --- | --- |
+| 排他制御なし |   |  |  |  |
+| `synchronized` |   |  |  |  |
+| `volatile` |   |  |  |  |
+| `AtomicInteger` |   |  |  |  |
 : 課題1：判定（OK または NG） {#tbl-task1-judge}
 
 **考察**
@@ -366,8 +373,8 @@ class MultiplyThread extends Thread {
 1. `nproc` などで、使用している計算機の論理プロセッサ数を確認する（@sec-cpu-count）。
 2. **逐次版**を3回実行し、処理時間とその平均を @tbl-task2-seq に記録する。
 3. **並列版**：`main` メソッドを変更し、`ParallelMultiply` と `MultiplyThread` の「ここを記述」の部分を完成させる。
-4. スレッド数を1, 2, 4, 8, 16, 32 と変えて、それぞれ3回ずつ実行し、処理時間とその平均を @tbl-task2-par に記録する。
-5. スレッド数ごとに、次の2つの値を計算し、@tbl-task2-speedup に記録する。小数第2位まで求める。
+4. スレッド数を1, 2, 4, 8, 15, 16, 32 と変えて、それぞれ3回ずつ実行し、処理時間とその平均を @tbl-task2-par に記録する。平均は小数点以下を切り捨て、**整数**とする。
+5. スレッド数ごとに、次の2つの値を計算し、@tbl-task2-speedup に記録する。それぞれ**小数第2位**まで求める。
    - **速度向上率**：並列版の平均（@tbl-task2-par）を、逐次版の平均（@tbl-task2-seq）で割った値。並列版が逐次版の何倍速いかを表す。
    - **並列化効率**：速度向上率を、スレッド数で割った値。理想は1.00で、これは「スレッド数を2倍にすると、処理時間がちょうど半分になる」場合にあたる。
 
@@ -382,6 +389,7 @@ class MultiplyThread extends Thread {
 | 2 |  |  |  |  |
 | 4 |  |  |  |  |
 | 8 |  |  |  |  |
+| 15 |  |  |  |  |
 | 16 |  |  |  |  |
 | 32 |  |  |  |  |
 : 課題2：並列版の処理時間（ミリ秒） {#tbl-task2-par}
@@ -392,6 +400,7 @@ class MultiplyThread extends Thread {
 | 2 |  |  |
 | 4 |  |  |
 | 8 |  |  |
+| 15 |  |  |
 | 16 |  |  |
 | 32 |  |  |
 : 課題2：速度向上率と並列化効率 {#tbl-task2-speedup}
@@ -399,7 +408,7 @@ class MultiplyThread extends Thread {
 **考察**
 
 1. 全スレッドが同じ配列を扱っているのに、排他制御が不要である理由を説明せよ。配列 `c` と、配列 `a`, `b` のそれぞれについて答えること（@sec-race-cause）。
-2. スレッド数を増やしたとき、速度向上率と並列化効率はどのように変化したか。並列化効率が1.00に届かない理由を考察せよ（@sec-cpu-count、@sec-suitability）。
+2. スレッド数を増やしたとき、速度向上率と並列化効率はどのように変化したか。速度向上率が単調に増加しない理由と、並列化効率が殆ど単調に減少する理由を考察せよ（@sec-cpu-count、@sec-suitability）。
 
 ::: {.callout-tip collapse="true"}
 ## ヒント（最初は自力でやってみる。クリックで表示）
