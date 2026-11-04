@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ja" xml:lang="ja"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.19">
+<meta name="generator" content="quarto-1.11.9">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -74,18 +74,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../chapters/08-parallel.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-6453f418aeef366c23116eb9cb0b6816.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-5de16f5e46225c21e2daa90d340bf64f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-3218d7d29a29f08bc4fdf3802c3e3ca5.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-5de16f5e46225c21e2daa90d340bf64f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-b91ea3c57517067583130b75a4a0e470.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-aa1117f53e320700de8484011540395d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-b91ea3c57517067583130b75a4a0e470.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-e38c6f09d09fb5807c02a3ec22ed2b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-fd136b7982169becce9db50a4c43202c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-e38c6f09d09fb5807c02a3ec22ed2b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -151,7 +152,7 @@ window.Quarto = {
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-sidebar floating quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">メインコンテンツにスキップ</a><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -174,6 +175,7 @@ window.Quarto = {
       for (let i=0; i < toggles.length; i++) {
         const toggle = toggles[i];
         if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
           if (alternate) {
             toggle.classList.add("alternate");
           } else {
@@ -203,13 +205,19 @@ window.Quarto = {
       manageTransitions('#quarto-margin-sidebar .nav-link', true);
       // Switch the toggles
       setColorSchemeToggle(alternate)
-      // Hack to workaround the fact that safari doesn't
-      // properly recolor the scrollbar when toggling (#1455)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
       if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
         manageTransitions("body", false);
-        window.scrollTo(0, 1);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
         setTimeout(() => {
-          window.scrollTo(0, 0);
+          window.scrollTo(0, scrollY);
           manageTransitions("body", true);
         }, 40);
       }
@@ -303,6 +311,7 @@ window.Quarto = {
       // Read the current dark / light value
       let toAlternate = !hasAlternateSentinel();
       toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
       setStyleSentinel(toAlternate);
       toggleGiscusIfUsed(toAlternate, darkModeDefault);
       window.dispatchEvent(new Event('resize'));
@@ -317,13 +326,13 @@ window.Quarto = {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav">
+  <nav class="quarto-secondary-nav" aria-label="ツールバー">
     <div class="container-fluid d-flex">
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/09-exercises.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">総合演習</span></a></li></ol></nav>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="サイドバーを切り替える" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        <nav class="quarto-page-breadcrumbs" aria-label="パンくずリスト"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/09-exercises.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">総合演習</span></a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="サーチ" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
@@ -334,13 +343,13 @@ window.Quarto = {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="ウェブサイト">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="../">Javaによる並行プログラミング入門</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/cyisnf/java-concurrency-lecture" title="ソースコード" class="quarto-navigation-tool px-1" aria-label="ソースコード"><i class="bi bi-github"></i></a>
-  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="ダークモードの切り替え"><i class="bi"></i></a>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="ダークモードの切り替え" aria-label="ダークモードの切り替え"><i class="bi"></i></button>
 </div>
     </div>
       </div>
@@ -417,7 +426,7 @@ window.Quarto = {
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active">
     <h2 id="toc-title">目次</h2>
    
   <ul>
@@ -428,7 +437,7 @@ window.Quarto = {
 <div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture/edit/main/chapters/09-exercises.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content" id="quarto-document-content" tabindex="-1">
 
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -570,19 +579,19 @@ window.Quarto = {
 <p>各窓口は、発行した番号を<strong>自分専用の配列</strong> <code>issued</code> に記録します。すべての窓口が終わった後、<code>check()</code> が全窓口の記録を集めて、重複と欠番の数を表示します。</p>
 <p><strong>手順</strong></p>
 <ol type="1">
-<li><strong>排他制御なし</strong>：<code>issue()</code> の中身を書き、5回実行して、重複した番号と欠番の数を記録する。</li>
-<li><strong>synchronized 版</strong>：<code>issue()</code> を <code>synchronized</code> メソッドにして、5回実行する。</li>
-<li><strong>volatile 版</strong>：<code>synchronized</code> を外し、代わりに変数 <code>next</code> に <code>volatile</code> を付けて、5回実行する。</li>
-<li><strong>AtomicInteger 版</strong>：変数 <code>next</code> を <code>java.util.concurrent.atomic.AtomicInteger</code> 型に変え、<code>issue()</code> を <code>incrementAndGet()</code> を使って書き直して、5回実行する（<a href="05-volatile.html#sec-av-summary" class="quarto-xref"><span>セクション 5.5</span></a>）。</li>
+<li><strong>排他制御なし</strong>：<code>issue()</code> の中身を書き、3回実行して、重複した番号と欠番の数を記録する。</li>
+<li><strong>synchronized 版</strong>：<code>issue()</code> を <code>synchronized</code> メソッドにして、3回実行する。</li>
+<li><strong>volatile 版</strong>：<code>synchronized</code> を外し、代わりに変数 <code>next</code> に <code>volatile</code> を付けて、3回実行する。</li>
+<li><strong>AtomicInteger 版</strong>：変数 <code>next</code> を <code>java.util.concurrent.atomic.AtomicInteger</code> 型に変え、<code>issue()</code> を <code>incrementAndGet()</code> を使って書き直して、3回実行する（<a href="05-volatile.html#sec-av-summary" class="quarto-xref"><span>セクション 5.5</span></a>）。</li>
 <li>結果を、次の3つの表にまとめる。各欄には、<code>check()</code> が表示した値をそのまま書く。</li>
 </ol>
-<p>「範囲外」は、<code>issue()</code> を正しく書けていれば 0 になるため、記録しなくてよいです。</p>
-<div id="tbl-task1-duplicated" class="quarto-float quarto-figure quarto-figure-center anchored">
+<p>「平均」は小数点以下を切り捨て、整数とする。</p>
+<div id="tbl-task1-out" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task1-duplicated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.2: 課題1：重複した番号の数
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task1-out-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;9.2: 課題1：範囲外の数
 </figcaption>
-<div aria-describedby="tbl-task1-duplicated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div aria-describedby="tbl-task1-out-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -590,16 +599,12 @@ window.Quarto = {
 <th>1回目</th>
 <th>2回目</th>
 <th>3回目</th>
-<th>4回目</th>
-<th>5回目</th>
-<th>合計</th>
+<th>平均</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>排他制御なし</td>
-<td></td>
-<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -611,13 +616,9 @@ window.Quarto = {
 <td></td>
 <td></td>
 <td></td>
-<td></td>
-<td></td>
 </tr>
 <tr class="odd">
 <td><code>volatile</code></td>
-<td></td>
-<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -627,6 +628,54 @@ window.Quarto = {
 <td><code>AtomicInteger</code></td>
 <td></td>
 <td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div id="tbl-task1-duplicated" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task1-duplicated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;9.3: 課題1：重複した番号の数
+</figcaption>
+<div aria-describedby="tbl-task1-duplicated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>方法</th>
+<th>1回目</th>
+<th>2回目</th>
+<th>3回目</th>
+<th>平均</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>排他制御なし</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>synchronized</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>volatile</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>AtomicInteger</code></td>
 <td></td>
 <td></td>
 <td></td>
@@ -640,7 +689,7 @@ window.Quarto = {
 <div id="tbl-task1-missing" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task1-missing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.3: 課題1：欠番の数
+表&nbsp;9.4: 課題1：欠番の数
 </figcaption>
 <div aria-describedby="tbl-task1-missing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -650,16 +699,12 @@ window.Quarto = {
 <th>1回目</th>
 <th>2回目</th>
 <th>3回目</th>
-<th>4回目</th>
-<th>5回目</th>
-<th>合計</th>
+<th>平均</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>排他制御なし</td>
-<td></td>
-<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -671,8 +716,6 @@ window.Quarto = {
 <td></td>
 <td></td>
 <td></td>
-<td></td>
-<td></td>
 </tr>
 <tr class="odd">
 <td><code>volatile</code></td>
@@ -680,13 +723,9 @@ window.Quarto = {
 <td></td>
 <td></td>
 <td></td>
-<td></td>
-<td></td>
 </tr>
 <tr class="even">
 <td><code>AtomicInteger</code></td>
-<td></td>
-<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -700,7 +739,7 @@ window.Quarto = {
 <div id="tbl-task1-judge" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task1-judge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.4: 課題1：判定（OK または NG）
+表&nbsp;9.5: 課題1：判定（OK または NG）
 </figcaption>
 <div aria-describedby="tbl-task1-judge-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -710,16 +749,12 @@ window.Quarto = {
 <th>1回目</th>
 <th>2回目</th>
 <th>3回目</th>
-<th>4回目</th>
-<th>5回目</th>
 <th>OK の回数</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>排他制御なし</td>
-<td></td>
-<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -731,8 +766,6 @@ window.Quarto = {
 <td></td>
 <td></td>
 <td></td>
-<td></td>
-<td></td>
 </tr>
 <tr class="odd">
 <td><code>volatile</code></td>
@@ -740,13 +773,9 @@ window.Quarto = {
 <td></td>
 <td></td>
 <td></td>
-<td></td>
-<td></td>
 </tr>
 <tr class="even">
 <td><code>AtomicInteger</code></td>
-<td></td>
-<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -916,7 +945,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <div id="tbl-task2-classes" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-classes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.5: 並列版の2つのクラスの役割
+表&nbsp;9.6: 並列版の2つのクラスの役割
 </figcaption>
 <div aria-describedby="tbl-task2-classes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -954,6 +983,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-task2-classes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div>
+
 <pre class="mermaid mermaid-js" data-label="fig-task2-classes">flowchart TB
     M["main メソッド"] --&gt;|"a, b, スレッド数"| P["ParallelMultiply&lt;br/&gt;（仕事を割り当てる）"]
     P --&gt;|"0〜432行目"| T0["MultiplyThread 0"]
@@ -1051,19 +1081,19 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <p><strong>手順</strong></p>
 <ol type="1">
 <li><code>nproc</code> などで、使用している計算機の論理プロセッサ数を確認する（<a href="08-parallel.html#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a>）。</li>
-<li><strong>逐次版</strong>を3回実行し、処理時間とその平均を <a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.6</span></a> に記録する。</li>
+<li><strong>逐次版</strong>を3回実行し、処理時間とその平均を <a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.7</span></a> に記録する。</li>
 <li><strong>並列版</strong>：<code>main</code> メソッドを変更し、<code>ParallelMultiply</code> と <code>MultiplyThread</code> の「ここを記述」の部分を完成させる。</li>
-<li>スレッド数を1, 2, 4, 8, 16, 32 と変えて、それぞれ3回ずつ実行し、処理時間とその平均を <a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a> に記録する。</li>
-<li>スレッド数ごとに、次の2つの値を計算し、<a href="#tbl-task2-speedup" class="quarto-xref">表&nbsp;<span>9.8</span></a> に記録する。小数第2位まで求める。
+<li>スレッド数を1, 2, 4, 8, 15, 16, 32 と変えて、それぞれ3回ずつ実行し、処理時間とその平均を <a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.8</span></a> に記録する。平均は小数点以下を切り捨て、<strong>整数</strong>とする。</li>
+<li>スレッド数ごとに、次の2つの値を計算し、<a href="#tbl-task2-speedup" class="quarto-xref">表&nbsp;<span>9.9</span></a> に記録する。それぞれ<strong>小数第2位</strong>まで求める。
 <ul>
-<li><strong>速度向上率</strong>：逐次版の平均（<a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.6</span></a>）を、並列版の平均（<a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a>）で割った値。並列版が逐次版の何倍速いかを表す。</li>
+<li><strong>速度向上率</strong>：並列版の平均（<a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.8</span></a>）を、逐次版の平均（<a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.7</span></a>）で割った値。並列版が逐次版の何倍速いかを表す。</li>
 <li><strong>並列化効率</strong>：速度向上率を、スレッド数で割った値。理想は1.00で、これは「スレッド数を2倍にすると、処理時間がちょうど半分になる」場合にあたる。</li>
 </ul></li>
 </ol>
 <div id="tbl-task2-seq" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-seq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.6: 課題2：逐次版の処理時間（ミリ秒）
+表&nbsp;9.7: 課題2：逐次版の処理時間（ミリ秒）
 </figcaption>
 <div aria-describedby="tbl-task2-seq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1090,7 +1120,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <div id="tbl-task2-par" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-par-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.7: 課題2：並列版の処理時間（ミリ秒）
+表&nbsp;9.8: 課題2：並列版の処理時間（ミリ秒）
 </figcaption>
 <div aria-describedby="tbl-task2-par-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1133,13 +1163,20 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <td></td>
 </tr>
 <tr class="odd">
-<td>16</td>
+<td>15</td>
 <td></td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
 <tr class="even">
+<td>16</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
 <td>32</td>
 <td></td>
 <td></td>
@@ -1154,7 +1191,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <div id="tbl-task2-speedup" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-speedup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.8: 課題2：速度向上率と並列化効率
+表&nbsp;9.9: 課題2：速度向上率と並列化効率
 </figcaption>
 <div aria-describedby="tbl-task2-speedup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
@@ -1187,11 +1224,16 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <td></td>
 </tr>
 <tr class="odd">
-<td>16</td>
+<td>15</td>
 <td></td>
 <td></td>
 </tr>
 <tr class="even">
+<td>16</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
 <td>32</td>
 <td></td>
 <td></td>
@@ -1204,7 +1246,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <p><strong>考察</strong></p>
 <ol type="1">
 <li>全スレッドが同じ配列を扱っているのに、排他制御が不要である理由を説明せよ。配列 <code>c</code> と、配列 <code>a</code>, <code>b</code> のそれぞれについて答えること（<a href="04-race-condition.html#sec-race-cause" class="quarto-xref"><span>セクション 4.3</span></a>）。</li>
-<li>スレッド数を増やしたとき、速度向上率と並列化効率はどのように変化したか。並列化効率が1.00に届かない理由を考察せよ（<a href="08-parallel.html#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a>、<a href="08-parallel.html#sec-suitability" class="quarto-xref"><span>セクション 8.5</span></a>）。</li>
+<li>スレッド数を増やしたとき、速度向上率と並列化効率はどのように変化したか。速度向上率が単調に増加しない理由と、並列化効率が殆ど単調に減少する理由を考察せよ（<a href="08-parallel.html#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a>、<a href="08-parallel.html#sec-suitability" class="quarto-xref"><span>セクション 8.5</span></a>）。</li>
 </ol>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
@@ -1236,15 +1278,50 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
     if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
-      const a = window.document.createElement('a');
-      a.classList.add('top-right');
-      a.classList.add('quarto-color-scheme-toggle');
-      a.href = "";
-      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "ダークモードの切り替え");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
       const i = window.document.createElement("i");
       i.classList.add('bi');
-      a.appendChild(i);
-      window.document.body.appendChild(a);
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "ダークモードの切り替え");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
     }
     setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
@@ -1323,7 +1400,8 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
       // Inspect non-navigation links and adorn them if external
-     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
       for (var i=0; i<links.length; i++) {
         const link = links[i];
         if (!isInternal(link.href)) {
@@ -1332,8 +1410,69 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+          if (!link.classList.contains('no-external-icon')) {
+          }
         }
       }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
       const config = {
         allowHTML: true,
@@ -1347,6 +1486,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
         interactiveBorder: 10,
         theme: 'quarto',
         placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
       };
       if (contentFn) {
         config.content = contentFn;
@@ -1509,44 +1649,54 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
           const lineIds = lines.map((line) => {
             return targetCell + "-" + line;
           })
-          let top = null;
-          let height = null;
-          let parent = null;
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
           if (lineIds.length > 0) {
-              //compute the position of the single el (top and bottom and make a div)
-              const el = window.document.getElementById(lineIds[0]);
-              top = el.offsetTop;
-              height = el.offsetHeight;
-              parent = el.parentElement.parentElement;
-            if (lineIds.length > 1) {
-              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-              height = bottom - top;
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
             }
-            if (top !== null && height !== null && parent !== null) {
-              // cook up a div (if necessary) and position it 
-              let div = window.document.getElementById("code-annotation-line-highlight");
-              if (div === null) {
-                div = window.document.createElement("div");
-                div.setAttribute("id", "code-annotation-line-highlight");
-                div.style.position = 'absolute';
-                parent.appendChild(div);
-              }
-              div.style.top = top - 2 + "px";
-              div.style.height = height + 4 + "px";
-              div.style.left = 0;
-              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-              if (gutterDiv === null) {
-                gutterDiv = window.document.createElement("div");
-                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-                gutterDiv.style.position = 'absolute';
-                const codeCell = window.document.getElementById(targetCell);
-                const gutter = codeCell.querySelector('.code-annotation-gutter');
-                gutter.appendChild(gutterDiv);
-              }
-              gutterDiv.style.top = top - 2 + "px";
-              gutterDiv.style.height = height + 4 + "px";
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
             }
+            placeBand(gutterDiv, el, lastEl);
             selectedAnnoteEl = annoteEl;
           }
         };
@@ -1645,7 +1795,10 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
     }
   });
   </script>
-<nav class="page-navigation">
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"スクロール可能なコード","output":"スクロール可能な出力"};
+  </script>
+<nav class="page-navigation" aria-label="ページ">
   <div class="nav-page nav-page-previous">
       <a href="../chapters/08-parallel.html" class="pagination-link" aria-label="並列処理による高速化">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">並列処理による高速化</span></span>
