@@ -779,7 +779,7 @@ window.Quarto = {
 <div class="callout-body-container callout-body">
 <ul>
 <li>手順1は、<code>next</code> の値を別の変数に取っておき、<code>next</code> を1増やしてから、取っておいた値を返します。<code>return next++;</code> と1行で書いても同じ意味です。</li>
-<li>手順3で <code>volatile</code> を付けると、どの操作が保証されて、どの操作が保証されないのかを、<a href="05-volatile.html#tbl-sync-vs-volatile" class="quarto-xref">表&nbsp;<span>5.1</span></a> で確かめてください。</li>
+<li>手順3で <code>volatile</code> を付けると、どの性質が保証されて、どの性質が保証されないのかを、<a href="05-volatile.html#tbl-sync-vs-volatile" class="quarto-xref">表&nbsp;<span>5.1</span></a> で確かめてください。</li>
 <li>手順4では、<code>AtomicInteger</code> の <code>getAndIncrement()</code> を使います。このメソッドは、<strong>1増やす前の値</strong>を返します。<code>incrementAndGet()</code>（1増やした後の値を返す）を使うと、番号が2から始まってしまい、「範囲外」と「欠番」が1つずつ表示されます。</li>
 </ul>
 </div>
@@ -1045,10 +1045,10 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <li><strong>逐次版</strong>を3回実行し、処理時間とその平均を <a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.6</span></a> に記録する。</li>
 <li><strong>並列版</strong>：<code>main</code> メソッドを変更し、<code>ParallelMultiply</code> と <code>MultiplyThread</code> の「ここを記述」の部分を完成させる。<code>MatrixPara.java</code>と名付ける。</li>
 <li>スレッド数を1, 2, 4, 8, 15, 16, 32 と変えて、それぞれ3回ずつ実行し、処理時間とその平均を <a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a> に記録する。平均は小数点以下を切り捨て、<strong>整数</strong>とする。</li>
-<li>スレッド数ごとに、次の2つの値を計算し、<a href="#tbl-task2-speedup" class="quarto-xref">表&nbsp;<span>9.8</span></a> に記録する。それぞれ<strong>小数第2位</strong>まで求める。
+<li>スレッド数ごとに、次の2つの値を計算し、<span class="quarto-unresolved-ref">?tbl-task2-speedup</span> に記録する。それぞれ<strong>小数第2位</strong>まで求める。
 <ul>
 <li><strong>速度向上率</strong>：並列版の平均（<a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a>）を、逐次版の平均（<a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.6</span></a>）で割った値。並列版が逐次版の何倍速いかを表す。</li>
-<li><strong>並列化効率</strong>：速度向上率を、スレッド数で割った値。理想は1.00で、これは「スレッド数を2倍にすると、処理時間がちょうど半分になる」場合にあたる。</li>
+<li><strong>並列化効率</strong>：速度向上率を、スレッド数で割った値。理想は1.00で、これは「スレッド数を N にすると、処理時間がちょうど 1/N になる」場合にあたる。 | 1回目 | 2回目 | 3回目 | 平均 | | — | — | — | — | | &nbsp; | | | |</li>
 </ul></li>
 </ol>
 <div id="tbl-task2-seq" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -1057,33 +1057,6 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 表&nbsp;9.6: 課題2：逐次版の処理時間（ミリ秒）
 </figcaption>
 <div aria-describedby="tbl-task2-seq-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>1回目</th>
-<th>2回目</th>
-<th>3回目</th>
-<th>平均</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>&nbsp;</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</div>
-</figure>
-</div>
-<div id="tbl-task2-par" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-par-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.7: 課題2：並列版の処理時間（ミリ秒）
-</figcaption>
-<div aria-describedby="tbl-task2-par-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1149,12 +1122,12 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 </div>
 </figure>
 </div>
-<div id="tbl-task2-speedup" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="tbl-task2-par" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-speedup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-表&nbsp;9.8: 課題2：速度向上率と並列化効率
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-task2-par-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+表&nbsp;9.7: 課題2：並列版の処理時間（ミリ秒）
 </figcaption>
-<div aria-describedby="tbl-task2-speedup-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div aria-describedby="tbl-task2-par-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1204,6 +1177,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 </div>
 </figure>
 </div>
+<p>: 課題2：速度向上率と並列化効率 {#tbl-task2-speedup}</p>
 <p><strong>考察</strong></p>
 <ol type="1">
 <li>全スレッドが同じ配列を扱っているのに、排他制御が不要である理由を説明せよ。配列 <code>c</code> と、配列 <code>a</code>, <code>b</code> のそれぞれについて答えること（<a href="04-race-condition.html#sec-race-cause" class="quarto-xref"><span>セクション 4.3</span></a>）。</li>
