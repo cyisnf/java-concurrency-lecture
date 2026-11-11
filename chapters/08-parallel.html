@@ -630,7 +630,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li>依存関係があると、他の処理を待つ時間が生じて速度が伸びません</li>
 <li>仕事量に偏りがあると、<strong>仕事量が多いスレッドの実行時間が延び</strong>、 結果として全体の処理時間が延びてしまいます</li>
-<li>プログラムの中に並列化できない部分があると、スレッドをいくら増やしてもその部分の時間は短くなりません（これを<strong>アムダールの法則</strong>と呼びます）</li>
 </ul>
 </section>
 <section id="sec-efficiency" class="level2" data-number="8.6">
@@ -640,19 +639,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>CPUのコアはそれぞれ独立に計算できますが、配列などのデータが置かれている<strong>メモリ（およびCPUの中で全コアが共有するキャッシュ）は、全コアで共有</strong>しています。</p>
 <p>多くのスレッドが同時に大量のデータを読み込もうとすると、<strong>読み込みの順番待ち</strong>が起こり、データが届くまで計算を進められない時間が増えます。スレッドを増やすほど、この順番待ちも増えます。計算の量に比べて、データを読み込む量が多いプログラムほど、この影響を強く受けます。</p>
 <p>料理人を何人増やしても、食材を取り出す冷蔵庫が1台しかなければ、冷蔵庫の前で順番待ちが起こり、人数に比例しては速くならないのと同じ理屈です。</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">ノート</span>スレッドの作成にかかる時間
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>スレッドの作成・起動（<code>start()</code>）や終了待ち（<code>join()</code>）の処理そのものにかかる時間は、1スレッドあたり0.1ミリ秒程度です（計算機によって異なります）。処理時間が数百ミリ秒以上かかるプログラムでは、効率の低下の原因にはほとんどなりません。</p>
-</div>
-</div>
 </section>
 <section id="sec-exercise" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="sec-exercise">練習：スレッド数と処理時間の関係</h2>
