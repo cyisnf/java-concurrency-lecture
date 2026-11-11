@@ -1220,7 +1220,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <p><strong>考察</strong></p>
 <ol type="1">
 <li>全スレッドが同じ配列を扱っているのに、排他制御が不要である理由を説明せよ。配列 <code>c</code> と、配列 <code>a</code>, <code>b</code> のそれぞれについて答えること（<a href="04-race-condition.html#sec-race-cause" class="quarto-xref"><span>セクション 4.3</span></a>）。</li>
-<li>スレッド数を増やしたとき、速度向上率と並列化効率はどのように変化したか。速度向上率が単調に増加しない理由と、並列化効率が単調に減少する理由を考察せよ（<a href="08-parallel.html#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a>、<a href="08-parallel.html#sec-suitability" class="quarto-xref"><span>セクション 8.5</span></a>）。</li>
+<li>スレッド数を増やしたとき、速度向上率と並列化効率はどのように変化したか。速度向上率が単調に増加しない理由と、並列化効率が単調に減少する理由を考察せよ（<a href="08-parallel.html#sec-cpu-count" class="quarto-xref"><span>セクション 8.2</span></a>、<a href="08-parallel.html#sec-efficiency" class="quarto-xref"><span>セクション 8.6</span></a>）。</li>
 </ol>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
