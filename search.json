@@ -618,5 +618,35 @@
     "crumbs": [
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>練習問題1 解答例</span>"
     ]
+  },
+  {
+    "objectID": "solutions/ex2.html",
+    "href": "solutions/ex2.html",
+    "title": "11  練習問題2 解答例",
+    "section": "",
+    "text": "11.1 解答の要点",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>練習問題2 解答例</span>"
+    ]
+  },
+  {
+    "objectID": "solutions/ex2.html#sec-ex2-point",
+    "href": "solutions/ex2.html#sec-ex2-point",
+    "title": "11  練習問題2 解答例",
+    "section": "",
+    "text": "move() の「出金と入金」を、途中で割り込まれない1つのまとまりにします。\nprintMoney() の「全口座の読み出し」を「出金と入金」と同じロックで守ります。",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>練習問題2 解答例</span>"
+    ]
+  },
+  {
+    "objectID": "solutions/ex2.html#sec-ex2-answer",
+    "href": "solutions/ex2.html#sec-ex2-answer",
+    "title": "11  練習問題2 解答例",
+    "section": "11.2 解答例",
+    "text": "11.2 解答例\n\n\nATM.java\n\npublic class ATM {\n    static int SIZE = 100;\n    int[] account;\n\n    public ATM() {\n        account = new int[SIZE];\n        for (int i = 0; i &lt; SIZE; i++) {\n            account[i] = 100000;  // 初期残高10万円\n        }\n    }\n\n    void printMoney() {\n        synchronized (account) {  // move() と同じオブジェクトのロックを取得する\n            int total = 0;\n            for (int i = 0; i &lt; SIZE; i++) {\n                System.out.print(account[i] + \" \");\n                if (i % 10 == 9) {\n                    System.out.println();  // 10口座ごとに改行\n                }\n                total += account[i];\n            }\n            System.out.println(\"総額: \" + total);\n        }\n    }\n\n    void move(int from, int to, int money) {\n        synchronized (account) {  // 出金と入金を、1つのスレッドが続けて行う\n            account[from] = account[from] - money;\n            account[to] = account[to] + money;\n        }\n    }\n\n    public static void main(String[] args) {\n        ATM atm = new ATM();\n        for (int i = 0; i &lt; 30; i++) {\n            new Customer(atm).start();\n        }\n    }\n}\n\nclass Customer extends Thread {\n    ATM atm;\n\n    public Customer(ATM atm) {\n        this.atm = atm;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 1000; i++) {\n            int from = (int) (Math.random() * ATM.SIZE);\n            int to = (int) (Math.random() * ATM.SIZE);\n            int money = (int) (Math.random() * 10000);\n            atm.move(from, to, money);\n        }\n        atm.printMoney();  // 各顧客が操作を終えるたびに表示（最後の表示が最終結果）\n    }\n}\n\n\nロックに使うオブジェクトについて\nこの解答では、配列 account のロックを使っています。配列もオブジェクトなので、ロックを持っています。synchronized (this)（ATM オブジェクトのロック）や、synchronized メソッドにしても正解です。\n大切なのは、move() と printMoney() で同じオブジェクトのロックを使うことです。片方が account、もう片方が this のように別々のロックを使うと、互いに排他制御されません。",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>練習問題2 解答例</span>"
+    ]
   }
 ]
