@@ -5,7 +5,7 @@ project:
   render:
     - index.qmd
     - chapters/*.qmd
-    # - solutions/*.qmd
+    - solutions/*.qmd
 
 lang: ja
 
@@ -31,7 +31,7 @@ book:
     - chapters/07-deadlock.qmd
     - chapters/08-parallel.qmd
     - chapters/09-exercises.qmd
-    # - solutions/ex1.qmd
+    - solutions/ex1.qmd
     # - solutions/ex2.qmd
     # - solutions/ex3.qmd
     # - solutions/ex4.qmd

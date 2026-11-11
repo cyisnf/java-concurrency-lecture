@@ -1,0 +1,157 @@
+---
+title: "練習問題1 解答例"
+---
+
+## 解答の要点 {#sec-ex1-point}
+
+- 「`tail` を確かめる処理」から「`tail` と `values` を書き換える処理」までを、**途中で他のスレッドに割り込まれない1つのまとまり**にする必要があります。
+- 最も簡単な方法は、`enqueue()` と `dequeue()` を `synchronized` メソッドにすることです。
+
+## 解答例：排他制御を加えたプログラム {#sec-ex1-answer}
+
+`enqueue()` と `dequeue()` を `synchronized` メソッドにします。変更箇所は2か所だけです。
+
+```{.java filename="IntQueue.java"}
+public class IntQueue {
+    final int SIZE = 10;
+    private int[] values = new int[SIZE];
+    private int tail = -1;  // 末尾の位置（空のときは -1）
+
+    synchronized boolean enqueue(int data) {  // 変更：synchronized を付けた
+        if (data <= 0) {
+            return false;           // 負の値は受け付けない
+        }
+        if (tail == SIZE - 1) {
+            return false;           // 満杯
+        }
+        pause();                    // 競合を起こりやすくするための休止
+        tail++;
+        values[tail] = data;
+        System.out.println("enqueue :" + data + " tail:" + tail);
+        return true;
+    }
+
+    synchronized int dequeue() {  // 変更：synchronized を付けた
+        if (isEmpty()) {
+            return -1;              // 空
+        }
+        int data = values[0];
+        for (int i = 0; i < SIZE - 1; i++) {
+            values[i] = values[i + 1];  // 要素を1つずつ前に詰める
+        }
+        pause();                    // 競合を起こりやすくするための休止
+        tail--;
+        System.out.println("dequeue :" + data + " tail:" + tail);
+        return data;
+    }
+
+    // dequeue() の中（ロックを持った状態）からだけ呼ぶので、synchronized は付けていない
+    boolean isEmpty() {
+        return (tail == -1);
+    }
+
+    // 1ミリ秒だけ休止する（キューの機能には不要。競合を観察しやすくするための処理）
+    static void pause() {
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+        }
+    }
+
+    public static void main(String[] args) {
+        IntQueue q = new IntQueue();
+        new EnQueueThread(q).start();
+        new EnQueueThread(q).start();
+        new DeQueueThread(q).start();
+        new DeQueueThread(q).start();
+    }
+}
+
+class EnQueueThread extends Thread {
+    IntQueue q;
+
+    public EnQueueThread(IntQueue q) {
+        this.q = q;
+    }
+
+    public void run() {
+        for (int i = 0; i < 100; i++) {
+            int data = (int) (Math.random() * 100 + 1);  // 1〜100の乱数
+            q.enqueue(data);
+        }
+    }
+}
+
+class DeQueueThread extends Thread {
+    IntQueue q;
+
+    public DeQueueThread(IntQueue q) {
+        this.q = q;
+    }
+
+    public void run() {
+        for (int i = 0; i < 100; i++) {
+            q.dequeue();
+        }
+    }
+}
+```
+
+## 別解：synchronizedブロックを使用する場合 {#sec-ex1-another-answer}
+
+**共有変数（`tail`、`values`）を読み始めるところから、書き換えて表示し終えるところまで**を、1つの `synchronized` ブロックで囲みます。
+
+```{.java filename="IntQueue.java（synchronizedブロック版）の変更箇所"}
+    boolean enqueue(int data) {
+        if (data <= 0) {
+            return false;   // 引数だけを調べる処理なので、ブロックの外でよい
+        }
+        synchronized (this) {
+            if (tail == SIZE - 1) {
+                return false;   // ブロックの途中で return してもロックは解放される
+            }
+            pause();
+            tail++;
+            values[tail] = data;
+            System.out.println("enqueue :" + data + " tail:" + tail);
+        }
+        return true;
+    }
+
+    int dequeue() {
+        int data;
+        synchronized (this) {
+            if (isEmpty()) {
+                return -1;
+            }
+            data = values[0];
+            for (int i = 0; i < SIZE - 1; i++) {
+                values[i] = values[i + 1];
+            }
+            pause();
+            tail--;
+            System.out.println("dequeue :" + data + " tail:" + tail);
+        }
+        return data;
+    }
+```
+
+この問題では、ブロックの外に出せるのは `data <= 0` の確認だけです。
+そのため、**メソッド全体を `synchronized` にした場合とほとんど差がありません**。
+
+::: {.callout-warning}
+## よくある誤り：書き換えの行だけを囲む
+次のように `tail++` と代入だけを囲んでも、正しくありません。
+
+満杯かの確認がブロックの外にあるため、割り込みが起こります。
+
+```java
+if (tail == SIZE - 1) {   // ← ここで確認した後に割り込まれる
+    return false;
+}
+synchronized (this) {
+    tail++;
+    values[tail] = data;
+}
+```
+:::
