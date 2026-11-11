@@ -414,9 +414,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#sec-cpu-count" id="toc-sec-cpu-count" class="nav-link" data-scroll-target="#sec-cpu-count"><span class="header-section-number">8.2</span> CPU（コア）数の確認</a></li>
   <li><a href="#sec-para-sample" id="toc-sec-para-sample" class="nav-link" data-scroll-target="#sec-para-sample"><span class="header-section-number">8.3</span> サンプル：配列の要素を分担して増やす</a></li>
   <li><a href="#sec-measure" id="toc-sec-measure" class="nav-link" data-scroll-target="#sec-measure"><span class="header-section-number">8.4</span> 実行時間の測り方</a></li>
+  <li><a href="#sec-exercise" id="toc-sec-exercise" class="nav-link" data-scroll-target="#sec-exercise">練習：スレッド数と処理時間の関係</a></li>
   <li><a href="#sec-suitability" id="toc-sec-suitability" class="nav-link" data-scroll-target="#sec-suitability"><span class="header-section-number">8.5</span> 並列処理に向くプログラム、向かないプログラム</a></li>
   <li><a href="#sec-efficiency" id="toc-sec-efficiency" class="nav-link" data-scroll-target="#sec-efficiency"><span class="header-section-number">8.6</span> スレッド数と並列化効率</a></li>
-  <li><a href="#sec-exercise" id="toc-sec-exercise" class="nav-link" data-scroll-target="#sec-exercise">練習：スレッド数と処理時間の関係</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/cyisnf/java-concurrency-lecture/edit/main/chapters/08-parallel.qmd" class="toc-action"><i class="bi bi-github"></i>編集</a></li><li><a href="https://github.com/cyisnf/java-concurrency-lecture/issues/new" class="toc-action"><i class="bi empty"></i>問題を報告</a></li></ul></div></nav>
     </div>
@@ -604,6 +604,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><code>user</code> がほとんど変わらないのは、仕事の総量が変わらないからです。半分ずつの仕事を2人で分担しても、1人で全部やっても、仕事の総量は同じなのと同じ理屈です。</p>
 <p><code>&gt; /dev/null</code> は、プログラムの出力を画面に表示せずに捨てる指定です。画面表示（入出力）にかかる時間を除いて、計算の時間を測りたいときに使います。</p>
 </section>
+<section id="sec-exercise" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="sec-exercise">練習：スレッド数と処理時間の関係</h2>
+<p><a href="#sec-para-sample" class="quarto-xref"><span>セクション 8.3</span></a> のプログラムについて、スレッド数を増やしていくと、どこまで速くなるかを確認してみてください。</p>
+<ol type="1">
+<li><code>nproc</code> で、使用している計算機の論理プロセッサ数を確認する。</li>
+<li>スレッド数を 1, 2, 4, 8, … のように変化させ、それぞれの実行時間を比較する。</li>
+</ol>
+</section>
 <section id="sec-suitability" class="level2" data-number="8.5">
 <h2 data-number="8.5" class="anchored" data-anchor-id="sec-suitability"><span class="header-section-number">8.5</span> 並列処理に向くプログラム、向かないプログラム</h2>
 <table class="caption-top table">
@@ -631,22 +639,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>依存関係があると、他の処理を待つ時間が生じて速度が伸びません</li>
 <li>仕事量に偏りがあると、<strong>仕事量が多いスレッドの実行時間が延び</strong>、 結果として全体の処理時間が延びてしまいます</li>
 </ul>
+<p>なお、並列処理に向いているプログラムであっても、スレッド数に比例して速くなり続けるわけではありません。その理由は <a href="#sec-efficiency" class="quarto-xref"><span>セクション 8.6</span></a> で説明します。</p>
 </section>
 <section id="sec-efficiency" class="level2" data-number="8.6">
 <h2 data-number="8.6" class="anchored" data-anchor-id="sec-efficiency"><span class="header-section-number">8.6</span> スレッド数と並列化効率</h2>
-<p>スレッド数を N にしたとき、処理時間がちょうど 1/N になるのが理想です。 しかし実際には、スレッドを増やすほど理想から遠ざかることがよくあります。 主な原因は、<strong>全コアが共有している資源の取り合い</strong>です。</p>
-<p><strong>メモリの取り合い</strong></p>
-<p>CPUのコアはそれぞれ独立に計算できますが、配列などのデータが置かれている<strong>メモリ（およびCPUの中で全コアが共有するキャッシュ）は、全コアで共有</strong>しています。</p>
+<p>スレッド数を N にしたとき、処理時間がちょうど 1/N になるのが理想ですが、実際には、スレッドを増やすほど理想から遠ざかることがよくあります。</p>
+<p>主な原因は、<strong>全コアが共有している資源の取り合い</strong>です。</p>
+<p>CPUのコアはそれぞれ、配列などのデータが置かれている<strong>メモリを共有</strong>しています。</p>
 <p>多くのスレッドが同時に大量のデータを読み込もうとすると、<strong>読み込みの順番待ち</strong>が起こり、データが届くまで計算を進められない時間が増えます。スレッドを増やすほど、この順番待ちも増えます。計算の量に比べて、データを読み込む量が多いプログラムほど、この影響を強く受けます。</p>
 <p>料理人を何人増やしても、食材を取り出す冷蔵庫が1台しかなければ、冷蔵庫の前で順番待ちが起こり、人数に比例しては速くならないのと同じ理屈です。</p>
-</section>
-<section id="sec-exercise" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="sec-exercise">練習：スレッド数と処理時間の関係</h2>
-<p><a href="#sec-para-sample" class="quarto-xref"><span>セクション 8.3</span></a> のプログラムについて、スレッド数を増やしていくと、どこまで速くなるかを確認してみてください。</p>
-<ol type="1">
-<li><code>nproc</code> で、使用している計算機の論理プロセッサ数を確認する。</li>
-<li>スレッド数を 1, 2, 4, 8, … のように変化させ、それぞれの実行時間を比較する。</li>
-</ol>
 
 
 </section>
