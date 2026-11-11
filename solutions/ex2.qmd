@@ -1,0 +1,76 @@
+---
+title: "練習問題2 解答例"
+---
+
+## 解答の要点 {#sec-ex2-point}
+
+- `move()` の「出金と入金」を、途中で割り込まれない1つのまとまりにします。
+- `printMoney()` の「全口座の読み出し」を「出金と入金」と同じロックで守ります。
+
+## 解答例 {#sec-ex2-answer}
+
+```{.java filename="ATM.java"}
+public class ATM {
+    static int SIZE = 100;
+    int[] account;
+
+    public ATM() {
+        account = new int[SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            account[i] = 100000;  // 初期残高10万円
+        }
+    }
+
+    void printMoney() {
+        synchronized (account) {  // move() と同じオブジェクトのロックを取得する
+            int total = 0;
+            for (int i = 0; i < SIZE; i++) {
+                System.out.print(account[i] + " ");
+                if (i % 10 == 9) {
+                    System.out.println();  // 10口座ごとに改行
+                }
+                total += account[i];
+            }
+            System.out.println("総額: " + total);
+        }
+    }
+
+    void move(int from, int to, int money) {
+        synchronized (account) {  // 出金と入金を、1つのスレッドが続けて行う
+            account[from] = account[from] - money;
+            account[to] = account[to] + money;
+        }
+    }
+
+    public static void main(String[] args) {
+        ATM atm = new ATM();
+        for (int i = 0; i < 30; i++) {
+            new Customer(atm).start();
+        }
+    }
+}
+
+class Customer extends Thread {
+    ATM atm;
+
+    public Customer(ATM atm) {
+        this.atm = atm;
+    }
+
+    public void run() {
+        for (int i = 0; i < 1000; i++) {
+            int from = (int) (Math.random() * ATM.SIZE);
+            int to = (int) (Math.random() * ATM.SIZE);
+            int money = (int) (Math.random() * 10000);
+            atm.move(from, to, money);
+        }
+        atm.printMoney();  // 各顧客が操作を終えるたびに表示（最後の表示が最終結果）
+    }
+}
+```
+
+### ロックに使うオブジェクトについて {.unnumbered}
+
+この解答では、配列 `account` のロックを使っています。配列もオブジェクトなので、ロックを持っています。`synchronized (this)`（`ATM` オブジェクトのロック）や、`synchronized` メソッドにしても正解です。
+
+大切なのは、**`move()` と `printMoney()` で同じオブジェクトのロックを使う**ことです。片方が `account`、もう片方が `this` のように別々のロックを使うと、互いに排他制御されません。
