@@ -10,13 +10,21 @@
 | [課題2](#sec-task2) | 行列の積の並列化（スレッド数と処理時間の関係） | @sec-synchronization, @sec-parallel |
 : 総合演習の課題 {#tbl-exercises}
 
-どちらの課題も、プログラムが正しく動いているかを確かめる仕組みが、配布するプログラムに含まれています。
-必ず**「OK」と表示されることを確認**してから、結果をまとめてください。
+**提出物**
 
-**提出物**（提出方法は授業で指示します）
+以下のファイルを LETUS 上に提出してください。
 
 1. 作成したプログラムのソースファイル
+    - `TicketSync.java`
+    - `TicketVolatile.java`
+    - `TicketAtomic.java`
+    - `MatrixPara.java`
 2. 実行結果をまとめた表と、指定された考察が記されたPDF
+    - `Report_学籍番号.pdf`
+
+**必ず大学のLinux教育環境で実行できるようにしてください。**
+
+また、PDF は 「[レポートの構成について](http://www.is.noda.tus.ac.jp/2is/enshu1_2026/index.php?%E3%83%AC%E3%83%9D%E3%83%BC%E3%83%88%E3%81%AE%E6%A7%8B%E6%88%90)」に従って作成してください。
 
 ## 課題1：整理番号の発行 {#sec-task1 .unnumbered}
 
@@ -99,37 +107,36 @@ class Window extends Thread {
 
 **手順**
 
-1. **排他制御なし**：`issue()` の中身を書き、5回実行して、重複した番号と欠番の数を記録する。
-2. **synchronized 版**：`issue()` を `synchronized` メソッドにして、5回実行する。
-3. **volatile 版**：`synchronized` を外し、代わりに変数 `next` に `volatile` を付けて、5回実行する。
-4. **AtomicInteger 版**：変数 `next` を `java.util.concurrent.atomic.AtomicInteger` 型に変え、`issue()` を `incrementAndGet()` を使って書き直して、5回実行する（@sec-av-summary）。
+1. **排他制御なし**：`issue()` の中身を書き、3回実行して、重複した番号と欠番の数を記録する。
+2. **synchronized 版**：`issue()` を `synchronized` メソッドにして、3回実行する。`TicketSync.java` と名付ける。
+3. **volatile 版**：`synchronized` を外し、代わりに変数 `next` に `volatile` を付けて、3回実行する。`TicketVolatile.java` と名付ける。
+4. **AtomicInteger 版**：変数 `next` を `java.util.concurrent.atomic.AtomicInteger` 型に変え、`issue()` を `incrementAndGet()` を使って書き直して、3回実行する（@sec-av-summary）。`TicketAtomic.java` と名付ける。
 5. 結果を、次の3つの表にまとめる。各欄には、`check()` が表示した値をそのまま書く。
 
-「範囲外」は、`issue()` を正しく書けていれば 0 になるため、記録しなくてよいです。
+「平均」は小数点以下を切り捨て、整数とすること。
 
-
-| 方法 | 1回目 | 2回目 | 3回目 | 4回目 | 5回目 | 合計 |
-| --- | --- | --- | --- | --- | --- | --- |
-| 排他制御なし |   |  |  |  |  |  |
-| `synchronized` |   |  |  |  |  |  |
-| `volatile` |   |  |  |  |  |  |
-| `AtomicInteger` |   |  |  |  |  |  |
+| 方法 | 1回目 | 2回目 | 3回目 | 平均 |
+| --- | --- | --- | --- | --- |
+| 排他制御なし |   |  |  |  |
+| `synchronized` |   |  |  |  |
+| `volatile` |   |  |  |  |
+| `AtomicInteger` |   |  |  |  |
 : 課題1：重複した番号の数 {#tbl-task1-duplicated}
 
-| 方法 | 1回目 | 2回目 | 3回目 | 4回目 | 5回目 | 合計 |
-| --- | --- | --- | --- | --- | --- | --- |
-| 排他制御なし |   |  |  |  |  |  |
-| `synchronized` |   |  |  |  |  |  |
-| `volatile` |   |  |  |  |  |  |
-| `AtomicInteger` |   |  |  |  |  |  |
+| 方法 | 1回目 | 2回目 | 3回目 | 平均 |
+| --- | --- | --- | --- | --- |
+| 排他制御なし |   |  |  |  |
+| `synchronized` |   |  |  |  |
+| `volatile` |   |  |  |  |
+| `AtomicInteger` |   |  |  |  |
 : 課題1：欠番の数 {#tbl-task1-missing}
 
-| 方法 | 1回目 | 2回目 | 3回目 | 4回目 | 5回目 | OK の回数 |
-| --- | --- | --- | --- | --- | --- | --- |
-| 排他制御なし |   |  |  |  |  |  |
-| `synchronized` |   |  |  |  |  |  |
-| `volatile` |   |  |  |  |  |  |
-| `AtomicInteger` |   |  |  |  |  |  |
+| 方法 | 1回目 | 2回目 | 3回目 | OK の回数 |
+| --- | --- | --- | --- | --- |
+| 排他制御なし |   |  |  |  |
+| `synchronized` |   |  |  |  |
+| `volatile` |   |  |  |  |
+| `AtomicInteger` |   |  |  |  |
 : 課題1：判定（OK または NG） {#tbl-task1-judge}
 
 **考察**
@@ -145,7 +152,7 @@ class Window extends Thread {
 ::: {.callout-tip collapse="true"}
 ## ヒント（最初は自力でやってみる。クリックで表示）
 - 手順1は、`next` の値を別の変数に取っておき、`next` を1増やしてから、取っておいた値を返します。`return next++;` と1行で書いても同じ意味です。
-- 手順3で `volatile` を付けると、どの操作が保証されて、どの操作が保証されないのかを、@tbl-sync-vs-volatile で確かめてください。
+- 手順3で `volatile` を付けると、どの性質が保証されて、どの性質が保証されないのかを、@tbl-sync-vs-volatile で確かめてください。
 - 手順4では、`AtomicInteger` の `getAndIncrement()` を使います。このメソッドは、**1増やす前の値**を返します。`incrementAndGet()`（1増やした後の値を返す）を使うと、番号が2から始まってしまい、「範囲外」と「欠番」が1つずつ表示されます。
 :::
 
@@ -265,11 +272,12 @@ class SequentialMultiply {
 ```
 
 `check()` は、計算した $C$ が $A \times B$ と等しいかを、短い時間で調べるメソッドです。**1つでも誤った要素があれば、「NG」と表示されます。**
+必ず**「OK」と表示されることを確認**してから、結果をまとめてください。
 
 スレッド数は、@sec-para-sample と同じく、コマンドライン引数で指定します。
 
 ```{.bash}
-$ java Matrix 4      # 4スレッドで実行する
+$ java MatrixPara 4      # 4スレッドで実行する
 ```
 
 **並列版の構成**
@@ -297,14 +305,14 @@ flowchart TB
 
 `main` メソッドの「ここから行列の積の計算の呼び出し」の部分は、次のように1行だけ変更します。
 
-```{.java filename="Matrix.java（並列版）の main メソッドの変更箇所"}
+```{.java filename="MatrixPara.java（並列版）の main メソッドの変更箇所"}
         // ここから行列の積の計算の呼び出し
         ParallelMultiply mm = new ParallelMultiply(a, b, num);  // SequentialMultiply を置き換える
 ```
 
 `SequentialMultiply` クラスは削除し、代わりに次の2つのクラスを書きます。「ここを記述」の部分を完成させてください。
 
-```{.java filename="Matrix.java（並列版）の ParallelMultiply と MultiplyThread"}
+```{.java filename="MatrixPara.java（並列版）の ParallelMultiply と MultiplyThread"}
 /**
    行列の積を求める（並列）
    仕事を分けてスレッドに渡し、すべてのスレッドの終了を待つ
@@ -365,12 +373,11 @@ class MultiplyThread extends Thread {
 
 1. `nproc` などで、使用している計算機の論理プロセッサ数を確認する（@sec-cpu-count）。
 2. **逐次版**を3回実行し、処理時間とその平均を @tbl-task2-seq に記録する。
-3. **並列版**：`main` メソッドを変更し、`ParallelMultiply` と `MultiplyThread` の「ここを記述」の部分を完成させる。
-4. スレッド数を1, 2, 4, 8, 16, 32 と変えて、それぞれ3回ずつ実行し、処理時間とその平均を @tbl-task2-par に記録する。
-5. スレッド数ごとに、次の2つの値を計算し、@tbl-task2-speedup に記録する。小数第2位まで求める。
-   - **速度向上率**：逐次版の平均（@tbl-task2-seq）を、並列版の平均（@tbl-task2-par）で割った値。並列版が逐次版の何倍速いかを表す。
-   - **並列化効率**：速度向上率を、スレッド数で割った値。理想は1.00で、これは「スレッド数を2倍にすると、処理時間がちょうど半分になる」場合にあたる。
-
+3. **並列版**：`main` メソッドを変更し、`ParallelMultiply` と `MultiplyThread` の「ここを記述」の部分を完成させる。`MatrixPara.java`と名付ける。
+4. スレッド数を1, 2, 4, 8, 15, 16, 32 と変えて、それぞれ3回ずつ実行し、処理時間とその平均を @tbl-task2-par に記録する。平均は小数点以下を切り捨て、**整数**とする。
+5. スレッド数ごとに、次の2つの値を計算し、@tbl-task2-speedup に記録する。それぞれ**小数第2位**まで求める。
+   - **速度向上率**：並列版の平均（@tbl-task2-par）を、逐次版の平均（@tbl-task2-seq）で割った値。並列版が逐次版の何倍速いかを表す。
+   - **並列化効率**：速度向上率を、スレッド数で割った値。理想は1.00で、これは「スレッド数を N にすると、処理時間がちょうど 1/N になる」場合にあたる。
 | 1回目 | 2回目 | 3回目 | 平均 |
 | --- | --- | --- | --- |
 | &nbsp; |  |  |  |
@@ -382,6 +389,7 @@ class MultiplyThread extends Thread {
 | 2 |  |  |  |  |
 | 4 |  |  |  |  |
 | 8 |  |  |  |  |
+| 15 |  |  |  |  |
 | 16 |  |  |  |  |
 | 32 |  |  |  |  |
 : 課題2：並列版の処理時間（ミリ秒） {#tbl-task2-par}
@@ -392,6 +400,7 @@ class MultiplyThread extends Thread {
 | 2 |  |  |
 | 4 |  |  |
 | 8 |  |  |
+| 15 |  |  |
 | 16 |  |  |
 | 32 |  |  |
 : 課題2：速度向上率と並列化効率 {#tbl-task2-speedup}
@@ -399,7 +408,7 @@ class MultiplyThread extends Thread {
 **考察**
 
 1. 全スレッドが同じ配列を扱っているのに、排他制御が不要である理由を説明せよ。配列 `c` と、配列 `a`, `b` のそれぞれについて答えること（@sec-race-cause）。
-2. スレッド数を増やしたとき、速度向上率と並列化効率はどのように変化したか。並列化効率が1.00に届かない理由を考察せよ（@sec-cpu-count、@sec-suitability）。
+2. スレッド数を増やしたとき、速度向上率と並列化効率はどのように変化したか。速度向上率が単調に増加しない理由と、並列化効率が単調に減少する理由を考察せよ（@sec-cpu-count、@sec-suitability）。
 
 ::: {.callout-tip collapse="true"}
 ## ヒント（最初は自力でやってみる。クリックで表示）
