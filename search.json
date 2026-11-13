@@ -688,5 +688,65 @@
     "crumbs": [
       "<span class='chapter-number'>12</span>  <span class='chapter-title'>練習問題3 解答例</span>"
     ]
+  },
+  {
+    "objectID": "solutions/ex4.html",
+    "href": "solutions/ex4.html",
+    "title": "13  練習問題4 解答例",
+    "section": "",
+    "text": "13.1 解答の要点",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>練習問題4 解答例</span>"
+    ]
+  },
+  {
+    "objectID": "solutions/ex4.html#sec-ex4-point",
+    "href": "solutions/ex4.html#sec-ex4-point",
+    "title": "13  練習問題4 解答例",
+    "section": "",
+    "text": "元のプログラムでは、デッドロックの4条件（相互排除・保持と待機・横取り不可・循環待ち）がすべて揃います。\nどれか1つの条件を崩せば、デッドロックは起こりません。\n解答は複数あり、本ページでは3つの解答例を示します。\n\n\n\n\n解答例\n方針\n崩す条件\n待ち方\n\n\n\n\n解答例1\n両方揃わなければ、持っている道具を解放する\n保持と待機\nループを回り続ける\n\n\n解答例2\n両方空いているときだけ、両方を同時に取る\n保持と待機\nwait() で待つ\n\n\n解答例3\nフォークを持っている人だけがナイフを取れるようにする\n循環待ち\nループを回り続ける",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>練習問題4 解答例</span>"
+    ]
+  },
+  {
+    "objectID": "solutions/ex4.html#sec-ex4-original",
+    "href": "solutions/ex4.html#sec-ex4-original",
+    "title": "13  練習問題4 解答例",
+    "section": "13.2 元のプログラムの動き",
+    "text": "13.2 元のプログラムの動き\n元のプログラムの HumanThread.run() は、次の流れで動きます。\n\n\n\n\n\n\nflowchart TB\n    A([食事を始める]) --&gt; B{\"両方持っている？&lt;br/&gt;canEat()\"}\n    B -- いいえ --&gt; C[\"フォークを取る&lt;br/&gt;getFork()\"]\n    C --&gt; D[\"ナイフを取る&lt;br/&gt;getKnife()\"]\n    D --&gt; B\n    B -- はい --&gt; E[食事する]\n    E --&gt; F[\"両方を返す&lt;br/&gt;reset()\"]\n    F --&gt; G{10回食べた？}\n    G -- いいえ --&gt; A\n    G -- はい --&gt; H([終了])\n\n\n 元のプログラムの HumanThread の処理の流れ",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>練習問題4 解答例</span>"
+    ]
+  },
+  {
+    "objectID": "solutions/ex4.html#sec-ex4-answer1",
+    "href": "solutions/ex4.html#sec-ex4-answer1",
+    "title": "13  練習問題4 解答例",
+    "section": "13.3 解答例1：取れなかったら解放して取り直す",
+    "text": "13.3 解答例1：取れなかったら解放して取り直す\nループの先頭で reset(id) を呼び、持っている道具をいったん全部返してから取り直します。変更は1行だけです。\n\n\nDeadLockTest.java\n\npublic class DeadLockTest {\n    int fork = 0;   // フォークを持っている人のID（0なら誰も持っていない）\n    int knife = 0;  // ナイフを持っている人のID\n\n    // ID番号を名前に変換する（1 → A, 2 → B, ..., 8 → H）\n    static char name(int n) {\n        return (char) ('A' + n - 1);\n    }\n\n    synchronized void getFork(int n) {\n        if (fork != 0) {\n            return;  // 誰かが持っているので取れない\n        }\n        fork = n;\n        System.out.println(name(n) + \" get Fork\");\n    }\n\n    synchronized void getKnife(int n) {\n        if (knife != 0) {\n            return;\n        }\n        knife = n;\n        System.out.println(name(n) + \" get Knife\");\n    }\n\n    synchronized void reset(int n) {  // 自分が持っている道具を返す\n        if (fork == n) fork = 0;\n        if (knife == n) knife = 0;\n    }\n\n    synchronized boolean canEat(int n) {  // 両方持っていれば食事できる\n        return (fork == n) && (knife == n);\n    }\n\n    public static void main(String[] args) {\n        DeadLockTest dlt = new DeadLockTest();\n        for (int i = 1; i &lt; 9; i++) {\n            new HumanThread(dlt, i).start();\n        }\n    }\n}\n\nclass HumanThread extends Thread {\n    DeadLockTest dlt;\n    int id;\n\n    public HumanThread(DeadLockTest dlt, int id) {\n        this.dlt = dlt;\n        this.id = id;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 10; i++) {\n            while (!dlt.canEat(id)) {\n                dlt.reset(id);  // 追加：持っている道具をいったん返してから取り直す\n                dlt.getFork(id);\n                dlt.getKnife(id);\n            }\n            System.out.println(DeadLockTest.name(id) + \" ate a meal.\");\n            dlt.reset(id);\n        }\n    }\n}\n\n片方しか取れなかった人は、次の繰り返しで必ずその道具を返します。\n道具を持ったまま待ち続ける人がいなくなるので、保持と待機の条件が崩れ、デッドロックは起こりません。\n\nこの解答の弱点\n\n\n\n\n\n\n警告ライブロック\n\n\n\nAさんがフォーク、Bさんがナイフを取り、2人とも返し、また同じように取る……という動きを全員が同じタイミングで繰り返すと、誰もが動き続けているのに誰も食事できない状態になりえます。 これをライブロックと呼びます。実際には実行のタイミングが少しずつずれるため、いずれ誰かが両方を取れますが、そうなる保証はありません。\n\n\nまた、道具が空くまでループを回り続ける（ビジーウェイト）ため、待っている間もCPUを使い続けます。\n取り直す前にランダムな時間だけ休むと、全員が同じタイミングで取り合う状況が起こりにくくなり、CPUの無駄も減ります。\n            while (!dlt.canEat(id)) {\n                dlt.reset(id);\n                try {\n                    sleep((int) (Math.random() * 10));  // 0〜9ミリ秒休んでから取り直す\n                } catch (InterruptedException e) {\n                    return;\n                }\n                dlt.getFork(id);\n                dlt.getKnife(id);\n            }",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>練習問題4 解答例</span>"
+    ]
+  },
+  {
+    "objectID": "solutions/ex4.html#sec-ex4-answer2",
+    "href": "solutions/ex4.html#sec-ex4-answer2",
+    "title": "13  練習問題4 解答例",
+    "section": "13.4 解答例2：両方を同時に取る",
+    "text": "13.4 解答例2：両方を同時に取る\nナイフとフォークを1つの synchronized メソッドの中で両方同時に取ります。\nどちらかが使用中なら、第6章の wait() で両方が空くまで待ちます。\n\n\nDeadLockTest.java（解答例2）\n\npublic class DeadLockTest {\n    int fork = 0;   // フォークを持っている人のID（0なら誰も持っていない）\n    int knife = 0;  // ナイフを持っている人のID\n\n    // ID番号を名前に変換する（1 → A, 2 → B, ..., 8 → H）\n    static char name(int n) {\n        return (char) ('A' + n - 1);\n    }\n\n    // ナイフとフォークを両方同時に取る。どちらかが使用中なら、両方空くまで待つ\n    synchronized void getBoth(int n) throws InterruptedException {\n        while (fork != 0 || knife != 0) {\n            wait();\n        }\n        fork = n;\n        knife = n;\n        System.out.println(name(n) + \" get Fork and Knife\");\n    }\n\n    synchronized void reset(int n) {  // 自分が持っている道具を返す\n        if (fork == n) fork = 0;\n        if (knife == n) knife = 0;\n        notifyAll();  // 道具が空くのを待っている人を起こす\n    }\n\n    public static void main(String[] args) {\n        DeadLockTest dlt = new DeadLockTest();\n        for (int i = 1; i &lt; 9; i++) {\n            new HumanThread(dlt, i).start();\n        }\n    }\n}\n\nclass HumanThread extends Thread {\n    DeadLockTest dlt;\n    int id;\n\n    public HumanThread(DeadLockTest dlt, int id) {\n        this.dlt = dlt;\n        this.id = id;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 10; i++) {\n            try {\n                dlt.getBoth(id);  // 両方そろうまで、ここで待つ\n            } catch (InterruptedException e) {\n                return;\n            }\n            System.out.println(DeadLockTest.name(id) + \" ate a meal.\");\n            dlt.reset(id);\n        }\n    }\n}\n\n道具を片方だけ持つ人がいなくなるため、保持と待機の条件が崩れます。解答例1と比べて、次の利点があります。\n\n取っては返す、という無駄な動きがないので、ライブロックが起こらない。\n待っている間は wait() で休むので、CPUを使わない。\ncanEat() が不要になり、プログラムが簡潔になる。",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>練習問題4 解答例</span>"
+    ]
+  },
+  {
+    "objectID": "solutions/ex4.html#sec-ex4-answer3",
+    "href": "solutions/ex4.html#sec-ex4-answer3",
+    "title": "13  練習問題4 解答例",
+    "section": "13.5 解答例3：取る順番を決める",
+    "text": "13.5 解答例3：取る順番を決める\n「フォークを持っている人だけが、ナイフを取れる」という規則にします。元のプログラムの getKnife() を次のように変えるだけで、HumanThread は元のままで動きます。\n    synchronized void getKnife(int n) {\n        if (fork != n || knife != 0) {\n            return;  // フォークを持っていない人は、ナイフに手を出さない\n        }\n        knife = n;\n        System.out.println(name(n) + \" get Knife\");\n    }\nナイフを持てるのはフォークを持っている人だけなので、「ナイフだけを持ってフォークを待つ人」がいなくなります。\nフォークを持っている人は必ずナイフを取れるので、待ちの輪ができません（循環待ちの条件が崩れる）。\n道具が多数ある場合も、「すべての人が同じ順番で道具を取る」という規則にすれば、同じ理由で循環待ちを防げます。\nただし、この解答例も、フォークが空くまでループを回り続ける点は元のプログラムと同じです。",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>練習問題4 解答例</span>"
+    ]
   }
 ]
