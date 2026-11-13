@@ -658,5 +658,35 @@
     "crumbs": [
       "<span class='chapter-number'>11</span>  <span class='chapter-title'>練習問題2 解答例</span>"
     ]
+  },
+  {
+    "objectID": "solutions/ex3.html",
+    "href": "solutions/ex3.html",
+    "title": "12  練習問題3 解答例",
+    "section": "",
+    "text": "12.1 解答の要点",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>練習問題3 解答例</span>"
+    ]
+  },
+  {
+    "objectID": "solutions/ex3.html#sec-ex3-point",
+    "href": "solutions/ex3.html#sec-ex3-point",
+    "title": "12  練習問題3 解答例",
+    "section": "",
+    "text": "満杯・空のときは、return で失敗する代わりに wait() で待つ。\n待つ条件は if ではなく while で確かめる。\n追加・取り出しに成功したら notifyAll() で待っているスレッドを起こす。この問題では notify() では不十分で、プログラムが終わらなくなることがある（後述）。",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>練習問題3 解答例</span>"
+    ]
+  },
+  {
+    "objectID": "solutions/ex3.html#sec-ex3-answer",
+    "href": "solutions/ex3.html#sec-ex3-answer",
+    "title": "12  練習問題3 解答例",
+    "section": "12.2 解答例",
+    "text": "12.2 解答例\n練習問題1の解答例からの変更箇所に「変更」とコメントを付けています。\n\n\nIntQueue.java\n\npublic class IntQueue {\n    final int SIZE = 10;\n    private int[] values = new int[SIZE];\n    private int tail = -1;  // 末尾の位置（空のときは -1）\n\n    synchronized boolean enqueue(int data) {\n        if (data &lt;= 0) {\n            return false;           // 負の値は受け付けない\n        }\n        while (tail == SIZE - 1) {  // 変更：満杯の間は待つ（if ではなく while）\n            System.out.println(\"enqueue :Queue Full.. wait dequeue()\");\n            try {\n                wait();             // ロックを解放して、取り出されるまで待つ\n            } catch (InterruptedException e) {\n                return false;       // 待機中に中断されたら、追加せずに戻る\n            }\n        }\n        tail++;\n        values[tail] = data;\n        System.out.println(\"enqueue :\" + data + \" tail:\" + tail);\n        notifyAll();                // 変更：取り出しを待っているスレッドを起こす\n        return true;\n    }\n\n    synchronized int dequeue() {\n        while (isEmpty()) {         // 変更：空の間は待つ\n            System.out.println(\"dequeue :Queue Empty.. wait enqueue()\");\n            try {\n                wait();             // ロックを解放して、追加されるまで待つ\n            } catch (InterruptedException e) {\n                return -1;          // 待機中に中断されたら、取り出さずに戻る\n            }\n        }\n        int data = values[0];\n        for (int i = 0; i &lt; SIZE - 1; i++) {\n            values[i] = values[i + 1];  // 要素を1つずつ前に詰める\n        }\n        tail--;\n        System.out.println(\"dequeue :\" + data + \" tail:\" + tail);\n        notifyAll();                // 変更：追加を待っているスレッドを起こす\n        return data;\n    }\n\n    boolean isEmpty() {\n        return (tail == -1);\n    }\n\n    public static void main(String[] args) {\n        IntQueue q = new IntQueue();\n        new EnQueueThread(q).start();\n        new EnQueueThread(q).start();\n        new DeQueueThread(q).start();\n        new DeQueueThread(q).start();\n    }\n}\n\nclass EnQueueThread extends Thread {\n    IntQueue q;\n\n    public EnQueueThread(IntQueue q) {\n        this.q = q;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 100; i++) {\n            int data = (int) (Math.random() * 100 + 1);  // 1〜100の乱数\n            q.enqueue(data);\n        }\n    }\n}\n\nclass DeQueueThread extends Thread {\n    IntQueue q;\n\n    public DeQueueThread(IntQueue q) {\n        this.q = q;\n    }\n\n    public void run() {\n        for (int i = 0; i &lt; 100; i++) {\n            q.dequeue();\n        }\n    }\n}\n\n\nなぜ while で条件を確かめるのか\n条件の確認は、wait() を呼ぶ前と、wait() から戻った後の両方で必要です。while で囲むと、この両方が1つのループで実現できます。\n\n\nなぜ notify() ではなく notifyAll() なのか\n\nnotify() は、待っているスレッドの中から1つだけを選んで起こします。\n追加スレッドと取出しスレッドが同じオブジェクトで待つため、取出しスレッドが送った通知で、別の取出しスレッドが起こされることがあります。\n起こされたスレッドは条件を確かめて再び待つだけなので、4つのスレッドがすべて待機したままになってしまいます。\nnotifyAll() なら全員が起こされ、各自が while で条件を確かめ直すので、条件が整ったスレッドが必ず先に進めます。",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>練習問題3 解答例</span>"
+    ]
   }
 ]
