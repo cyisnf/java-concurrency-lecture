@@ -33,7 +33,7 @@ book:
     - chapters/09-exercises.qmd
     - solutions/ex1.qmd
     - solutions/ex2.qmd
-    # - solutions/ex3.qmd
+    - solutions/ex3.qmd
     # - solutions/ex4.qmd
 
 format:

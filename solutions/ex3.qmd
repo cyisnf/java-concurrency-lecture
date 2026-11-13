@@ -1,0 +1,111 @@
+---
+title: "練習問題3 解答例"
+---
+
+## 解答の要点 {#sec-ex3-point}
+
+- 満杯・空のときは、`return` で失敗する代わりに `wait()` で待つ。
+- 待つ条件は `if` ではなく **`while`** で確かめる。
+- 追加・取り出しに成功したら `notifyAll()` で待っているスレッドを起こす。この問題では `notify()` では不十分で、プログラムが終わらなくなることがある（[後述](#sec-ex3-notifyall)）。
+
+## 解答例 {#sec-ex3-answer}
+
+[練習問題1の解答例](ex1.qmd#sec-ex1-answer)からの変更箇所に「変更」とコメントを付けています。
+
+```{.java filename="IntQueue.java"}
+public class IntQueue {
+    final int SIZE = 10;
+    private int[] values = new int[SIZE];
+    private int tail = -1;  // 末尾の位置（空のときは -1）
+
+    synchronized boolean enqueue(int data) {
+        if (data <= 0) {
+            return false;           // 負の値は受け付けない
+        }
+        while (tail == SIZE - 1) {  // 変更：満杯の間は待つ（if ではなく while）
+            System.out.println("enqueue :Queue Full.. wait dequeue()");
+            try {
+                wait();             // ロックを解放して、取り出されるまで待つ
+            } catch (InterruptedException e) {
+                return false;       // 待機中に中断されたら、追加せずに戻る
+            }
+        }
+        tail++;
+        values[tail] = data;
+        System.out.println("enqueue :" + data + " tail:" + tail);
+        notifyAll();                // 変更：取り出しを待っているスレッドを起こす
+        return true;
+    }
+
+    synchronized int dequeue() {
+        while (isEmpty()) {         // 変更：空の間は待つ
+            System.out.println("dequeue :Queue Empty.. wait enqueue()");
+            try {
+                wait();             // ロックを解放して、追加されるまで待つ
+            } catch (InterruptedException e) {
+                return -1;          // 待機中に中断されたら、取り出さずに戻る
+            }
+        }
+        int data = values[0];
+        for (int i = 0; i < SIZE - 1; i++) {
+            values[i] = values[i + 1];  // 要素を1つずつ前に詰める
+        }
+        tail--;
+        System.out.println("dequeue :" + data + " tail:" + tail);
+        notifyAll();                // 変更：追加を待っているスレッドを起こす
+        return data;
+    }
+
+    boolean isEmpty() {
+        return (tail == -1);
+    }
+
+    public static void main(String[] args) {
+        IntQueue q = new IntQueue();
+        new EnQueueThread(q).start();
+        new EnQueueThread(q).start();
+        new DeQueueThread(q).start();
+        new DeQueueThread(q).start();
+    }
+}
+
+class EnQueueThread extends Thread {
+    IntQueue q;
+
+    public EnQueueThread(IntQueue q) {
+        this.q = q;
+    }
+
+    public void run() {
+        for (int i = 0; i < 100; i++) {
+            int data = (int) (Math.random() * 100 + 1);  // 1〜100の乱数
+            q.enqueue(data);
+        }
+    }
+}
+
+class DeQueueThread extends Thread {
+    IntQueue q;
+
+    public DeQueueThread(IntQueue q) {
+        this.q = q;
+    }
+
+    public void run() {
+        for (int i = 0; i < 100; i++) {
+            q.dequeue();
+        }
+    }
+}
+```
+
+### なぜ while で条件を確かめるのか {.unnumbered}
+
+条件の確認は、`wait()` を**呼ぶ前**と、`wait()` から**戻った後**の両方で必要です。`while` で囲むと、この両方が1つのループで実現できます。
+
+### なぜ notify() ではなく notifyAll() なのか {#sec-ex3-notifyall .unnumbered}
+
+- `notify()` は、待っているスレッドの中から**1つだけ**を選んで起こします。
+- 追加スレッドと取出しスレッドが同じオブジェクトで待つため、取出しスレッドが送った通知で、**別の取出しスレッド**が起こされることがあります。
+- 起こされたスレッドは条件を確かめて再び待つだけなので、**4つのスレッドがすべて待機したまま**になってしまいます。
+- `notifyAll()` なら全員が起こされ、各自が `while` で条件を確かめ直すので、条件が整ったスレッドが必ず先に進めます。
