@@ -110,7 +110,7 @@ class Window extends Thread {
 1. **排他制御なし**：`issue()` の中身を書き、3回実行して、重複した番号と欠番の数を記録する。
 2. **synchronized 版**：`issue()` を `synchronized` メソッドにして、3回実行する。`TicketSync.java` と名付ける。
 3. **volatile 版**：`synchronized` を外し、代わりに変数 `next` に `volatile` を付けて、3回実行する。`TicketVolatile.java` と名付ける。
-4. **AtomicInteger 版**：変数 `next` を `java.util.concurrent.atomic.AtomicInteger` 型に変え、`issue()` を `incrementAndGet()` を使って書き直して、3回実行する（@sec-av-summary）。`TicketAtomic.java` と名付ける。
+4. **AtomicInteger 版**：変数 `next` を `java.util.concurrent.atomic.AtomicInteger` 型に変え、`issue()` を `getAndIncrement()` を使って書き直して、3回実行する（@sec-av-summary）。`TicketAtomic.java` と名付ける。
 5. 結果を、次の3つの表にまとめる。各欄には、`check()` が表示した値をそのまま書く。
 
 「平均」は小数点以下を切り捨て、整数とすること。
