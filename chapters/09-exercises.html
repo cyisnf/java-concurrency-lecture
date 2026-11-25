@@ -85,9 +85,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-5de16f5e46225c21e2daa90d340bf64f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e38c6f09d09fb5807c02a3ec22ed2b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-fd136b7982169becce9db50a4c43202c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-e38c6f09d09fb5807c02a3ec22ed2b55.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-25d1631d321d0cf4700df4b7caabb002.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-cd403c8d8403115a0e15a665dac54fd1.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-25d1631d321d0cf4700df4b7caabb002.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -618,7 +618,7 @@ window.Quarto = {
 <li><strong>排他制御なし</strong>：<code>issue()</code> の中身を書き、3回実行して、重複した番号と欠番の数を記録する。</li>
 <li><strong>synchronized 版</strong>：<code>issue()</code> を <code>synchronized</code> メソッドにして、3回実行する。<code>TicketSync.java</code> と名付ける。</li>
 <li><strong>volatile 版</strong>：<code>synchronized</code> を外し、代わりに変数 <code>next</code> に <code>volatile</code> を付けて、3回実行する。<code>TicketVolatile.java</code> と名付ける。</li>
-<li><strong>AtomicInteger 版</strong>：変数 <code>next</code> を <code>java.util.concurrent.atomic.AtomicInteger</code> 型に変え、<code>issue()</code> を <code>incrementAndGet()</code> を使って書き直して、3回実行する（<a href="05-volatile.html#sec-av-summary" class="quarto-xref"><span>セクション 5.5</span></a>）。<code>TicketAtomic.java</code> と名付ける。</li>
+<li><strong>AtomicInteger 版</strong>：変数 <code>next</code> を <code>java.util.concurrent.atomic.AtomicInteger</code> 型に変え、<code>issue()</code> を <code>getAndIncrement()</code> を使って書き直して、3回実行する（<a href="05-volatile.html#sec-av-summary" class="quarto-xref"><span>セクション 5.5</span></a>）。<code>TicketAtomic.java</code> と名付ける。</li>
 <li>結果を、次の3つの表にまとめる。各欄には、<code>check()</code> が表示した値をそのまま書く。</li>
 </ol>
 <p>「平均」は小数点以下を切り捨て、整数とすること。</p>
