@@ -1072,7 +1072,7 @@ c_{ij} = a_{i0} b_{0j} + a_{i1} b_{1j} + \cdots + a_{i,N-1} b_{N-1,j} = \sum_{k=
 <li>スレッド数を1, 2, 4, 8, 15, 16, 32 と変えて、それぞれ3回ずつ実行し、処理時間とその平均を <a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a> に記録する。平均は小数点以下を切り捨て、<strong>整数</strong>とする。</li>
 <li>スレッド数ごとに、次の2つの値を計算し、<a href="#tbl-task2-speedup" class="quarto-xref">表&nbsp;<span>9.8</span></a> に記録する。それぞれ<strong>小数第2位</strong>まで求める。
 <ul>
-<li><strong>速度向上率</strong>：並列版の平均（<a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a>）を、逐次版の平均（<a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.6</span></a>）で割った値。並列版が逐次版の何倍速いかを表す。</li>
+<li><strong>速度向上率</strong>：逐次版の平均（<a href="#tbl-task2-seq" class="quarto-xref">表&nbsp;<span>9.6</span></a>）を並列版の平均（<a href="#tbl-task2-par" class="quarto-xref">表&nbsp;<span>9.7</span></a>）で割った値。並列版が逐次版の何倍速いかを表す。</li>
 <li><strong>並列化効率</strong>：速度向上率を、スレッド数で割った値。理想は1.00で、これは「スレッド数を N にすると、処理時間がちょうど 1/N になる」場合にあたる。</li>
 </ul></li>
 </ol>
